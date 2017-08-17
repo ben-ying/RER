@@ -2,30 +2,25 @@ package com.yjh.rer.viewmodel;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.yjh.rer.dao.RedEnvelopeDao;
-import com.yjh.rer.entity.RedEnvelope;
+import com.yjh.rer.network.Resource;
+import com.yjh.rer.room.dao.RedEnvelopeDao;
+import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.injection.DaggerRedEnvelopeComponent;
 import com.yjh.rer.injection.RedEnvelopeModule;
 import com.yjh.rer.repository.RedEnvelopeRepository;
-import com.yjh.rer.webservice.Webservice;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-
 public class RedEnvelopeViewModel extends ViewModel implements RedEnvelopeDao {
-    private LiveData<List<RedEnvelope>> redEnvelopes;
+    private LiveData<Resource<List<RedEnvelope>>> redEnvelopes;
     @Inject
     RedEnvelopeRepository repository;
 
-    public LiveData<List<RedEnvelope>> getRedEnvelopes() {
+    public LiveData<Resource<List<RedEnvelope>>> getRedEnvelopes() {
             return redEnvelopes;
     }
 
@@ -35,7 +30,7 @@ public class RedEnvelopeViewModel extends ViewModel implements RedEnvelopeDao {
         }
         DaggerRedEnvelopeComponent.builder().redEnvelopeModule(
                 new RedEnvelopeModule(this)).build().inject(this);
-        redEnvelopes = repository.getRedEnvelopes(token, userId);
+        redEnvelopes = repository.loadRedEnvelopes(token, userId);
     }
 
     @Override

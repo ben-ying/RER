@@ -1,15 +1,11 @@
-package com.yjh.rer.entity;
+package com.yjh.rer.room.entity;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import static com.yjh.rer.entity.RedEnvelope.TABLE_NAME;
+import static com.yjh.rer.room.entity.RedEnvelope.TABLE_NAME;
 
 @Entity(tableName = TABLE_NAME)
 public class RedEnvelope extends ViewModel {

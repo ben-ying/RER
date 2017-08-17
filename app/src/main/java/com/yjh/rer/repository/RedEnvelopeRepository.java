@@ -2,22 +2,24 @@ package com.yjh.rer.repository;
 
 
 import android.arch.lifecycle.LiveData;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.yjh.rer.dao.RedEnvelopeDao;
-import com.yjh.rer.entity.RedEnvelope;
-import com.yjh.rer.webservice.Webservice;
+import com.yjh.rer.BaseResponse;
+import com.yjh.rer.network.ApiResponse;
+import com.yjh.rer.network.NetworkBoundResource;
+import com.yjh.rer.network.Resource;
+import com.yjh.rer.network.Webservice;
+import com.yjh.rer.room.dao.RedEnvelopeDao;
+import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.util.LiveDataCallAdapterFactory;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -31,30 +33,39 @@ public class RedEnvelopeRepository {
     public RedEnvelopeRepository(RedEnvelopeDao redEnvelopeDao) {
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .baseUrl(BASE_URL)
                 .build();
         this.webservice = retrofit.create(Webservice.class);
         this.redEnvelopeDao = redEnvelopeDao;
     }
 
-    public LiveData<List<RedEnvelope>> getRedEnvelopes(String token, String userId) {
-        refreshRedEnvelopes(token, userId);
-        return redEnvelopeDao.loadRedEnvelopes(userId);
-    }
-
-    private void refreshRedEnvelopes(final String token, final String userId) {
-
-        Call<List<RedEnvelope>> call = webservice.getRedEnvelopes(token, userId);
-        call.enqueue(new Callback<List<RedEnvelope>>() {
+    public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
+            final String token, final String userId) {
+        return new NetworkBoundResource<List<RedEnvelope>, BaseResponse>() {
             @Override
-            public void onResponse(Call<List<RedEnvelope>> call, Response<List<RedEnvelope>> response) {
+            protected void saveCallResult(@NonNull BaseResponse item) {
                 Log.d("", "");
             }
 
             @Override
-            public void onFailure(Call<List<RedEnvelope>> call, Throwable t) {
+            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
                 Log.d("", "");
+                return data == null;
+//                return rateLimiter.canFetch(userId) && (data == null || !isFresh(data));
             }
-        });
+
+            @NonNull
+            @Override
+            protected LiveData<List<RedEnvelope>> loadFromDb() {
+                return redEnvelopeDao.loadRedEnvelopes(userId);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<BaseResponse>> createCall() {
+                return webservice.getRedEnvelopes(token, userId);
+            }
+        }.getAsLiveData();
     }
 }

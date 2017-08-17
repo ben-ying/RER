@@ -1,10 +1,7 @@
 package com.yjh.rer.injection;
 
-import com.yjh.rer.dao.RedEnvelopeDao;
+import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.repository.RedEnvelopeRepository;
-import com.yjh.rer.webservice.Webservice;
-
-import java.util.concurrent.Executor;
 
 import javax.inject.Singleton;
 
