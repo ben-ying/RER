@@ -1,0 +1,62 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1673e77aebd26b13b04b95fccc06be8d",
+    "entities": [
+      {
+        "tableName": "red_envelopes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`red_envelopes` INTEGER, `user_id` INTEGER, `type` INTEGER, `money` TEXT, `money_from` TEXT, `remark` TEXT, `created` TEXT, PRIMARY KEY(`red_envelopes`))",
+        "fields": [
+          {
+            "fieldPath": "redEnvelopeId",
+            "columnName": "red_envelopes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "user_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "money",
+            "columnName": "money",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "moneyFrom",
+            "columnName": "money_from",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "remark",
+            "columnName": "remark",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "red_envelopes"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"1673e77aebd26b13b04b95fccc06be8d\")"
+    ]
+  }
+}

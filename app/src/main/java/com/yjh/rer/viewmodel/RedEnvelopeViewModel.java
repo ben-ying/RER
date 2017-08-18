@@ -1,9 +1,13 @@
 package com.yjh.rer.viewmodel;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
+import android.content.Context;
 import android.util.Log;
 
+import com.yjh.rer.MyApplication;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -15,10 +19,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class RedEnvelopeViewModel extends ViewModel implements RedEnvelopeDao {
+public class RedEnvelopeViewModel extends AndroidViewModel {
     private LiveData<Resource<List<RedEnvelope>>> redEnvelopes;
     @Inject
     RedEnvelopeRepository repository;
+    Application application;
+
+    public RedEnvelopeViewModel(Application application) {
+        super(application);
+        this.application = application;
+    }
 
     public LiveData<Resource<List<RedEnvelope>>> getRedEnvelopes() {
             return redEnvelopes;
@@ -29,18 +39,7 @@ public class RedEnvelopeViewModel extends ViewModel implements RedEnvelopeDao {
             return;
         }
         DaggerRedEnvelopeComponent.builder().redEnvelopeModule(
-                new RedEnvelopeModule(this)).build().inject(this);
+                new RedEnvelopeModule(application)).build().inject(this);
         redEnvelopes = repository.loadRedEnvelopes(token, userId);
-    }
-
-    @Override
-    public void saveRedEnvelope(RedEnvelope redEnvelope) {
-        Log.d("", "");
-    }
-
-    @Override
-    public LiveData<List<RedEnvelope>> loadRedEnvelopes(String userId) {
-        Log.d("", "");
-        return null;
     }
 }

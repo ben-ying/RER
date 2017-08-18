@@ -23,40 +23,35 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
         ResultType r = null;
         result.setValue(Resource.loading(r));
         final LiveData<ResultType> dbSource = loadFromDb();
-        if (dbSource == null) {
-            fetchFromNetwork(dbSource);
-        } else {
-            result.addSource(dbSource, new Observer<ResultType>() {
-                @Override
-                public void onChanged(@Nullable ResultType resultType) {
-                    result.removeSource(dbSource);
-                    if (shouldFetch(resultType)) {
-                        fetchFromNetwork(dbSource);
-                    } else {
-                        result.addSource(dbSource, new Observer<ResultType>() {
-                            @Override
-                            public void onChanged(@Nullable ResultType resultType) {
-                                result.setValue(Resource.success(resultType));
-                            }
-                        });
-                    }
+
+        result.addSource(dbSource, new Observer<ResultType>() {
+            @Override
+            public void onChanged(@Nullable ResultType resultType) {
+                result.removeSource(dbSource);
+                if (shouldFetch(resultType)) {
+                    fetchFromNetwork(dbSource);
+                } else {
+                    result.addSource(dbSource, new Observer<ResultType>() {
+                        @Override
+                        public void onChanged(@Nullable ResultType resultType) {
+                            result.setValue(Resource.success(resultType));
+                        }
+                    });
                 }
-            });
-        }
+            }
+        });
     }
 
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
         // we re-attach dbSource as a new source,
         // it will dispatch its latest value quickly
-        if (dbSource != null) {
-            result.addSource(dbSource, new Observer<ResultType>() {
-                @Override
-                public void onChanged(@Nullable ResultType resultType) {
-                    result.setValue(Resource.loading(resultType));
-                }
-            });
-        }
+        result.addSource(dbSource, new Observer<ResultType>() {
+            @Override
+            public void onChanged(@Nullable ResultType resultType) {
+                result.setValue(Resource.loading(resultType));
+            }
+        });
         result.addSource(apiResponse, new Observer<ApiResponse<RequestType>>() {
             @Override
             public void onChanged(final @Nullable ApiResponse<RequestType> requestTypeApiResponse) {

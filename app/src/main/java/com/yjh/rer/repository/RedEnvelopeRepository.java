@@ -12,32 +12,26 @@ import com.yjh.rer.network.NetworkBoundResource;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.network.Webservice;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
+import com.yjh.rer.room.db.MyDatabase;
 import com.yjh.rer.room.entity.RedEnvelope;
-import com.yjh.rer.util.LiveDataCallAdapterFactory;
+import com.yjh.rer.util.RateLimiter;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 @Singleton
 public class RedEnvelopeRepository {
-    private static final String BASE_URL = "http://bensbabycare.com/webservice/";
-    private final Webservice webservice;
-    private final RedEnvelopeDao redEnvelopeDao;
+    private Webservice webservice;
+    private RedEnvelopeDao redEnvelopeDao;
+    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(10, TimeUnit.MINUTES);
 
     @Inject
-    public RedEnvelopeRepository(RedEnvelopeDao redEnvelopeDao) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
-                .baseUrl(BASE_URL)
-                .build();
-        this.webservice = retrofit.create(Webservice.class);
-        this.redEnvelopeDao = redEnvelopeDao;
+    public RedEnvelopeRepository(Webservice webservice, MyDatabase database) {
+        this.webservice = webservice;
+        this.redEnvelopeDao = database.redEnvelopeDao();
     }
 
     public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
@@ -51,8 +45,7 @@ public class RedEnvelopeRepository {
             @Override
             protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
                 Log.d("", "");
-                return data == null;
-//                return rateLimiter.canFetch(userId) && (data == null || !isFresh(data));
+                return data == null || data.isEmpty() || repoListRateLimit.shouldFetch(token);
             }
 
             @NonNull
