@@ -14,9 +14,11 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface RedEnvelopeDao {
     @Insert(onConflict = REPLACE)
-    void saveRedEnvelope(RedEnvelope redEnvelope);
+    void save(RedEnvelope redEnvelope);
 
-    @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
-            " WHERE " + RedEnvelope.FIELD_USER_ID + " = :userId")
-    LiveData<List<RedEnvelope>> loadRedEnvelopes(String userId);
+    @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME)
+    LiveData<List<RedEnvelope>> loadRedEnvelopes();
+
+    @Query("SELECT Count(*) FROM " + RedEnvelope.TABLE_NAME)
+    int count();
 }

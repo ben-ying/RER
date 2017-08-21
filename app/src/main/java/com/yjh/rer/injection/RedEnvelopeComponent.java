@@ -1,6 +1,5 @@
 package com.yjh.rer.injection;
 
-import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import javax.inject.Singleton;

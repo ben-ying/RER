@@ -4,10 +4,9 @@ import android.app.Application;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 
-import com.yjh.rer.MyApplication;
 import com.yjh.rer.network.Webservice;
-import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.repository.RedEnvelopeRepository;
+import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.db.MyDatabase;
 import com.yjh.rer.util.LiveDataCallAdapterFactory;
 

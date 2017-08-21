@@ -8,12 +8,7 @@ import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
-
-import com.yjh.rer.room.entity.RedEnvelope;
-import com.yjh.rer.util.LiveDataTestUtil;
-
-import java.util.List;
+import android.widget.Toast;
 
 public abstract class NetworkBoundResource<ResultType, RequestType> {
     private final MediatorLiveData<Resource<ResultType>> result = new MediatorLiveData<>();

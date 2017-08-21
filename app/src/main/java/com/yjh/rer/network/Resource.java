@@ -28,4 +28,18 @@ public class Resource<T> {
     public static <T> Resource<T> loading(@Nullable T data) {
         return new Resource<>(Status.SUCCESS, data, null);
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    @Nullable
+    public T getData() {
+        return data;
+    }
+
+    @Nullable
+    public String getMessage() {
+        return message;
+    }
 }
