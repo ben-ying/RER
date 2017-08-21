@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.util.AlertUtils;
 
 import java.util.List;
 
@@ -19,12 +20,18 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
     private Context mContext;
     private List<RedEnvelope> mRedEnvelopes;
     private TextView mTotalTextView;
+    private RedEnvelopeInterface mInterface;
 
-    RedEnvelopeAdapter(Context context,
-                       List<RedEnvelope> redEnvelopes, TextView totalTextView) {
+    interface RedEnvelopeInterface {
+        void delete(int reId);
+    }
+
+    RedEnvelopeAdapter(Context context, List<RedEnvelope> redEnvelopes,
+                       TextView totalTextView, RedEnvelopeInterface redEnvelopeInterface) {
         this.mContext = context;
         this.mRedEnvelopes = redEnvelopes;
         this.mTotalTextView = totalTextView;
+        this.mInterface = redEnvelopeInterface;
     }
 
     public void setData(List<RedEnvelope> redEnvelopes) {
@@ -51,19 +58,19 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         holder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-//                AlertUtils.showConfirmDialog(mContext, R.string.delete_event_alert,
-//                        new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                deleteTask(redEnvelope);
-//                            }
-//                        });
+                AlertUtils.showConfirmDialog(mContext, R.string.delete_red_envelope_alert,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mInterface.delete(redEnvelope.getRedEnvelopeId());
+                            }
+                        });
                 return true;
             }
         });
     }
 
-    private void deleteTask(final RedEnvelope redEnvelope) {
+//    private void deleteTask(final RedEnvelope redEnvelope) {
 //        new NavigationTaskHandler(mContext, mUser.getToken())
 //                .deleteRedEnvelope(redEnvelope.getRedEnvelopeId(), new HttpResponseInterface<RedEnvelope>() {
 //                    @Override
@@ -95,7 +102,7 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
 //                    public void onHttpError(String error) {
 //                    }
 //                });
-    }
+//    }
 
 
     @Override

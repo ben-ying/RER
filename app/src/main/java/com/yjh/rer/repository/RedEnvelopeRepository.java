@@ -47,9 +47,7 @@ public class RedEnvelopeRepository {
                     RedEnvelope[] redEnvelopes = GsonUtils.getJsonData(
                             new JSONObject(item.getResult().toString())
                                     .getString("results"), RedEnvelope[].class);
-                    for (RedEnvelope redEnvelope : redEnvelopes) {
-                        redEnvelopeDao.save(redEnvelope);
-                    }
+                    redEnvelopeDao.saveAll(redEnvelopes);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -64,13 +62,84 @@ public class RedEnvelopeRepository {
             @NonNull
             @Override
             protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return redEnvelopeDao.loadRedEnvelopes();
+                return redEnvelopeDao.loadAll();
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<ResponseBody>> createCall() {
                 return webservice.getRedEnvelopes(token, userId);
+            }
+        }.getAsLiveData();
+    }
+
+    public LiveData<Resource<RedEnvelope>> addRedEnvelope(final String moneyFrom,
+                                                          final String money,
+                                                          final String remark,
+                                                          final String token) {
+        return new NetworkBoundResource<RedEnvelope, ResponseBody>() {
+
+            @Override
+            protected void saveCallResult(@NonNull ResponseBody item) {
+//                redEnvelopeDao.save(item);
+                Log.d("", "");
+                try {
+                    RedEnvelope redEnvelope = GsonUtils.getJsonData(
+                            new JSONObject(item.getResult().toString()), RedEnvelope.class);
+                    redEnvelopeDao.save(redEnvelope);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable RedEnvelope data) {
+                return data == null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<RedEnvelope> loadFromDb() {
+                return redEnvelopeDao.findById(-1);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<ResponseBody>> createCall() {
+                return webservice.addRedEnvelope(moneyFrom, money, remark, token);
+            }
+        }.getAsLiveData();
+    }
+
+    public LiveData<Resource<RedEnvelope>> deleteRedEnvelope(final int reId, final String token) {
+        return new NetworkBoundResource<RedEnvelope, ResponseBody>() {
+
+            @Override
+            protected void saveCallResult(@NonNull ResponseBody item) {
+                try {
+                    RedEnvelope redEnvelope = GsonUtils.getJsonData(
+                            new JSONObject(item.getResult().toString()), RedEnvelope.class);
+                    redEnvelopeDao.delete(redEnvelope);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            protected boolean shouldFetch(@Nullable RedEnvelope data) {
+                return data != null;
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<RedEnvelope> loadFromDb() {
+                return redEnvelopeDao.findById(reId);
+            }
+
+            @NonNull
+            @Override
+            protected LiveData<ApiResponse<ResponseBody>> createCall() {
+                return webservice.deleteRedEnvelope(reId, token);
             }
         }.getAsLiveData();
     }

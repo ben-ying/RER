@@ -1,8 +1,10 @@
 package com.yjh.rer.main;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +15,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.yjh.rer.R;
@@ -23,7 +27,8 @@ import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import java.util.List;
 
-public class RedEnvelopesFragment extends BaseFragment implements View.OnClickListener {
+public class RedEnvelopesFragment extends BaseFragment
+        implements View.OnClickListener, RedEnvelopeAdapter.RedEnvelopeInterface {
 
     private RedEnvelopeViewModel mViewModel;
     private List<RedEnvelope> mRedEnvelopes;
@@ -90,7 +95,6 @@ public class RedEnvelopesFragment extends BaseFragment implements View.OnClickLi
 
     private void getData() {
         mViewModel.init("1272dc0fe06c52383c7a9bdfef33255b940c195b", "1");
-        mRedEnvelopes = mViewModel.getRedEnvelopes().getValue().getData();
         mViewModel.getRedEnvelopes().observe(this, new Observer<Resource<List<RedEnvelope>>>() {
             @Override
             public void onChanged(@Nullable Resource<List<RedEnvelope>> listResource) {
@@ -105,7 +109,8 @@ public class RedEnvelopesFragment extends BaseFragment implements View.OnClickLi
                     mTotalTextView.setText(String.format(getString(
                             R.string.red_envelope_total), mRedEnvelopes.size(), mTotalMoney));
                     if (mAdapter == null) {
-                        mAdapter = new RedEnvelopeAdapter(getActivity(), mRedEnvelopes, mTotalTextView);
+                        mAdapter = new RedEnvelopeAdapter(getActivity(),
+                                mRedEnvelopes, mTotalTextView, RedEnvelopesFragment.this);
                         mRecyclerView.setAdapter(mAdapter);
                     } else {
                         mAdapter.setData(mRedEnvelopes);
@@ -129,8 +134,65 @@ public class RedEnvelopesFragment extends BaseFragment implements View.OnClickLi
         return view;
     }
 
+    private void addRedEnvelopDialog() {
+        final View view = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_red_envelope, null);
+        final EditText fromEditText = (EditText) view.findViewById(R.id.et_from);
+        final EditText moneyEditText = (EditText) view.findViewById(R.id.et_money);
+        final AutoCompleteTextView remarkEditText = (AutoCompleteTextView) view.findViewById(R.id.et_remark);
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
+                .setTitle(R.string.red_envelopes)
+                .setView(view)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mViewModel.add(fromEditText.getText().toString(),
+                                moneyEditText.getText().toString(),
+                                remarkEditText.getText().toString());
+                        mViewModel.getRedEnvelope().observe(RedEnvelopesFragment.this,
+                                new Observer<Resource<RedEnvelope>>() {
+                            @Override
+                            public void onChanged(@Nullable Resource<RedEnvelope> redEnvelopeResource) {
+                                if (redEnvelopeResource != null && redEnvelopeResource.getData() != null) {
+                                    mRedEnvelopes.add(0, redEnvelopeResource.getData());
+                                    mAdapter.setData(mRedEnvelopes);
+                                }
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .create();
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
     @Override
     public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.fab:
+                addRedEnvelopDialog();
+                break;
+        }
+    }
 
+    @Override
+    public void delete(int reId) {
+        mViewModel.delete(reId);
+        mViewModel.getRedEnvelope().observe(this, new Observer<Resource<RedEnvelope>>() {
+            @Override
+            public void onChanged(@Nullable Resource<RedEnvelope> redEnvelopeResource) {
+                if (redEnvelopeResource != null && redEnvelopeResource.getData() != null) {
+                    mRedEnvelopes.remove(redEnvelopeResource.getData());
+                    for (RedEnvelope redEnvelope : mRedEnvelopes) {
+                        if (redEnvelope.getRedEnvelopeId() ==
+                                redEnvelopeResource.getData().getRedEnvelopeId()) {
+                            mRedEnvelopes.remove(redEnvelope);
+                            mAdapter.setData(mRedEnvelopes);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
     }
 }
