@@ -7,13 +7,14 @@
         android:id="@+id/tv_total"
         android:textColor="@color/default_text_color"
         android:textSize="@dimen/setting_text_size"
-        android:padding="@dimen/recycler_view_padding"
+        android:paddingStart="@dimen/recycler_view_padding"
+        android:paddingEnd="@dimen/recycler_view_padding"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="@dimen/sticky_height" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
-        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,6 +25,8 @@
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
+                android:background="@android:color/transparent"
+                android:paddingTop="@dimen/sticky_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </android.support.v4.widget.NestedScrollView>

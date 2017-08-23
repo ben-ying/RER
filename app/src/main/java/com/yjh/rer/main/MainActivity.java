@@ -3,7 +3,6 @@ package com.yjh.rer.main;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -13,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
@@ -21,55 +19,51 @@ import com.yjh.rer.base.BaseFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private RedEnvelopesFragment mRedEnvelopesFragment;
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
-    private HomeViewPagerAdapter mPagerAdapter;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.drawer_layout) DrawerLayout drawer;
+    @BindView(R.id.view_pager) ViewPager viewPager;
+    @BindView(R.id.tab_layout_main) TabLayout tabLayout;
+    @BindView(R.id.nav_view) NavigationView navigationView;
 
-    
+    private RedEnvelopesFragment mRedEnvelopesFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
+                toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         List<BaseFragment> fragments = new ArrayList<>();
         mRedEnvelopesFragment = RedEnvelopesFragment.newInstance();
         fragments.add(mRedEnvelopesFragment);
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mPagerAdapter = new HomeViewPagerAdapter(this, getSupportFragmentManager(), fragments);
-        mViewPager.setOffscreenPageLimit(1);
-        mViewPager.setAdapter(mPagerAdapter);
-        mTabLayout = (TabLayout) findViewById(R.id.tab_layout_main);
-        mTabLayout.setupWithViewPager(mViewPager);
+        HomeViewPagerAdapter homeViewPagerAdapter = new HomeViewPagerAdapter(
+                this, getSupportFragmentManager(), fragments);
+        viewPager.setOffscreenPageLimit(1);
+        viewPager.setAdapter(homeViewPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @OnClick(R.id.fab)
+    public void addRedEnvelopDialog() {
+        mRedEnvelopesFragment.addRedEnvelopDialog();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -118,8 +112,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

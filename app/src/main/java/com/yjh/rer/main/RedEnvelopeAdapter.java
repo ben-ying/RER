@@ -14,6 +14,9 @@ import com.yjh.rer.util.AlertUtils;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         RedEnvelopeAdapter.RedEnvelopeViewHolder> implements View.OnClickListener {
 
@@ -87,17 +90,14 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
     }
 
     class RedEnvelopeViewHolder extends RecyclerView.ViewHolder {
-        View rootView;
-        TextView fromTextView;
-        TextView dateTextView;
-        TextView moneyTextView;
+        @BindView(R.id.content_layout) View rootView;
+        @BindView(R.id.tv_from) TextView fromTextView;
+        @BindView(R.id.tv_datetime) TextView dateTextView;
+        @BindView(R.id.tv_money) TextView moneyTextView;
 
         RedEnvelopeViewHolder(View itemView) {
             super(itemView);
-            this.rootView = itemView.findViewById(R.id.content_layout);
-            this.fromTextView = (TextView) itemView.findViewById(R.id.tv_from);
-            this.dateTextView = (TextView) itemView.findViewById(R.id.tv_datetime);
-            this.moneyTextView = (TextView) itemView.findViewById(R.id.tv_money);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
