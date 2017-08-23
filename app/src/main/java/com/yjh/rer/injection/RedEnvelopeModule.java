@@ -21,8 +21,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module
 public class RedEnvelopeModule {
 
-    private Application application;
     private static final String BASE_URL = "http://bensbabycare.com/webservice/";
+    private Application mApplication;
 
     @Singleton
     @Provides
@@ -53,13 +53,12 @@ public class RedEnvelopeModule {
         return db.redEnvelopeDao();
     }
 
-
     @Provides
     Context applicationContext() {
-        return application;
+        return mApplication;
     }
 
     public RedEnvelopeModule(Application application) {
-        this.application = application;
+        this.mApplication = application;
     }
 }

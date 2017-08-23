@@ -70,41 +70,6 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         });
     }
 
-//    private void deleteTask(final RedEnvelope redEnvelope) {
-//        new NavigationTaskHandler(mContext, mUser.getToken())
-//                .deleteRedEnvelope(redEnvelope.getRedEnvelopeId(), new HttpResponseInterface<RedEnvelope>() {
-//                    @Override
-//                    public void onStart() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(RedEnvelope classOfT) {
-//                        if (classOfT != null && redEnvelope.getRedEnvelopeId() == classOfT.getRedEnvelopeId()) {
-//                            mRedEnvelopes.remove(redEnvelope);
-//                            int total = 0;
-//                            for (RedEnvelope redEnvelope : mRedEnvelopes) {
-//                                total += redEnvelope.getMoneyInt();
-//                            }
-//                            mTotalTextView.setText(String.format(mContext.getString(
-//                                    R.string.red_envelope_total), mRedEnvelopes.size(), total));
-//                            notifyDataSetChanged();
-//                            RedEnvelope.deleteAll(RedEnvelope.class, "red_envelope_id = ?",
-//                                    String.valueOf(redEnvelope.getRedEnvelopeId()));
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onFailure(HttpBaseResult result) {
-//                    }
-//
-//                    @Override
-//                    public void onHttpError(String error) {
-//                    }
-//                });
-//    }
-
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

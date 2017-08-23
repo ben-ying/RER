@@ -30,7 +30,7 @@ import javax.inject.Singleton;
 public class RedEnvelopeRepository {
     private Webservice webservice;
     private RedEnvelopeDao redEnvelopeDao;
-    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(10, TimeUnit.MINUTES);
+    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(1, TimeUnit.SECONDS);
 
     @Inject
     public RedEnvelopeRepository(Webservice webservice, MyDatabase database) {
@@ -73,11 +73,11 @@ public class RedEnvelopeRepository {
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<RedEnvelope>> addRedEnvelope(final String moneyFrom,
+    public LiveData<Resource<List<RedEnvelope>>> addRedEnvelope(final String moneyFrom,
                                                           final String money,
                                                           final String remark,
                                                           final String token) {
-        return new NetworkBoundResource<RedEnvelope, ResponseBody>() {
+        return new NetworkBoundResource<List<RedEnvelope>, ResponseBody>() {
 
             @Override
             protected void saveCallResult(@NonNull ResponseBody item) {
@@ -93,14 +93,14 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable RedEnvelope data) {
-                return data == null;
+            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
+                return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<RedEnvelope> loadFromDb() {
-                return redEnvelopeDao.findById(-1);
+            protected LiveData<List<RedEnvelope>> loadFromDb() {
+                return redEnvelopeDao.loadAll();
             }
 
             @NonNull
@@ -111,8 +111,8 @@ public class RedEnvelopeRepository {
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<RedEnvelope>> deleteRedEnvelope(final int reId, final String token) {
-        return new NetworkBoundResource<RedEnvelope, ResponseBody>() {
+    public LiveData<Resource<List<RedEnvelope>>> deleteRedEnvelope(final int reId, final String token) {
+        return new NetworkBoundResource<List<RedEnvelope>, ResponseBody>() {
 
             @Override
             protected void saveCallResult(@NonNull ResponseBody item) {
@@ -126,14 +126,14 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable RedEnvelope data) {
-                return data != null;
+            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
+                return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<RedEnvelope> loadFromDb() {
-                return redEnvelopeDao.findById(reId);
+            protected LiveData<List<RedEnvelope>> loadFromDb() {
+                return redEnvelopeDao.loadAll();
             }
 
             @NonNull

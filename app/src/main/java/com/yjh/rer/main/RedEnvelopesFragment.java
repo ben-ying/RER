@@ -38,7 +38,6 @@ public class RedEnvelopesFragment extends BaseFragment
     private RedEnvelopeAdapter mAdapter;
     private boolean mShowFab = true;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private int mTotalMoney;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -54,7 +53,6 @@ public class RedEnvelopesFragment extends BaseFragment
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setNestedScrollingEnabled(false);
-        mTotalMoney = 0;
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -85,16 +83,13 @@ public class RedEnvelopesFragment extends BaseFragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getData();
+                mViewModel.load("1");
             }
         });
 
-        mViewModel = ViewModelProviders.of(this).get(RedEnvelopeViewModel.class);
-        getData();
-    }
-
-    private void getData() {
-        mViewModel.init("1272dc0fe06c52383c7a9bdfef33255b940c195b", "1");
+        RedEnvelopeViewModel.Factory factory = new RedEnvelopeViewModel.Factory(
+                getActivity().getApplication(), "1272dc0fe06c52383c7a9bdfef33255b940c195b");
+        mViewModel = ViewModelProviders.of(this, factory).get(RedEnvelopeViewModel.class);
         mViewModel.getRedEnvelopes().observe(this, new Observer<Resource<List<RedEnvelope>>>() {
             @Override
             public void onChanged(@Nullable Resource<List<RedEnvelope>> listResource) {
@@ -102,12 +97,12 @@ public class RedEnvelopesFragment extends BaseFragment
                 mSwipeRefreshLayout.setRefreshing(false);
                 if (listResource != null && listResource.getData() != null) {
                     mRedEnvelopes = listResource.getData();
-                    mTotalMoney = 0;
+                    int total = 0;
                     for (RedEnvelope redEnvelope : mRedEnvelopes) {
-                        mTotalMoney += redEnvelope.getMoneyInt();
+                        total += redEnvelope.getMoneyInt();
                     }
                     mTotalTextView.setText(String.format(getString(
-                            R.string.red_envelope_total), mRedEnvelopes.size(), mTotalMoney));
+                            R.string.red_envelope_total), mRedEnvelopes.size(), total));
                     if (mAdapter == null) {
                         mAdapter = new RedEnvelopeAdapter(getActivity(),
                                 mRedEnvelopes, mTotalTextView, RedEnvelopesFragment.this);
@@ -118,6 +113,8 @@ public class RedEnvelopesFragment extends BaseFragment
                 }
             }
         });
+        mSwipeRefreshLayout.setRefreshing(true);
+        mViewModel.load("1");
     }
 
     @Override
@@ -145,19 +142,10 @@ public class RedEnvelopesFragment extends BaseFragment
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        mSwipeRefreshLayout.setRefreshing(true);
                         mViewModel.add(fromEditText.getText().toString(),
                                 moneyEditText.getText().toString(),
                                 remarkEditText.getText().toString());
-                        mViewModel.getRedEnvelope().observe(RedEnvelopesFragment.this,
-                                new Observer<Resource<RedEnvelope>>() {
-                            @Override
-                            public void onChanged(@Nullable Resource<RedEnvelope> redEnvelopeResource) {
-                                if (redEnvelopeResource != null && redEnvelopeResource.getData() != null) {
-                                    mRedEnvelopes.add(0, redEnvelopeResource.getData());
-                                    mAdapter.setData(mRedEnvelopes);
-                                }
-                            }
-                        });
                     }
                 })
                 .setNegativeButton(R.string.cancel, null)
@@ -177,22 +165,7 @@ public class RedEnvelopesFragment extends BaseFragment
 
     @Override
     public void delete(int reId) {
+        mSwipeRefreshLayout.setRefreshing(true);
         mViewModel.delete(reId);
-        mViewModel.getRedEnvelope().observe(this, new Observer<Resource<RedEnvelope>>() {
-            @Override
-            public void onChanged(@Nullable Resource<RedEnvelope> redEnvelopeResource) {
-                if (redEnvelopeResource != null && redEnvelopeResource.getData() != null) {
-                    mRedEnvelopes.remove(redEnvelopeResource.getData());
-                    for (RedEnvelope redEnvelope : mRedEnvelopes) {
-                        if (redEnvelope.getRedEnvelopeId() ==
-                                redEnvelopeResource.getData().getRedEnvelopeId()) {
-                            mRedEnvelopes.remove(redEnvelope);
-                            mAdapter.setData(mRedEnvelopes);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
     }
 }

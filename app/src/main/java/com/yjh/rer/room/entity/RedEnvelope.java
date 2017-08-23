@@ -3,14 +3,17 @@ package com.yjh.rer.room.entity;
 import android.arch.lifecycle.ViewModel;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import static com.yjh.rer.room.entity.RedEnvelope.TABLE_NAME;
 
 @Entity(tableName = TABLE_NAME)
 public class RedEnvelope extends ViewModel {
+    public static final int INVALID_ID = -1;
     public static final String TABLE_NAME = "red_envelopes";
     public static final String FIELD_RED_ENVELOPE_ID = "red_envelope_id";
     public static final String FIELD_USER_ID = "user_id";
@@ -55,6 +58,21 @@ public class RedEnvelope extends ViewModel {
         return created == null ? "" : created.split(" ")[0];
     }
 
+    public RedEnvelope() {
+    }
+
+    @Ignore
+    public RedEnvelope(int redEnvelopeId) {
+        this.redEnvelopeId = redEnvelopeId;
+    }
+
+    @Ignore
+    public RedEnvelope(String money, String moneyFrom, String remark) {
+        this.redEnvelopeId = INVALID_ID;
+        this.money = money;
+        this.moneyFrom = moneyFrom;
+        this.remark = remark;
+    }
 
     public int getRedEnvelopeId() {
         return redEnvelopeId;
@@ -110,5 +128,10 @@ public class RedEnvelope extends ViewModel {
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

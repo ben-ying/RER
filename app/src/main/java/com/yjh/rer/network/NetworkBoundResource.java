@@ -31,6 +31,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                         @Override
                         public void onChanged(@Nullable ResultType resultType) {
                             result.setValue(Resource.success(resultType));
+                            result.removeSource(dbSource);
                         }
                     });
                 }
@@ -62,6 +63,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                         @Override
                         public void onChanged(@Nullable ResultType resultType) {
                             Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
+                            result.removeSource(dbSource);
                         }
                     });
                 }
@@ -84,10 +86,12 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                 // we specially request a new live data,
                 // otherwise we will get immediately last cached value,
                 // which may not be updated with latest results received from network.
-                result.addSource(loadFromDb(), new Observer<ResultType>() {
+                final LiveData<ResultType> dbSource = loadFromDb();
+                result.addSource(dbSource, new Observer<ResultType>() {
                     @Override
                     public void onChanged(@Nullable ResultType resultType) {
                         result.setValue(Resource.success(resultType));
+                        result.removeSource(dbSource);
                     }
                 });
             }
