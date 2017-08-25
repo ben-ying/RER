@@ -16,8 +16,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
     @MainThread
     public NetworkBoundResource() {
-        ResultType r = null;
-        result.setValue(Resource.loading(r));
+        result.setValue(Resource.loading((ResultType) null));
         final LiveData<ResultType> dbSource = loadFromDb();
 
         result.addSource(dbSource, new Observer<ResultType>() {
@@ -40,6 +39,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     }
 
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
+        // start progress
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
         // we re-attach dbSource as a new source,
         // it will dispatch its latest value quickly
@@ -67,8 +67,14 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                         }
                     });
                 }
+                // end progress
             }
         });
+    }
+
+    @WorkerThread
+    protected RequestType processResponse(ApiResponse<RequestType> response) {
+        return response.getBody();
     }
 
     @MainThread

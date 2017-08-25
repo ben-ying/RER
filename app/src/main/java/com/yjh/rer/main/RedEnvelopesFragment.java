@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,10 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.base.LayoutManager;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
@@ -36,11 +39,11 @@ public class RedEnvelopesFragment extends BaseFragment
     @BindView(R.id.tv_total) TextView totalTextView;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout swipeRefreshLayout;
+    @BindView(R.id.progress_bar) ProgressBar progressBar;
 
     private RedEnvelopeViewModel mViewModel;
     private RedEnvelopeAdapter mAdapter;
     private Unbinder mUnBinder;
-    private Unbinder mDialogUnBinder;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -62,6 +65,7 @@ public class RedEnvelopesFragment extends BaseFragment
             @Override
             public void onRefresh() {
                 mViewModel.load("1");
+                progressBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -74,14 +78,25 @@ public class RedEnvelopesFragment extends BaseFragment
                 setData(listResource);
             }
         });
-        swipeRefreshLayout.setRefreshing(true);
+        progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_red_envelopes, container, false);
+        mUnBinder = ButterKnife.bind(this, view);
+
+        return view;
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
         Log.d("", "");
-        swipeRefreshLayout.setRefreshing(false);
         if (listResource != null && listResource.getData() != null) {
+            Log.d("TIME", "time1: " + System.currentTimeMillis());
+            progressBar.setVisibility(View.GONE);
+            swipeRefreshLayout.setRefreshing(false);
             List<RedEnvelope> redEnvelopes = listResource.getData();
             int total = 0;
             for (RedEnvelope redEnvelope : redEnvelopes) {
@@ -99,26 +114,17 @@ public class RedEnvelopesFragment extends BaseFragment
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_red_envelopes, container, false);
-        mUnBinder = ButterKnife.bind(this, view);
-
-        return view;
-    }
-
     public void addRedEnvelopDialog() {
         final DialogViews dialogViews = new DialogViews();
         View view = View.inflate(getActivity(), R.layout.dialog_add_red_envelope, null);
-        mDialogUnBinder = ButterKnife.bind(dialogViews, view);
+        ButterKnife.bind(dialogViews, view);
         final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
                 .setTitle(R.string.red_envelopes)
                 .setView(view)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        swipeRefreshLayout.setRefreshing(true);
+                        progressBar.setVisibility(View.VISIBLE);
                         mViewModel.add(dialogViews.fromEditText.getText().toString(),
                                 dialogViews.moneyEditText.getText().toString(),
                                 dialogViews.remarkEditText.getText().toString());
@@ -138,7 +144,7 @@ public class RedEnvelopesFragment extends BaseFragment
 
     @Override
     public void delete(int reId) {
-        swipeRefreshLayout.setRefreshing(true);
+        progressBar.setVisibility(View.VISIBLE);
         mViewModel.delete(reId);
     }
 
@@ -146,6 +152,5 @@ public class RedEnvelopesFragment extends BaseFragment
     public void onDestroyView() {
         super.onDestroyView();
         mUnBinder.unbind();
-        mDialogUnBinder.unbind();
     }
 }

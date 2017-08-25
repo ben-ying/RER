@@ -47,11 +47,7 @@ public class RedEnvelope extends ViewModel {
     private String created;
 
     public int getMoneyInt() {
-        try {
-            return Integer.valueOf(money);
-        } catch (Exception e) {
-            return 0;
-        }
+        return Integer.valueOf(money);
     }
 
     public String getCreatedDate() {

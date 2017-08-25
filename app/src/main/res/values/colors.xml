@@ -15,5 +15,6 @@
 
     <color name="ripple_light_gray">#88c8c5c4</color>
     <color name="hint_color">#808080</color>
+    <color name="light_bg_color">#CCCCCC</color>
 
 </resources>

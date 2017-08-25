@@ -70,6 +70,16 @@ public class RedEnvelopeRepository {
             protected LiveData<ApiResponse<ResponseBody>> createCall() {
                 return webservice.getRedEnvelopes(token, userId);
             }
+
+            @Override
+            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+                return response.getBody();
+            }
+
+            @Override
+            protected void onFetchFailed() {
+                super.onFetchFailed();
+            }
         }.getAsLiveData();
     }
 
@@ -108,6 +118,16 @@ public class RedEnvelopeRepository {
             protected LiveData<ApiResponse<ResponseBody>> createCall() {
                 return webservice.addRedEnvelope(moneyFrom, money, remark, token);
             }
+
+            @Override
+            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+                return response.getBody();
+            }
+
+            @Override
+            protected void onFetchFailed() {
+                super.onFetchFailed();
+            }
         }.getAsLiveData();
     }
 
@@ -140,6 +160,16 @@ public class RedEnvelopeRepository {
             @Override
             protected LiveData<ApiResponse<ResponseBody>> createCall() {
                 return webservice.deleteRedEnvelope(reId, token);
+            }
+
+            @Override
+            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+                return response.getBody();
+            }
+
+            @Override
+            protected void onFetchFailed() {
+                super.onFetchFailed();
             }
         }.getAsLiveData();
     }
