@@ -4,10 +4,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_settings">Settings</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="action_settings">设置</string>
+    <string name="action_sort">排序</string>
 
     <string name="red_envelopes">红包</string>
     <string name="red_envelope_remark">备注</string>
