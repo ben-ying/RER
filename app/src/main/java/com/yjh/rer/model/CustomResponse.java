@@ -1,9 +1,8 @@
 package com.yjh.rer.model;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 
-public class ResponseBody {
+public class CustomResponse<T> {
     public static final int SUCCESS_CODE = 200;
 
     @SerializedName("message")
@@ -11,7 +10,7 @@ public class ResponseBody {
     @SerializedName("code")
     private int code;
     @SerializedName("result")
-    private JsonObject result;
+    private T result;
 
     public boolean isSuccessful() {
         return code == SUCCESS_CODE;
@@ -33,11 +32,11 @@ public class ResponseBody {
         this.code = code;
     }
 
-    public JsonObject getResult() {
+    public T getResult() {
         return result;
     }
 
-    public void setResult(JsonObject result) {
+    public void setResult(T result) {
         this.result = result;
     }
 }

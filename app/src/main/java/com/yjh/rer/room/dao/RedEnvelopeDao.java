@@ -18,7 +18,7 @@ public interface RedEnvelopeDao {
     void save(RedEnvelope redEnvelope);
 
     @Insert(onConflict = REPLACE)
-    void saveAll(RedEnvelope... redEnvelopes);
+    void saveAll(List<RedEnvelope> redEnvelopes);
 
     @Delete
     void delete(RedEnvelope redEnvelope);

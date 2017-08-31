@@ -5,16 +5,16 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yjh.rer.BuildConfig;
-import com.yjh.rer.model.ResponseBody;
+import com.yjh.rer.model.CustomResponse;
 
 import retrofit2.Response;
 
 public class ApiResponse<T> {
-    private final int code;
+    private  int code;
     @Nullable
-    private final T body;
+    private  T body;
     @Nullable
-    private final String errorMessage;
+    private  String errorMessage;
 
     public ApiResponse(Throwable error) {
         code = 500;
@@ -27,7 +27,7 @@ public class ApiResponse<T> {
             Log.d("HTTP", "request: " + response.raw().request());
             Log.d("HTTP", "response: " + new Gson().toJson(response.body()));
         }
-        ResponseBody responseBody = (ResponseBody) response.body();
+        CustomResponse responseBody = (CustomResponse) response.body();
         code = responseBody.getCode();
         if (responseBody.isSuccessful()) {
             body = response.body();
@@ -39,7 +39,7 @@ public class ApiResponse<T> {
     }
 
     public boolean isSuccessful() {
-        return code == ResponseBody.SUCCESS_CODE;
+        return code == CustomResponse.SUCCESS_CODE;
     }
 
     public int getCode() {

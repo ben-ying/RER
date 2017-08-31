@@ -3,7 +3,11 @@ package com.yjh.rer.network;
 
 import android.arch.lifecycle.LiveData;
 
-import com.yjh.rer.model.ResponseBody;
+import com.yjh.rer.model.CustomResponse;
+import com.yjh.rer.model.ListResponseResult;
+import com.yjh.rer.room.entity.RedEnvelope;
+
+import java.util.List;
 
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -17,12 +21,12 @@ public interface Webservice {
     String URL_RED_ENVELOPES = "envelopes/";
 
     @GET(URL_RED_ENVELOPES)
-    LiveData<ApiResponse<ResponseBody>> getRedEnvelopes(
+    LiveData<ApiResponse<CustomResponse<ListResponseResult<List<RedEnvelope>>>>> getRedEnvelopes(
             @Query("token") String token, @Query("user_id") String userId);
 
     @FormUrlEncoded
     @POST(URL_RED_ENVELOPES)
-    LiveData<ApiResponse<ResponseBody>> addRedEnvelope(
+    LiveData<ApiResponse<CustomResponse<RedEnvelope>>> addRedEnvelope(
             @Field("money_from") String moneyFrom,
             @Field("money") String money,
             @Field("remark") String remark,
@@ -30,7 +34,7 @@ public interface Webservice {
 
     @FormUrlEncoded
     @HTTP(method = "DELETE", path = URL_RED_ENVELOPES + "{redEnvelopeId}", hasBody = true)
-    LiveData<ApiResponse<ResponseBody>> deleteRedEnvelope(
+    LiveData<ApiResponse<CustomResponse<RedEnvelope>>> deleteRedEnvelope(
             @Path("redEnvelopeId") int reId,
             @Field("token") String token);
 }

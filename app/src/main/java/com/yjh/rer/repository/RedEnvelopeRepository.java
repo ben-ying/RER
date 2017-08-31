@@ -6,7 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.yjh.rer.model.ResponseBody;
+import com.yjh.rer.model.CustomResponse;
+import com.yjh.rer.model.ListResponseResult;
 import com.yjh.rer.network.ApiResponse;
 import com.yjh.rer.network.NetworkBoundResource;
 import com.yjh.rer.network.Resource;
@@ -30,7 +31,7 @@ import javax.inject.Singleton;
 public class RedEnvelopeRepository {
     private Webservice webservice;
     private RedEnvelopeDao redEnvelopeDao;
-    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(1, TimeUnit.SECONDS);
+    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
 
     @Inject
     public RedEnvelopeRepository(Webservice webservice, MyDatabase database) {
@@ -40,23 +41,17 @@ public class RedEnvelopeRepository {
 
     public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
             final String token, final String userId) {
-        return new NetworkBoundResource<List<RedEnvelope>, ResponseBody>() {
+        return new NetworkBoundResource<List<RedEnvelope>,
+                CustomResponse<ListResponseResult<List<RedEnvelope>>>>() {
             @Override
-            protected void saveCallResult(@NonNull ResponseBody item) {
-                try {
-                    RedEnvelope[] redEnvelopes = GsonUtils.getJsonData(
-                            new JSONObject(item.getResult().toString())
-                                    .getString("results"), RedEnvelope[].class);
-                    redEnvelopeDao.deleteAll();
-                    redEnvelopeDao.saveAll(redEnvelopes);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            protected void saveCallResult(
+                    @NonNull CustomResponse<ListResponseResult<List<RedEnvelope>>> item) {
+                redEnvelopeDao.deleteAll();
+                redEnvelopeDao.saveAll(item.getResult().getResults());
             }
 
             @Override
             protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
-                Log.d("", "");
                 return data == null || data.isEmpty() || repoListRateLimit.shouldFetch(token);
             }
 
@@ -68,12 +63,14 @@ public class RedEnvelopeRepository {
 
             @NonNull
             @Override
-            protected LiveData<ApiResponse<ResponseBody>> createCall() {
+            protected LiveData<ApiResponse<
+                    CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
                 return webservice.getRedEnvelopes(token, userId);
             }
 
             @Override
-            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+            protected CustomResponse<ListResponseResult<List<RedEnvelope>>> processResponse(
+                    ApiResponse<CustomResponse<ListResponseResult<List<RedEnvelope>>>> response) {
                 return response.getBody();
             }
 
@@ -88,19 +85,11 @@ public class RedEnvelopeRepository {
                                                           final String money,
                                                           final String remark,
                                                           final String token) {
-        return new NetworkBoundResource<List<RedEnvelope>, ResponseBody>() {
+        return new NetworkBoundResource<List<RedEnvelope>, CustomResponse<RedEnvelope>>() {
 
             @Override
-            protected void saveCallResult(@NonNull ResponseBody item) {
-//                redEnvelopeDao.save(item);
-                Log.d("", "");
-                try {
-                    RedEnvelope redEnvelope = GsonUtils.getJsonData(
-                            new JSONObject(item.getResult().toString()), RedEnvelope.class);
-                    redEnvelopeDao.save(redEnvelope);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
+                redEnvelopeDao.save(item.getResult());
             }
 
             @Override
@@ -116,12 +105,13 @@ public class RedEnvelopeRepository {
 
             @NonNull
             @Override
-            protected LiveData<ApiResponse<ResponseBody>> createCall() {
+            protected LiveData<ApiResponse<CustomResponse<RedEnvelope>>> createCall() {
                 return webservice.addRedEnvelope(moneyFrom, money, remark, token);
             }
 
             @Override
-            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+            protected CustomResponse<RedEnvelope> processResponse(
+                    ApiResponse<CustomResponse<RedEnvelope>> response) {
                 return response.getBody();
             }
 
@@ -133,17 +123,11 @@ public class RedEnvelopeRepository {
     }
 
     public LiveData<Resource<List<RedEnvelope>>> deleteRedEnvelope(final int reId, final String token) {
-        return new NetworkBoundResource<List<RedEnvelope>, ResponseBody>() {
+        return new NetworkBoundResource<List<RedEnvelope>, CustomResponse<RedEnvelope>>() {
 
             @Override
-            protected void saveCallResult(@NonNull ResponseBody item) {
-                try {
-                    RedEnvelope redEnvelope = GsonUtils.getJsonData(
-                            new JSONObject(item.getResult().toString()), RedEnvelope.class);
-                    redEnvelopeDao.delete(redEnvelope);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
+                redEnvelopeDao.delete(item.getResult());
             }
 
             @Override
@@ -159,12 +143,13 @@ public class RedEnvelopeRepository {
 
             @NonNull
             @Override
-            protected LiveData<ApiResponse<ResponseBody>> createCall() {
+            protected LiveData<ApiResponse<CustomResponse<RedEnvelope>>> createCall() {
                 return webservice.deleteRedEnvelope(reId, token);
             }
 
             @Override
-            protected ResponseBody processResponse(ApiResponse<ResponseBody> response) {
+            protected CustomResponse<RedEnvelope> processResponse(
+                    ApiResponse<CustomResponse<RedEnvelope>> response) {
                 return response.getBody();
             }
 
