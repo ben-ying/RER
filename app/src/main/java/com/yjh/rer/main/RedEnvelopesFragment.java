@@ -4,6 +4,7 @@ package com.yjh.rer.main;
 import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -42,9 +43,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Cancellable;
 import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.observables.GroupedObservable;
 import io.reactivex.schedulers.Schedulers;
 
 public class RedEnvelopesFragment extends BaseFragment
@@ -74,12 +73,29 @@ public class RedEnvelopesFragment extends BaseFragment
     private int mScrollViewState = -1;
     private boolean reverseSorting;
     private List<RedEnvelope> mRedEnvelopes;
+    private SetDataListener mCallback;
+
+    public interface SetDataListener {
+        void setData(List<RedEnvelope> envelopes);
+    }
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
         RedEnvelopesFragment fragment = new RedEnvelopesFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mCallback = (SetDataListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement SetDataListener");
+        }
     }
 
     @Override
@@ -127,6 +143,10 @@ public class RedEnvelopesFragment extends BaseFragment
         menu.findItem(R.id.action_sort).setIcon(
                 reverseSorting ? R.mipmap.ic_resort_white_24dp : R.mipmap.ic_sort_white_24dp);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    public List<RedEnvelope> getData() {
+        return mRedEnvelopes;
     }
 
     private void sort() {
@@ -249,6 +269,7 @@ public class RedEnvelopesFragment extends BaseFragment
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             mRedEnvelopes = listResource.getData();
+            mCallback.setData(mRedEnvelopes);
             int total = 0;
             for (RedEnvelope redEnvelope : mRedEnvelopes) {
                 total += redEnvelope.getMoneyInt();

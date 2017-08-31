@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.List;
 public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
     private List<BaseFragment> mFragments;
+    private Context mContext;
 
     public HomeViewPagerAdapter(Context context, FragmentManager fm, List<BaseFragment> fragments) {
         super(fm);
+        this.mContext = context;
         this.mFragments = fragments;
     }
 
@@ -29,6 +32,6 @@ public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "test";
+        return mContext.getResources().getStringArray(R.array.fragment_options)[position];
     }
 }

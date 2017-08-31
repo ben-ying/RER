@@ -10,11 +10,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        RedEnvelopesFragment.SetDataListener {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.nav_view) NavigationView navigationView;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
+    private ChartFragment mChartFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity
         List<BaseFragment> fragments = new ArrayList<>();
         mRedEnvelopesFragment = RedEnvelopesFragment.newInstance();
         fragments.add(mRedEnvelopesFragment);
+        mChartFragment = ChartFragment.newInstance();
+        fragments.add(mChartFragment);
         HomeViewPagerAdapter homeViewPagerAdapter = new HomeViewPagerAdapter(
                 this, getSupportFragmentManager(), fragments);
         viewPager.setOffscreenPageLimit(1);
@@ -124,5 +128,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void setData(List<RedEnvelope> redEnvelopes) {
+        mChartFragment.setData(redEnvelopes);
+        viewPager.setCurrentItem(1);
     }
 }
