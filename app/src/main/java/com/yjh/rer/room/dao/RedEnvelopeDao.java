@@ -23,6 +23,9 @@ public interface RedEnvelopeDao {
     @Delete
     void delete(RedEnvelope redEnvelope);
 
+    @Query("DELETE FROM " + RedEnvelope.TABLE_NAME)
+    void deleteAll();
+
     @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
             " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID)
     LiveData<List<RedEnvelope>> loadAll();

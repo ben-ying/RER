@@ -73,10 +73,10 @@ public class RedEnvelopesFragment extends BaseFragment
     private int mScrollViewState = -1;
     private boolean reverseSorting;
     private List<RedEnvelope> mRedEnvelopes;
-    private SetDataListener mCallback;
+    private ChartDataChangedListener mCallback;
 
-    public interface SetDataListener {
-        void setData(List<RedEnvelope> envelopes);
+    public interface ChartDataChangedListener {
+        void setChartData(List<RedEnvelope> envelopes);
     }
 
     public static RedEnvelopesFragment newInstance() {
@@ -91,10 +91,10 @@ public class RedEnvelopesFragment extends BaseFragment
         super.onAttach(context);
 
         try {
-            mCallback = (SetDataListener) context;
+            mCallback = (ChartDataChangedListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement SetDataListener");
+                    + " must implement ChartDataChangedListener");
         }
     }
 
@@ -172,6 +172,7 @@ public class RedEnvelopesFragment extends BaseFragment
                     reverseSorting = !reverseSorting;
                     getActivity().invalidateOptionsMenu();
                     mAdapter.setData(mRedEnvelopes);
+                    mCallback.setChartData(mRedEnvelopes);
                 }
             });
         }
@@ -242,8 +243,8 @@ public class RedEnvelopesFragment extends BaseFragment
                 emitter.setCancellable(new Cancellable() {
                     @Override
                     public void cancel() throws Exception {
-                        scrollView.setOnScrollChangeListener(
-                                (NestedScrollView.OnScrollChangeListener) null);
+//                        scrollView.setOnScrollChangeListener(
+//                                (NestedScrollView.OnScrollChangeListener) null);
                     }
                 });
             }
@@ -269,10 +270,13 @@ public class RedEnvelopesFragment extends BaseFragment
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             mRedEnvelopes = listResource.getData();
-            mCallback.setData(mRedEnvelopes);
+            mCallback.setChartData(mRedEnvelopes);
             int total = 0;
             for (RedEnvelope redEnvelope : mRedEnvelopes) {
                 total += redEnvelope.getMoneyInt();
+            }
+            if (totalTextView.getVisibility() == View.GONE) {
+                totalTextView.setVisibility(View.VISIBLE);
             }
             totalTextView.setText(String.format(getString(
                     R.string.red_envelope_total), mRedEnvelopes.size(), total));

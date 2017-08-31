@@ -25,7 +25,7 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        RedEnvelopesFragment.SetDataListener {
+        RedEnvelopesFragment.ChartDataChangedListener {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -121,18 +121,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
-    public void setData(List<RedEnvelope> redEnvelopes) {
+    public void setChartData(List<RedEnvelope> redEnvelopes) {
         mChartFragment.setData(redEnvelopes);
-        viewPager.setCurrentItem(1);
     }
 }

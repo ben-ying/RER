@@ -47,6 +47,7 @@ public class RedEnvelopeRepository {
                     RedEnvelope[] redEnvelopes = GsonUtils.getJsonData(
                             new JSONObject(item.getResult().toString())
                                     .getString("results"), RedEnvelope[].class);
+                    redEnvelopeDao.deleteAll();
                     redEnvelopeDao.saveAll(redEnvelopes);
                 } catch (JSONException e) {
                     e.printStackTrace();
