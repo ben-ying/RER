@@ -5,6 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">设置</string>
+    <string name="action_sort_by_amount">按金额排序</string>
+    <string name="action_list_all">显示全部</string>
     <string name="action_sort">排序</string>
 
     <string name="red_envelopes">红包</string>

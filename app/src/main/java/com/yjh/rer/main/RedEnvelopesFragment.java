@@ -30,6 +30,7 @@ import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class RedEnvelopesFragment extends BaseFragment
     private ChartDataChangedListener mCallback;
 
     public interface ChartDataChangedListener {
-        void setChartData(List<RedEnvelope> envelopes);
+        void setChartData(ArrayList<RedEnvelope> envelopes);
     }
 
     public static RedEnvelopesFragment newInstance() {
@@ -132,7 +133,7 @@ public class RedEnvelopesFragment extends BaseFragment
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort:
-                sort();
+                sortByTime();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -149,7 +150,7 @@ public class RedEnvelopesFragment extends BaseFragment
         return mRedEnvelopes;
     }
 
-    private void sort() {
+    private void sortByTime() {
         if (mRedEnvelopes != null && mAdapter != null) {
             mDisposable = Observable.create(new ObservableOnSubscribe<RedEnvelope>() {
                 @Override
@@ -172,7 +173,7 @@ public class RedEnvelopesFragment extends BaseFragment
                     reverseSorting = !reverseSorting;
                     getActivity().invalidateOptionsMenu();
                     mAdapter.setData(mRedEnvelopes);
-                    mCallback.setChartData(mRedEnvelopes);
+                    mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
                 }
             });
         }
@@ -270,7 +271,7 @@ public class RedEnvelopesFragment extends BaseFragment
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             mRedEnvelopes = listResource.getData();
-            mCallback.setChartData(mRedEnvelopes);
+            mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
             int total = 0;
             for (RedEnvelope redEnvelope : mRedEnvelopes) {
                 total += redEnvelope.getMoneyInt();

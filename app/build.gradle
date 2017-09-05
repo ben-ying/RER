@@ -49,7 +49,10 @@ dependencies {
     // butter knife
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
+    // rxBinding
+    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    // rxBinding support-v4
+    compile 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.0.0'
     // MPAndroidChart
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
 }

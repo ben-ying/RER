@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -22,6 +23,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -59,6 +61,17 @@ public class MainActivity extends AppCompatActivity
         viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(homeViewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        RxViewPager.pageSelections(viewPager).subscribe(new Consumer<Integer>() {
+            @Override
+            public void accept(Integer integer) throws Exception {
+                if (integer == 0) {
+                    fab.show();
+                } else {
+                    fab.hide();
+                }
+            }
+        });
     }
 
     @OnClick(R.id.fab)
@@ -74,28 +87,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -121,7 +112,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void setChartData(List<RedEnvelope> redEnvelopes) {
-        mChartFragment.setData(redEnvelopes);
+    public void setChartData(ArrayList<RedEnvelope> redEnvelopes) {
+        mChartFragment.setChartData(redEnvelopes);
+        viewPager.setCurrentItem(1);
     }
 }
