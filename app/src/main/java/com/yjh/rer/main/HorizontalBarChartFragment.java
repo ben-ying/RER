@@ -9,12 +9,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
@@ -76,7 +79,14 @@ public class HorizontalBarChartFragment extends BaseFragment
         leftAxis.setAxisMinimum(0f);
         mChart.getAxisRight().setEnabled(false);
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setEnabled(false);
+        xAxis.setTextSize(7);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf(mRedEnvelopes.get((int) value).getMoneyFrom());
+            }
+        });
         mChart.setDoubleTapToZoomEnabled(false);
         updateData(mRedEnvelopes);
     }
@@ -177,7 +187,7 @@ public class HorizontalBarChartFragment extends BaseFragment
             entries.add(new BarEntry(i, mRedEnvelopes.get(i).getMoneyInt()));
         }
 
-        BarDataSet ds = new BarDataSet(entries, "Label");
+        BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sort_by_amount));
         // ds.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds.setColor(getActivity().getColor(R.color.colorPrimary));
         sets.add(ds);

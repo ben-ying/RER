@@ -1,5 +1,6 @@
 package com.yjh.rer.main;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,12 +11,15 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BarLineChartBase;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
@@ -69,7 +73,14 @@ public class BarChartFragment extends BaseFragment
         leftAxis.setAxisMinimum(0f);
         mChart.getAxisRight().setEnabled(false);
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setEnabled(false);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(7);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf(mRedEnvelopes.get((int) value).getMoneyFrom());
+            }
+        });
         mChart.setDoubleTapToZoomEnabled(false);
         updateData(mRedEnvelopes);
     }
@@ -141,16 +152,17 @@ public class BarChartFragment extends BaseFragment
     private BarData generateBarData() {
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> xValues = new ArrayList<>();
 
         for (int i = 0; i < mRedEnvelopes.size(); i++) {
             entries.add(new BarEntry(i, mRedEnvelopes.get(i).getMoneyInt()));
+            xValues.add(mRedEnvelopes.get(i).getMoneyFrom());
         }
 
-        BarDataSet ds = new BarDataSet(entries, "Label");
+        BarDataSet ds = new BarDataSet(entries, getString(R.string.action_list_all));
         // ds.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds.setColor(getActivity().getColor(R.color.colorPrimary));
         sets.add(ds);
-
         return new BarData(sets);
     }
 }
