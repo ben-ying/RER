@@ -92,6 +92,14 @@ public class HorizontalBarChartFragment extends BaseFragment
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+    }
+
+    @Override
     public void onChartGestureStart(MotionEvent me,
                                     ChartTouchListener.ChartGesture lastPerformedGesture) {
         Log.i("Gesture", "START");

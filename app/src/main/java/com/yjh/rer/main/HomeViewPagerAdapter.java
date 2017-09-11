@@ -32,6 +32,7 @@ public class HomeViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return mContext.getResources().getStringArray(R.array.fragment_options)[position];
+        return mContext.getApplicationContext().getResources()
+                .getStringArray(R.array.fragment_options)[position];
     }
 }

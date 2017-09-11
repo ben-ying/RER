@@ -1,6 +1,7 @@
 package com.yjh.rer.main;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -13,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
+import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -24,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -72,6 +75,14 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+        Timber.d("my first test");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getRefWatcher(this).watch(this);
     }
 
     @OnClick(R.id.fab)
@@ -114,6 +125,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void setChartData(ArrayList<RedEnvelope> redEnvelopes) {
         mChartFragment.setChartData(redEnvelopes);
-        viewPager.setCurrentItem(1);
+//        viewPager.setCurrentItem(1);
     }
 }
