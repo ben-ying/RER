@@ -25,13 +25,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yjh.rer.R;
-import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.base.BaseLifecycleFragment;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -131,10 +131,30 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
     }
 
     @Override
+    public void delete(int reId) {
+        progressBar.setVisibility(View.VISIBLE);
+        mViewModel.delete(reId);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnBinder.unbind();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort:
-                sortByTime();
+                sortDataByTime();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -151,7 +171,7 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
         return mRedEnvelopes;
     }
 
-    private void sortByTime() {
+    private void sortDataByTime() {
         if (mRedEnvelopes != null && mAdapter != null) {
             mDisposable = Observable.create(new ObservableOnSubscribe<RedEnvelope>() {
                 @Override
@@ -170,11 +190,10 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
             }).subscribe(new Consumer<List<RedEnvelope>>() {
                 @Override
                 public void accept(List<RedEnvelope> redEnvelopes) throws Exception {
-                    mRedEnvelopes = redEnvelopes;
                     reverseSorting = !reverseSorting;
                     getActivity().invalidateOptionsMenu();
-                    mAdapter.setData(mRedEnvelopes);
-                    mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
+                    mRedEnvelopes = redEnvelopes;
+                    setAdapter();
                 }
             });
         }
@@ -254,8 +273,6 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
     }
 
     private void initRecyclerViewData() {
-//        RedEnvelopeViewModel.Factory factory = new RedEnvelopeViewModel.Factory(
-//                getActivity().getApplication(), "1272dc0fe06c52383c7a9bdfef33255b940c195b");
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("1272dc0fe06c52383c7a9bdfef33255b940c195b");
         mViewModel.getRedEnvelopes().observe(this, new Observer<Resource<List<RedEnvelope>>>() {
@@ -283,13 +300,20 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
             }
             totalTextView.setText(String.format(getString(
                     R.string.red_envelope_total), mRedEnvelopes.size(), total));
-            if (mAdapter == null) {
-                mAdapter = new RedEnvelopeAdapter(getActivity(),
-                        mRedEnvelopes, totalTextView, RedEnvelopesFragment.this);
-                recyclerView.setAdapter(mAdapter);
-            } else {
-                mAdapter.setData(mRedEnvelopes);
+            if (reverseSorting) {
+                Collections.reverse(mRedEnvelopes);
             }
+            setAdapter();
+        }
+    }
+
+    private void setAdapter() {
+        if (mAdapter == null) {
+            mAdapter = new RedEnvelopeAdapter(getActivity(),
+                    mRedEnvelopes, totalTextView, RedEnvelopesFragment.this);
+            recyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.setData(mRedEnvelopes);
         }
     }
 
@@ -322,25 +346,5 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
         EditText moneyEditText;
         @BindView(R.id.et_remark)
         AutoCompleteTextView remarkEditText;
-    }
-
-    @Override
-    public void delete(int reId) {
-        progressBar.setVisibility(View.VISIBLE);
-        mViewModel.delete(reId);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
-        }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnBinder.unbind();
     }
 }

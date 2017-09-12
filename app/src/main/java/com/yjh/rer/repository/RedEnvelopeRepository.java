@@ -34,9 +34,9 @@ public class RedEnvelopeRepository {
     private RateLimiter<String> repoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
 
     @Inject
-    public RedEnvelopeRepository(Webservice webservice, MyDatabase database) {
+    public RedEnvelopeRepository(Webservice webservice, RedEnvelopeDao redEnvelopeDao) {
         this.webservice = webservice;
-        this.redEnvelopeDao = database.redEnvelopeDao();
+        this.redEnvelopeDao = redEnvelopeDao;
     }
 
     public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
