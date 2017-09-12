@@ -5,9 +5,12 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">设置</string>
-    <string name="action_sort_by_amount">按金额排序</string>
-    <string name="action_list_all">显示全部</string>
+    <string name="action_sorted_by_date">按日期显示</string>
+    <string name="action_sorted_by_amount">按金额显示</string>
+    <string name="action_sorted_by_category">按种类显示</string>
     <string name="action_sort">排序</string>
+    <string name="category_others">其它红包</string>
+    <string name="percentage">%.2s%</string>
 
     <string name="red_envelopes">红包</string>
     <string name="red_envelope_remark">备注</string>
@@ -20,4 +23,7 @@
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

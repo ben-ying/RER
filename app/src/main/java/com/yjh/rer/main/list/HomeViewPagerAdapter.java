@@ -1,4 +1,4 @@
-package com.yjh.rer.main;
+package com.yjh.rer.main.list;
 
 import android.content.Context;
 import android.support.v4.app.FragmentManager;

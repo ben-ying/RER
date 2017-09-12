@@ -1,7 +1,6 @@
 package com.yjh.rer.main;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -9,7 +8,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -18,6 +16,9 @@ import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.base.BaseLifecycleActivity;
+import com.yjh.rer.main.chart.ChartFragment;
+import com.yjh.rer.main.list.HomeViewPagerAdapter;
+import com.yjh.rer.main.list.RedEnvelopesFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class MainActivity extends BaseLifecycleActivity
         RedEnvelopesFragment.ChartDataChangedListener {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.fab) public FloatingActionButton fab;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.view_pager) ViewPager viewPager;
     @BindView(R.id.tab_layout_main) TabLayout tabLayout;

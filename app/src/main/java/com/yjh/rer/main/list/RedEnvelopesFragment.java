@@ -1,4 +1,4 @@
-package com.yjh.rer.main;
+package com.yjh.rer.main.list;
 
 
 import android.app.AlertDialog;
@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseLifecycleFragment;
+import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
@@ -193,6 +194,7 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
                     reverseSorting = !reverseSorting;
                     getActivity().invalidateOptionsMenu();
                     mRedEnvelopes = redEnvelopes;
+                    mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
                     setAdapter();
                 }
             });
@@ -290,7 +292,6 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             mRedEnvelopes = listResource.getData();
-            mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
             int total = 0;
             for (RedEnvelope redEnvelope : mRedEnvelopes) {
                 total += redEnvelope.getMoneyInt();
@@ -303,6 +304,7 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
             if (reverseSorting) {
                 Collections.reverse(mRedEnvelopes);
             }
+            mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
             setAdapter();
         }
     }

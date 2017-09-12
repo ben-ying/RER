@@ -1,4 +1,4 @@
-package com.yjh.rer.main;
+package com.yjh.rer.main.chart;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.mikephil.charting.charts.HorizontalBarChart;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -28,28 +28,19 @@ import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-
-public class HorizontalBarChartFragment extends BaseFragment
+public class BarChartFragment extends BaseFragment
         implements OnChartGestureListener, OnChartValueSelectedListener {
 
     private static final String RED_ENVELOPE = "red_envelope";
-    protected ArrayList<RedEnvelope> mRedEnvelopes;
-    protected HorizontalBarChart mChart;
-    private Disposable mDisposable;
+    private ArrayList<RedEnvelope> mRedEnvelopes;
+    private BarChart mChart;
 
-    public static HorizontalBarChartFragment newInstance(ArrayList<RedEnvelope> redEnvelopes) {
+    public static BarChartFragment newInstance(ArrayList<RedEnvelope> redEnvelopes) {
 
         Bundle args = new Bundle();
         args.putSerializable(RED_ENVELOPE, redEnvelopes);
-        HorizontalBarChartFragment fragment = new HorizontalBarChartFragment();
+        BarChartFragment fragment = new BarChartFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,8 +48,8 @@ public class HorizontalBarChartFragment extends BaseFragment
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_horizontal_bar_chart, container, false);
-        mChart = v.findViewById(R.id.horizontal_bar_chart);
+        View v = inflater.inflate(R.layout.fragment_bar_chart, container, false);
+        mChart = v.findViewById(R.id.bar_chart);
         mRedEnvelopes = (ArrayList<RedEnvelope>) getArguments().getSerializable(RED_ENVELOPE);
 
         return v;
@@ -78,8 +69,8 @@ public class HorizontalBarChartFragment extends BaseFragment
         leftAxis.setAxisMinimum(0f);
         mChart.getAxisRight().setEnabled(false);
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setTextSize(7);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(7);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -88,14 +79,6 @@ public class HorizontalBarChartFragment extends BaseFragment
         });
         mChart.setDoubleTapToZoomEnabled(false);
         updateData(mRedEnvelopes);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
-        }
     }
 
     @Override
@@ -108,7 +91,7 @@ public class HorizontalBarChartFragment extends BaseFragment
     public void onChartGestureEnd(MotionEvent me,
                                   ChartTouchListener.ChartGesture lastPerformedGesture) {
         Log.i("Gesture", "END");
-//        mChart.highlightValues(null);
+//        pieChart.highlightValues(null);
     }
 
     @Override
@@ -155,50 +138,27 @@ public class HorizontalBarChartFragment extends BaseFragment
     @Override
     public void updateData(ArrayList<RedEnvelope> redEnvelopes) {
         if (redEnvelopes != null) {
-            sortByAmount(redEnvelopes);
+            this.mRedEnvelopes = redEnvelopes;
             mChart.setData(generateBarData());
             mChart.invalidate();
             mChart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
-            mChart.moveViewTo(0, 0, YAxis.AxisDependency.LEFT);
-//            mChart.notifyDataSetChanged();
         }
-    }
-
-    private void sortByAmount(final ArrayList<RedEnvelope> redEnvelopes) {
-        mDisposable = Observable.create(new ObservableOnSubscribe<RedEnvelope>() {
-            @Override
-            public void subscribe(ObservableEmitter<RedEnvelope> e) throws Exception {
-                for (RedEnvelope redEnvelope : redEnvelopes) {
-                    e.onNext(redEnvelope);
-                }
-                e.onComplete();
-            }
-        }).toSortedList(new Comparator<RedEnvelope>() {
-            @Override
-            public int compare(RedEnvelope redEnvelope, RedEnvelope t1) {
-                return redEnvelope.getMoneyInt() - t1.getMoneyInt();
-            }
-        }).subscribe(new Consumer<List<RedEnvelope>>() {
-            @Override
-            public void accept(List<RedEnvelope> redEnvelopes) throws Exception {
-                mRedEnvelopes = new ArrayList<>(redEnvelopes);
-            }
-        });
     }
 
     private BarData generateBarData() {
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> xValues = new ArrayList<>();
 
         for (int i = 0; i < mRedEnvelopes.size(); i++) {
             entries.add(new BarEntry(i, mRedEnvelopes.get(i).getMoneyInt()));
+            xValues.add(mRedEnvelopes.get(i).getMoneyFrom());
         }
 
-        BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sort_by_amount));
+        BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sorted_by_date));
         // ds.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds.setColor(getActivity().getColor(R.color.colorPrimary));
         sets.add(ds);
-
         return new BarData(sets);
     }
 }

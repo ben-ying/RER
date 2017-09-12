@@ -1,4 +1,4 @@
-package com.yjh.rer.main;
+package com.yjh.rer.main.chart;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -38,7 +38,7 @@ public class ChartFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_chart, container, false);
-        mCurrentFragment = HorizontalBarChartFragment.newInstance(mRedEnvelopes);
+        mCurrentFragment = BarChartFragment.newInstance(mRedEnvelopes);
         replaceFragment(mCurrentFragment);
 
         return v;
@@ -53,12 +53,16 @@ public class ChartFragment extends BaseFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_sorted_by_date:
+                mCurrentFragment = BarChartFragment.newInstance(mRedEnvelopes);
+                replaceFragment(mCurrentFragment);
+                break;
             case R.id.action_sort_by_amount:
                 mCurrentFragment = HorizontalBarChartFragment.newInstance(mRedEnvelopes);
                 replaceFragment(mCurrentFragment);
                 break;
-            case R.id.action_list_all:
-                mCurrentFragment = BarChartFragment.newInstance(mRedEnvelopes);
+            case R.id.action_sort_by_category:
+                mCurrentFragment = PieChartFragment.newInstance(mRedEnvelopes);
                 replaceFragment(mCurrentFragment);
                 break;
         }
