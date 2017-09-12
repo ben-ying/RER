@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -25,7 +24,7 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
-import com.yjh.rer.base.custom.MyMarkerView;
+import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;

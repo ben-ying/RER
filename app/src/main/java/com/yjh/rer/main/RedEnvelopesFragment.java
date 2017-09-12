@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.base.BaseLifecycleFragment;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
@@ -47,7 +48,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class RedEnvelopesFragment extends BaseFragment
+public class RedEnvelopesFragment extends BaseLifecycleFragment
         implements RedEnvelopeAdapter.RedEnvelopeInterface {
 
     private static final String TAG = RedEnvelopesFragment.class.getSimpleName();
@@ -253,9 +254,10 @@ public class RedEnvelopesFragment extends BaseFragment
     }
 
     private void initRecyclerViewData() {
-        RedEnvelopeViewModel.Factory factory = new RedEnvelopeViewModel.Factory(
-                getActivity().getApplication(), "1272dc0fe06c52383c7a9bdfef33255b940c195b");
-        mViewModel = ViewModelProviders.of(this, factory).get(RedEnvelopeViewModel.class);
+//        RedEnvelopeViewModel.Factory factory = new RedEnvelopeViewModel.Factory(
+//                getActivity().getApplication(), "1272dc0fe06c52383c7a9bdfef33255b940c195b");
+        mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
+        mViewModel.setToken("1272dc0fe06c52383c7a9bdfef33255b940c195b");
         mViewModel.getRedEnvelopes().observe(this, new Observer<Resource<List<RedEnvelope>>>() {
             @Override
             public void onChanged(@Nullable Resource<List<RedEnvelope>> listResource) {

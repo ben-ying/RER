@@ -1,11 +1,25 @@
+/*
+ * Copyright (C) 2017 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.yjh.rer.injection;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
-import android.content.Context;
 
 import com.yjh.rer.network.Webservice;
-import com.yjh.rer.repository.RedEnvelopeRepository;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.db.MyDatabase;
 import com.yjh.rer.util.LiveDataCallAdapterFactory;
@@ -17,18 +31,9 @@ import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
-@Module
-public class RedEnvelopeModule {
-
+@Module(includes = ViewModelModule.class)
+class AppModule {
     private static final String BASE_URL = "http://bensbabycare.com/webservice/";
-    private Application mApplication;
-
-    @Singleton
-    @Provides
-    RedEnvelopeRepository provideRedEnvelopeRepository(Webservice webservice, MyDatabase database) {
-        return new RedEnvelopeRepository(webservice, database);
-    }
 
     @Singleton
     @Provides
@@ -43,22 +48,13 @@ public class RedEnvelopeModule {
 
     @Singleton
     @Provides
-    MyDatabase provideDb(Context context) {
-        return Room.databaseBuilder(context.getApplicationContext(), MyDatabase.class, "rer.db").build();
+    MyDatabase provideDb(Application application) {
+        return Room.databaseBuilder(application, MyDatabase.class, "rer.db").build();
     }
 
     @Singleton
     @Provides
     RedEnvelopeDao provideRedEnvelopeDao(MyDatabase db) {
         return db.redEnvelopeDao();
-    }
-
-    @Provides
-    Context applicationContext() {
-        return mApplication;
-    }
-
-    public RedEnvelopeModule(Application application) {
-        this.mApplication = application;
     }
 }

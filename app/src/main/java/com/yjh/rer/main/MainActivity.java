@@ -17,6 +17,7 @@ import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.base.BaseLifecycleActivity;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseLifecycleActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RedEnvelopesFragment.ChartDataChangedListener {
 

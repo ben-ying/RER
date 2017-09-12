@@ -1,6 +1,5 @@
 package com.yjh.rer.main;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -10,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -27,11 +24,10 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
-import com.yjh.rer.base.custom.MyMarkerView;
+import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BarChartFragment extends BaseFragment
         implements OnChartGestureListener, OnChartValueSelectedListener {
