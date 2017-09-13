@@ -2,10 +2,8 @@ package com.yjh.rer.main.list;
 
 
 import android.app.AlertDialog;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
@@ -25,7 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.yjh.rer.R;
-import com.yjh.rer.base.BaseLifecycleFragment;
+import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -41,15 +39,11 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Cancellable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class RedEnvelopesFragment extends BaseLifecycleFragment
+public class RedEnvelopesFragment extends BaseDaggerFragment
         implements RedEnvelopeAdapter.RedEnvelopeInterface {
 
     private static final String TAG = RedEnvelopesFragment.class.getSimpleName();
@@ -174,30 +168,23 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
 
     private void sortDataByTime() {
         if (mRedEnvelopes != null && mAdapter != null) {
-            mDisposable = Observable.create(new ObservableOnSubscribe<RedEnvelope>() {
-                @Override
-                public void subscribe(ObservableEmitter<RedEnvelope> e) throws Exception {
-                    for (RedEnvelope redEnvelope : mRedEnvelopes) {
-                        e.onNext(redEnvelope);
-                    }
-                    e.onComplete();
-                }
-            }).toSortedList(new Comparator<RedEnvelope>() {
-                @Override
-                public int compare(RedEnvelope redEnvelope, RedEnvelope t1) {
-                    return reverseSorting ? t1.getRedEnvelopeId() - redEnvelope.getRedEnvelopeId()
-                            : redEnvelope.getRedEnvelopeId() - t1.getRedEnvelopeId();
-                }
-            }).subscribe(new Consumer<List<RedEnvelope>>() {
-                @Override
-                public void accept(List<RedEnvelope> redEnvelopes) throws Exception {
-                    reverseSorting = !reverseSorting;
-                    getActivity().invalidateOptionsMenu();
-                    mRedEnvelopes = redEnvelopes;
-                    mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
-                    setAdapter();
-                }
-            });
+            mDisposable = Observable
+                    .create((ObservableEmitter<RedEnvelope> e) -> {
+                        for (RedEnvelope redEnvelope : mRedEnvelopes) {
+                            e.onNext(redEnvelope);
+                        }
+                        e.onComplete();
+                    })
+                    .toSortedList(reverseSorting ?
+                            Comparator.comparing(RedEnvelope::getRedEnvelopeId).reversed() :
+                            Comparator.comparing(RedEnvelope::getRedEnvelopeId))
+                    .subscribe((res) -> {
+                        reverseSorting = !reverseSorting;
+                        getActivity().invalidateOptionsMenu();
+                        mRedEnvelopes = res;
+                        mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
+                        setAdapter();
+                    });
         }
     }
 
@@ -208,51 +195,37 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
         recyclerView.setNestedScrollingEnabled(false);
         swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
                 R.color.google_green, R.color.google_red, R.color.google_yellow);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mViewModel.load("1");
-                progressBar.setVisibility(View.VISIBLE);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            mViewModel.load("1");
+            progressBar.setVisibility(View.VISIBLE);
         });
 
         mDisposable = createScrollViewObservable()
-                .filter(new Predicate<Integer>() {
-                    @Override
-                    public boolean test(Integer integer) throws Exception {
-                        return mScrollViewState != integer;
-                    }
-                })
+                .filter(integer -> mScrollViewState != integer)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Integer>() {
-                    @Override
-                    public void accept(Integer integer) throws Exception {
-                        mScrollViewState = integer;
-                        Log.d(TAG, "state: " + mScrollViewState);
-                        switch (integer) {
-                            case SCROLL_UP:
-                                ((MainActivity) getActivity()).fab.hide();
-                                totalTextView.bringToFront();
-                                break;
-                            case SCROLL_DOWN:
-                                ((MainActivity) getActivity()).fab.show();
-                                break;
-                            case SCROLL_VIEW_BRING_FRONT:
-                                swipeRefreshLayout.bringToFront();
-                                break;
-                        }
+                .subscribe(integer -> {
+                    mScrollViewState = integer;
+                    Log.d(TAG, "state: " + mScrollViewState);
+                    switch (integer) {
+                        case SCROLL_UP:
+                            ((MainActivity) getActivity()).fab.hide();
+                            totalTextView.bringToFront();
+                            break;
+                        case SCROLL_DOWN:
+                            ((MainActivity) getActivity()).fab.show();
+                            break;
+                        case SCROLL_VIEW_BRING_FRONT:
+                            swipeRefreshLayout.bringToFront();
+                            break;
                     }
                 });
     }
 
     private Observable<Integer> createScrollViewObservable() {
-        return Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(final ObservableEmitter<Integer> emitter) throws Exception {
-                scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-                    @Override
-                    public void onScrollChange(View view, int scrollX, int scrollY, int oldX, int oldY) {
+        return Observable.create((ObservableEmitter<Integer> emitter) -> {
+                scrollView.setOnScrollChangeListener((
+                        View view, int scrollX, int scrollY, int oldX, int oldY) -> {
                         if (scrollY > oldY) {
                             emitter.onNext(SCROLL_UP);
                         } else if (scrollY < oldY) {
@@ -261,28 +234,18 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
                                 emitter.onNext(SCROLL_VIEW_BRING_FRONT);
                             }
                         }
-                    }
                 });
-                emitter.setCancellable(new Cancellable() {
-                    @Override
-                    public void cancel() throws Exception {
+                emitter.setCancellable(() -> {
 //                        scrollView.setOnScrollChangeListener(
 //                                (NestedScrollView.OnScrollChangeListener) null);
-                    }
                 });
-            }
         });
     }
 
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("1272dc0fe06c52383c7a9bdfef33255b940c195b");
-        mViewModel.getRedEnvelopes().observe(this, new Observer<Resource<List<RedEnvelope>>>() {
-            @Override
-            public void onChanged(@Nullable Resource<List<RedEnvelope>> listResource) {
-                setData(listResource);
-            }
-        });
+        mViewModel.getRedEnvelopes().observe(this, this::setData);
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
     }
@@ -326,14 +289,11 @@ public class RedEnvelopesFragment extends BaseLifecycleFragment
         final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
                 .setTitle(R.string.red_envelopes)
                 .setView(view)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setPositiveButton(R.string.ok, (dialogInterface, which) -> {
                         progressBar.setVisibility(View.VISIBLE);
                         mViewModel.add(dialogViews.fromEditText.getText().toString(),
                                 dialogViews.moneyEditText.getText().toString(),
                                 dialogViews.remarkEditText.getText().toString());
-                    }
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .create();

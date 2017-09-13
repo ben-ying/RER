@@ -14,8 +14,8 @@ import android.view.MenuItem;
 import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
+import com.yjh.rer.base.BaseDaggerActivity;
 import com.yjh.rer.base.BaseFragment;
-import com.yjh.rer.base.BaseLifecycleActivity;
 import com.yjh.rer.main.chart.ChartFragment;
 import com.yjh.rer.main.list.HomeViewPagerAdapter;
 import com.yjh.rer.main.list.RedEnvelopesFragment;
@@ -27,19 +27,23 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.functions.Consumer;
-import timber.log.Timber;
 
-public class MainActivity extends BaseLifecycleActivity
+public class MainActivity extends BaseDaggerActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RedEnvelopesFragment.ChartDataChangedListener {
 
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab) public FloatingActionButton fab;
-    @BindView(R.id.drawer_layout) DrawerLayout drawer;
-    @BindView(R.id.view_pager) ViewPager viewPager;
-    @BindView(R.id.tab_layout_main) TabLayout tabLayout;
-    @BindView(R.id.nav_view) NavigationView navigationView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.fab)
+    public FloatingActionButton fab;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawer;
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
+    @BindView(R.id.tab_layout_main)
+    TabLayout tabLayout;
+    @BindView(R.id.nav_view)
+    NavigationView navigationView;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
@@ -67,18 +71,13 @@ public class MainActivity extends BaseLifecycleActivity
         viewPager.setAdapter(homeViewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
-        RxViewPager.pageSelections(viewPager).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer integer) throws Exception {
-                if (integer == 0) {
-                    fab.show();
-                } else {
-                    fab.hide();
-                }
+        RxViewPager.pageSelections(viewPager).subscribe(integer -> {
+            if (integer == 0) {
+                fab.show();
+            } else {
+                fab.hide();
             }
         });
-
-        Timber.d("my first test");
     }
 
     @Override

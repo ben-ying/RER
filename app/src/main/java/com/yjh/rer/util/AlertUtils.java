@@ -21,11 +21,8 @@ public class AlertUtils {
                 builder.setTitle(titleRes);
             }
             if (listener == null) {
-                builder.setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
+                builder.setNegativeButton(R.string.ok, (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
                 });
             } else {
                 builder.setNegativeButton(R.string.ok, listener);
@@ -50,11 +47,8 @@ public class AlertUtils {
         if (!((Activity) context).isFinishing()) {
             AlertDialog dialog = new AlertDialog.Builder(context)
                     .setMessage(message)
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
+                    .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
                     })
                     .setPositiveButton(R.string.confirm, listener)
                     .create();
@@ -68,11 +62,8 @@ public class AlertUtils {
             AlertDialog dialog = new AlertDialog.Builder(context)
                     .setTitle(title)
                     .setMessage(message)
-                    .setNegativeButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
+                    .setNegativeButton(R.string.ok, (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
                     })
                     .create();
             dialog.setCancelable(true);
@@ -84,11 +75,8 @@ public class AlertUtils {
         if (!((Activity) context).isFinishing()) {
             AlertDialog dialog = new AlertDialog.Builder(context)
                     .setMessage(message)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
                     })
                     .create();
             dialog.setCancelable(true);
@@ -100,11 +88,8 @@ public class AlertUtils {
         if (!((Activity) context).isFinishing()) {
             AlertDialog dialog = new AlertDialog.Builder(context)
                     .setMessage(messageRes)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
+                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
                     })
                     .create();
             dialog.setCancelable(true);

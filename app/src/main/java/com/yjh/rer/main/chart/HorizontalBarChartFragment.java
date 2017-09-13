@@ -22,13 +22,10 @@ import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class HorizontalBarChartFragment extends BaseFragment {
 
@@ -97,30 +94,21 @@ public class HorizontalBarChartFragment extends BaseFragment {
             mChart.invalidate();
             mChart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
             mChart.moveViewTo(0, 0, YAxis.AxisDependency.LEFT);
-//            pieChart.notifyDataSetChanged();
         }
     }
 
     private void sortByAmount(final ArrayList<RedEnvelope> redEnvelopes) {
-        mDisposable = Observable.create(new ObservableOnSubscribe<RedEnvelope>() {
-            @Override
-            public void subscribe(ObservableEmitter<RedEnvelope> e) throws Exception {
-                for (RedEnvelope redEnvelope : redEnvelopes) {
-                    e.onNext(redEnvelope);
-                }
-                e.onComplete();
-            }
-        }).toSortedList(new Comparator<RedEnvelope>() {
-            @Override
-            public int compare(RedEnvelope redEnvelope, RedEnvelope t1) {
-                return redEnvelope.getMoneyInt() - t1.getMoneyInt();
-            }
-        }).subscribe(new Consumer<List<RedEnvelope>>() {
-            @Override
-            public void accept(List<RedEnvelope> redEnvelopes) throws Exception {
-                mRedEnvelopes = new ArrayList<>(redEnvelopes);
-            }
-        });
+        mDisposable = Observable
+                .create((ObservableEmitter<RedEnvelope> e) -> {
+                    for (RedEnvelope redEnvelope : redEnvelopes) {
+                        e.onNext(redEnvelope);
+                    }
+                    e.onComplete();
+                })
+                .toSortedList(Comparator.comparing(RedEnvelope::getMoneyInt))
+                .subscribe((res) -> {
+                    mRedEnvelopes = new ArrayList<>(res);
+                });
     }
 
     private BarData generateBarData() {
@@ -132,7 +120,6 @@ public class HorizontalBarChartFragment extends BaseFragment {
         }
 
         BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sorted_by_amount));
-        // ds.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds.setColor(getActivity().getColor(R.color.colorPrimary));
         sets.add(ds);
 

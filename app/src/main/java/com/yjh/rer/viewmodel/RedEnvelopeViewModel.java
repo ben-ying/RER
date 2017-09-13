@@ -1,6 +1,5 @@
 package com.yjh.rer.viewmodel;
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
@@ -28,21 +27,17 @@ public class RedEnvelopeViewModel extends ViewModel {
         if (this.redEnvelopes != null) {
             return;
         }
-        redEnvelopes = Transformations.switchMap(reIdLiveData, new Function<ReId,
-                LiveData<Resource<List<RedEnvelope>>>>() {
-            @Override
-            public LiveData<Resource<List<RedEnvelope>>> apply(ReId reId) {
-                switch (reId.type) {
-                    case TYPE_LOAD:
-                        return repository.loadRedEnvelopes(mToken.getValue(), reId.userId);
-                    case TYPE_ADD:
-                        return repository.addRedEnvelope(
-                                reId.moneyFrom, reId.money, reId.remark, mToken.getValue());
-                    case TYPE_DELETE:
-                        return repository.deleteRedEnvelope(reId.id, mToken.getValue());
-                }
-                return null;
+        redEnvelopes = Transformations.switchMap(reIdLiveData, reId -> {
+            switch (reId.type) {
+                case TYPE_LOAD:
+                    return repository.loadRedEnvelopes(mToken.getValue(), reId.userId);
+                case TYPE_ADD:
+                    return repository.addRedEnvelope(
+                            reId.moneyFrom, reId.money, reId.remark, mToken.getValue());
+                case TYPE_DELETE:
+                    return repository.deleteRedEnvelope(reId.id, mToken.getValue());
             }
+            return null;
         });
     }
 

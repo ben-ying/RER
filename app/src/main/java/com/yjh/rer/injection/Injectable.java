@@ -16,8 +16,5 @@
 
 package com.yjh.rer.injection;
 
-/**
- * Marks an activity / fragment injectable.
- */
 public interface Injectable {
 }

@@ -2,9 +2,7 @@ package com.yjh.rer.main.chart;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,13 +13,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.custom.MyMarkerView;
@@ -29,8 +22,7 @@ import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
 
-public class BarChartFragment extends BaseFragment
-        implements OnChartGestureListener, OnChartValueSelectedListener {
+public class BarChartFragment extends BaseFragment {
 
     private static final String RED_ENVELOPE = "red_envelope";
     private ArrayList<RedEnvelope> mRedEnvelopes;
@@ -60,7 +52,6 @@ public class BarChartFragment extends BaseFragment
         super.onActivityCreated(savedInstanceState);
 
         mChart.getDescription().setEnabled(false);
-        mChart.setOnChartGestureListener(this);
         MyMarkerView mv = new MyMarkerView(getActivity(), R.layout.custom_marker_view);
         mv.setChartView(mChart);
         mChart.setMarker(mv);
@@ -79,60 +70,6 @@ public class BarChartFragment extends BaseFragment
         });
         mChart.setDoubleTapToZoomEnabled(false);
         updateData(mRedEnvelopes);
-    }
-
-    @Override
-    public void onChartGestureStart(MotionEvent me,
-                                    ChartTouchListener.ChartGesture lastPerformedGesture) {
-        Log.i("Gesture", "START");
-    }
-
-    @Override
-    public void onChartGestureEnd(MotionEvent me,
-                                  ChartTouchListener.ChartGesture lastPerformedGesture) {
-        Log.i("Gesture", "END");
-//        pieChart.highlightValues(null);
-    }
-
-    @Override
-    public void onChartLongPressed(MotionEvent me) {
-        Log.i("LongPress", "Chart longpressed.");
-    }
-
-    @Override
-    public void onChartDoubleTapped(MotionEvent me) {
-        Log.i("DoubleTap", "Chart double-tapped.");
-    }
-
-    @Override
-    public void onChartSingleTapped(MotionEvent me) {
-        Log.i("SingleTap", "Chart single-tapped.");
-    }
-
-    @Override
-    public void onChartFling(MotionEvent me1,
-                             MotionEvent me2, float velocityX, float velocityY) {
-        Log.i("Fling", "Chart flinged. VeloX: " + velocityX + ", VeloY: " + velocityY);
-    }
-
-    @Override
-    public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
-        Log.i("Scale / Zoom", "ScaleX: " + scaleX + ", ScaleY: " + scaleY);
-    }
-
-    @Override
-    public void onChartTranslate(MotionEvent me, float dX, float dY) {
-        Log.i("Translate / Move", "dX: " + dX + ", dY: " + dY);
-    }
-
-    @Override
-    public void onValueSelected(Entry e, Highlight h) {
-
-    }
-
-    @Override
-    public void onNothingSelected() {
-
     }
 
     @Override
@@ -156,7 +93,6 @@ public class BarChartFragment extends BaseFragment
         }
 
         BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sorted_by_date));
-        // ds.setColors(ColorTemplate.VORDIPLOM_COLORS);
         ds.setColor(getActivity().getColor(R.color.colorPrimary));
         sets.add(ds);
         return new BarData(sets);

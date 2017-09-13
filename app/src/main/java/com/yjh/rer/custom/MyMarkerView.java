@@ -11,6 +11,8 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 
+import butterknife.ButterKnife;
+
 
 public class MyMarkerView extends MarkerView {
 
@@ -18,6 +20,7 @@ public class MyMarkerView extends MarkerView {
 
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
+        ButterKnife.bind(this);
         mContentTextView = findViewById(R.id.tv_content);
     }
 

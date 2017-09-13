@@ -13,10 +13,8 @@ import com.yjh.rer.util.CrashLibrary;
 
 import javax.inject.Inject;
 
-import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
-import dagger.android.support.HasSupportFragmentInjector;
 import timber.log.Timber;
 
 public class MyApplication extends Application implements HasActivityInjector {

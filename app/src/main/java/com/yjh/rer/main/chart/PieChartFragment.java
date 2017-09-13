@@ -2,10 +2,7 @@ package com.yjh.rer.main.chart;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,34 +12,21 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.function.BiFunction;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Consumer;
 
 public class PieChartFragment extends BaseFragment implements OnChartValueSelectedListener {
     private static final String RED_ENVELOPE = "red_envelope";
@@ -135,13 +119,8 @@ public class PieChartFragment extends BaseFragment implements OnChartValueSelect
         pieDataSet.setSliceSpace(2f);
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueTextSize(12f);
-        pieDataSet.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, Entry entry,
-                                            int dataSetIndex, ViewPortHandler viewPortHandler) {
-                return new DecimalFormat("###,###,##0.0").format(value) + "%";
-            }
-        });
+        pieDataSet.setValueFormatter((value, entry, datasetIndex, viewPortHandler)
+                -> (new DecimalFormat("###,###,##0.0").format(value) + "%"));
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
         colors.add(getResources().getColor(R.color.google_red));

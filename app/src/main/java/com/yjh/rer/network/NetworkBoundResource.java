@@ -14,24 +14,18 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
     @MainThread
     public NetworkBoundResource() {
-        result.setValue(Resource.loading((ResultType) null));
+        result.setValue(Resource.loading(null));
         final LiveData<ResultType> dbSource = loadFromDb();
 
-        result.addSource(dbSource, new Observer<ResultType>() {
-            @Override
-            public void onChanged(@Nullable ResultType resultType) {
-                result.removeSource(dbSource);
-                if (shouldFetch(resultType)) {
-                    fetchFromNetwork(dbSource);
-                } else {
-                    result.addSource(dbSource, new Observer<ResultType>() {
-                        @Override
-                        public void onChanged(@Nullable ResultType resultType) {
-                            result.setValue(Resource.success(resultType));
-                            result.removeSource(dbSource);
-                        }
-                    });
-                }
+        result.addSource(dbSource, resultType -> {
+            result.removeSource(dbSource);
+            if (shouldFetch(resultType)) {
+                fetchFromNetwork(dbSource);
+            } else {
+                result.addSource(dbSource, resultType1 -> {
+                    result.setValue(Resource.success(resultType));
+                    result.removeSource(dbSource);
+                });
             }
         });
     }
@@ -47,25 +41,17 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                 result.setValue(Resource.loading(resultType));
             }
         });
-        result.addSource(apiResponse, new Observer<ApiResponse<RequestType>>() {
-            @Override
-            public void onChanged(final @Nullable ApiResponse<RequestType> requestTypeApiResponse) {
-                result.removeSource(apiResponse);
-                result.removeSource(dbSource);
-                //noinspection ConstantConditions
-                if (requestTypeApiResponse.isSuccessful()) {
-                    saveResultAndReInit(requestTypeApiResponse);
-                } else {
-                    onFetchFailed();
-                    result.addSource(dbSource, new Observer<ResultType>() {
-                        @Override
-                        public void onChanged(@Nullable ResultType resultType) {
-                            Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
-                            result.removeSource(dbSource);
-                        }
-                    });
-                }
-                // end progress
+        result.addSource(apiResponse, requestTypeApiResponse -> {
+            result.removeSource(apiResponse);
+            result.removeSource(dbSource);
+            if (requestTypeApiResponse.isSuccessful()) {
+                saveResultAndReInit(requestTypeApiResponse);
+            } else {
+                onFetchFailed();
+                result.addSource(dbSource, resultType -> {
+                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
+                    result.removeSource(dbSource);
+                });
             }
         });
     }
@@ -87,16 +73,10 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                // we specially request a new live data,
-                // otherwise we will get immediately last cached value,
-                // which may not be updated with latest results received from network.
                 final LiveData<ResultType> dbSource = loadFromDb();
-                result.addSource(dbSource, new Observer<ResultType>() {
-                    @Override
-                    public void onChanged(@Nullable ResultType resultType) {
-                        result.setValue(Resource.success(resultType));
-                        result.removeSource(dbSource);
-                    }
+                result.addSource(dbSource, resultType -> {
+                    result.setValue(Resource.success(resultType));
+                    result.removeSource(dbSource);
                 });
             }
         }.execute();
@@ -111,11 +91,13 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     protected abstract boolean shouldFetch(@Nullable ResultType data);
 
     // Called to get the cached data from the database
-    @NonNull @MainThread
+    @NonNull
+    @MainThread
     protected abstract LiveData<ResultType> loadFromDb();
 
     // Called to create the API call.
-    @NonNull @MainThread
+    @NonNull
+    @MainThread
     protected abstract LiveData<ApiResponse<RequestType>> createCall();
 
     // Called when the fetch fails. The child class may want to reset components

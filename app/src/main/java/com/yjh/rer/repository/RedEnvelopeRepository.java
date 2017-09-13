@@ -4,7 +4,6 @@ package com.yjh.rer.repository;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
@@ -13,13 +12,8 @@ import com.yjh.rer.network.NetworkBoundResource;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.network.Webservice;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
-import com.yjh.rer.room.db.MyDatabase;
 import com.yjh.rer.room.entity.RedEnvelope;
-import com.yjh.rer.util.GsonUtils;
 import com.yjh.rer.util.RateLimiter;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
