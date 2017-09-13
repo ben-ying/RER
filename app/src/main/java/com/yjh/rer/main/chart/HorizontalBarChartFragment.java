@@ -23,6 +23,9 @@ import com.yjh.rer.room.entity.RedEnvelope;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.disposables.Disposable;
@@ -31,8 +34,10 @@ public class HorizontalBarChartFragment extends BaseFragment {
 
     private static final String RED_ENVELOPE = "red_envelope";
     protected ArrayList<RedEnvelope> mRedEnvelopes;
-    protected HorizontalBarChart mChart;
+    @BindView(R.id.horizontal_bar_chart)
+    HorizontalBarChart chart;
     private Disposable mDisposable;
+    private Unbinder mUnBinder;
 
     public static HorizontalBarChartFragment newInstance(ArrayList<RedEnvelope> redEnvelopes) {
 
@@ -47,7 +52,7 @@ public class HorizontalBarChartFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_horizontal_bar_chart, container, false);
-        mChart = v.findViewById(R.id.horizontal_bar_chart);
+        mUnBinder = ButterKnife.bind(this, v);
         mRedEnvelopes = (ArrayList<RedEnvelope>) getArguments().getSerializable(RED_ENVELOPE);
 
         return v;
@@ -57,15 +62,15 @@ public class HorizontalBarChartFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mChart.getDescription().setEnabled(false);
+        chart.getDescription().setEnabled(false);
         MyMarkerView mv = new MyMarkerView(getActivity(), R.layout.custom_marker_view);
-        mv.setChartView(mChart);
-        mChart.setMarker(mv);
-        mChart.setDrawGridBackground(false);
-        YAxis leftAxis = mChart.getAxisLeft();
+        mv.setChartView(chart);
+        chart.setMarker(mv);
+        chart.setDrawGridBackground(false);
+        YAxis leftAxis = chart.getAxisLeft();
         leftAxis.setAxisMinimum(0f);
-        mChart.getAxisRight().setEnabled(false);
-        XAxis xAxis = mChart.getXAxis();
+        chart.getAxisRight().setEnabled(false);
+        XAxis xAxis = chart.getXAxis();
         xAxis.setTextSize(7);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -74,7 +79,7 @@ public class HorizontalBarChartFragment extends BaseFragment {
                 return String.valueOf(mRedEnvelopes.get((int) value).getMoneyFrom());
             }
         });
-        mChart.setDoubleTapToZoomEnabled(false);
+        chart.setDoubleTapToZoomEnabled(false);
         updateData(mRedEnvelopes);
     }
 
@@ -90,10 +95,10 @@ public class HorizontalBarChartFragment extends BaseFragment {
     public void updateData(ArrayList<RedEnvelope> redEnvelopes) {
         if (redEnvelopes != null) {
             sortByAmount(redEnvelopes);
-            mChart.setData(generateBarData());
-            mChart.invalidate();
-            mChart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
-            mChart.moveViewTo(0, 0, YAxis.AxisDependency.LEFT);
+            chart.setData(generateBarData());
+            chart.invalidate();
+            chart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
+            chart.moveViewTo(0, 0, YAxis.AxisDependency.LEFT);
         }
     }
 
@@ -124,5 +129,11 @@ public class HorizontalBarChartFragment extends BaseFragment {
         sets.add(ds);
 
         return new BarData(sets);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnBinder.unbind();
     }
 }

@@ -11,22 +11,23 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class MyMarkerView extends MarkerView {
 
-    private TextView mContentTextView;
+    @BindView(R.id.tv_content)
+    TextView contentTextView;
 
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         ButterKnife.bind(this);
-        mContentTextView = findViewById(R.id.tv_content);
     }
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        mContentTextView.setText(String.valueOf(
+        contentTextView.setText(String.valueOf(
                 Utils.formatNumber(e.getY(), 0, true)));
 
         super.refreshContent(e, highlight);

@@ -1,12 +1,13 @@
 package com.yjh.rer.main.list;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.yjh.rer.R;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -16,9 +17,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemLongClick;
+import butterknife.OnLongClick;
 
 public class RedEnvelopeAdapter extends RecyclerView.Adapter<
-        RedEnvelopeAdapter.RedEnvelopeViewHolder> implements View.OnClickListener {
+        RedEnvelopeAdapter.RedEnvelopeViewHolder> {
 
     private Context mContext;
     private List<RedEnvelope> mRedEnvelopes;
@@ -45,7 +49,7 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
     @Override
     public RedEnvelopeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new RedEnvelopeViewHolder(LayoutInflater.from(mContext)
-                        .inflate(R.layout.item_red_envelope, parent, false));
+                .inflate(R.layout.item_red_envelope, parent, false));
     }
 
 
@@ -57,31 +61,6 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         holder.moneyTextView.setText(String.format(mContext.getString(R.string.red_envelope_yuan),
                 redEnvelope.getMoneyInt()) + ", " + redEnvelope.getRemark());
         holder.rootView.setTag(redEnvelope);
-        holder.rootView.setOnClickListener(this);
-        holder.rootView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                AlertUtils.showConfirmDialog(mContext, R.string.delete_red_envelope_alert,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mInterface.delete(redEnvelope.getRedEnvelopeId());
-                            }
-                        });
-                return true;
-            }
-        });
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.content_layout:
-//                Intent intent = new Intent(mContext, RedEnvelopeActivity.class);
-//                ((Activity) mContext).startActivityForResult(
-//                        intent, Constants.RED_ENVELOPE_EDIT_REQUEST);
-                break;
-        }
     }
 
     @Override
@@ -90,14 +69,31 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
     }
 
     class RedEnvelopeViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.content_layout) View rootView;
-        @BindView(R.id.tv_from) TextView fromTextView;
-        @BindView(R.id.tv_datetime) TextView dateTextView;
-        @BindView(R.id.tv_money) TextView moneyTextView;
+        @BindView(R.id.content_layout)
+        View rootView;
+        @BindView(R.id.tv_from)
+        TextView fromTextView;
+        @BindView(R.id.tv_datetime)
+        TextView dateTextView;
+        @BindView(R.id.tv_money)
+        TextView moneyTextView;
 
         RedEnvelopeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick(R.id.content_layout)
+        void intent2DetailView(View v) {
+        }
+
+        @OnLongClick(R.id.content_layout)
+        boolean showDeleteDialog(View view) {
+            AlertUtils.showConfirmDialog(mContext, R.string.delete_red_envelope_alert,
+                    (dialogInterface, i) -> {
+                        mInterface.delete(((RedEnvelope) view.getTag()).getRedEnvelopeId());
+                    });
+            return true;
         }
     }
 }
