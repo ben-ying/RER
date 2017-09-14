@@ -113,8 +113,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        super.onDestroyView();
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
