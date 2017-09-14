@@ -57,7 +57,10 @@ public class BarChartFragment extends BaseDaggerFragment {
         this.redEnvelopes = redEnvelopes;
         chart.setData(generateBarData());
         chart.invalidate();
-        chart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
+        if (redEnvelopes.size() > 0) {
+            // if data is empty set this, when has data chart always not shown
+            chart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);
+        }
     }
 
     private BarData generateBarData() {
