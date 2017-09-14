@@ -1,8 +1,11 @@
 package com.yjh.rer.main;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -14,16 +17,19 @@ import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerActivity;
+import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.main.chart.ChartFragment;
 import com.yjh.rer.main.list.HomeViewPagerAdapter;
 import com.yjh.rer.main.list.RedEnvelopesFragment;
+import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import dagger.android.DaggerFragment;
 
 public class MainActivity extends BaseDaggerActivity
         implements NavigationView.OnNavigationItemSelectedListener {

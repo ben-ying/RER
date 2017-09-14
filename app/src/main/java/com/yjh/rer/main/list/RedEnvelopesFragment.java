@@ -3,8 +3,11 @@ package com.yjh.rer.main.list;
 
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,11 +44,13 @@ import io.reactivex.schedulers.Schedulers;
 public class RedEnvelopesFragment extends BaseDaggerFragment
         implements RedEnvelopeAdapter.RedEnvelopeInterface {
 
-    private static final String TAG = RedEnvelopesFragment.class.getSimpleName();
+    private static final String TAG =
+            RedEnvelopesFragment.class.getSimpleName();
 
     private static final int SCROLL_UP = 0;
     private static final int SCROLL_DOWN = 1;
     private static final int SCROLL_VIEW_BRING_FRONT = 2;
+    private static final String FIRST_OPEN_APP = "first_open_app";
 
     @BindView(R.id.tv_total)
     TextView totalTextView;
@@ -63,6 +68,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private Disposable mDisposable;
     private int mScrollViewState = -1;
     private boolean reverseSorting;
+    private boolean mIsFirstOpen;
+    private SharedPreferences mSharedPreferences;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -86,6 +93,10 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSharedPreferences =
+                getActivity().getSharedPreferences(getActivity().getApplicationContext()
+                        .getPackageName(), Context.MODE_PRIVATE);
+        mIsFirstOpen = mSharedPreferences.getBoolean(FIRST_OPEN_APP, true);
         setHasOptionsMenu(true);
     }
 
@@ -230,6 +241,19 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                 Collections.reverse(redEnvelopes);
             }
             setAdapter();
+
+            // init chart data when first open app
+            if (mIsFirstOpen && redEnvelopes.size() > 0) {
+                Fragment fragment = getActivity().getSupportFragmentManager()
+                        .findFragmentById(R.id.container);
+                if (fragment != null && fragment.isAdded()
+                        && fragment instanceof BaseDaggerFragment) {
+                    mSharedPreferences.edit().putBoolean(
+                            FIRST_OPEN_APP, false).apply();
+                    mIsFirstOpen = false;
+                    ((BaseDaggerFragment) fragment).setData(redEnvelopes);
+                }
+            }
         }
     }
 

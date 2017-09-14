@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import com.squareup.leakcanary.RefWatcher;
 import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
+import com.yjh.rer.room.entity.RedEnvelope;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;

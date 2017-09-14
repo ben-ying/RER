@@ -24,7 +24,7 @@ public class BarChartFragment extends BaseDaggerFragment {
     BarChart chart;
 
     public static BarChartFragment newInstance() {
-        return  new BarChartFragment();
+        return new BarChartFragment();
     }
 
     @Override
