@@ -43,7 +43,6 @@ public class RedEnvelopeRepository {
                     @NonNull CustomResponse<ListResponseResult<List<RedEnvelope>>> item) {
                 mRedEnvelopeDao.deleteAll();
                 mRedEnvelopeDao.saveAll(item.getResult().getResults());
-                Log.d("", "");
             }
 
             @Override

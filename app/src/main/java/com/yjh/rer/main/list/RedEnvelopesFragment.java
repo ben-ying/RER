@@ -9,7 +9,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -169,7 +169,6 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(integer -> {
                     mScrollViewState = integer;
-                    Log.d(TAG, "state: " + mScrollViewState);
                     switch (integer) {
                         case SCROLL_UP:
                             ((MainActivity) getActivity()).fab.hide();
@@ -187,21 +186,21 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private Observable<Integer> createScrollViewObservable() {
         return Observable.create((ObservableEmitter<Integer> emitter) -> {
-                scrollView.setOnScrollChangeListener((
-                        View view, int scrollX, int scrollY, int oldX, int oldY) -> {
-                        if (scrollY > oldY) {
-                            emitter.onNext(SCROLL_UP);
-                        } else if (scrollY < oldY) {
-                            emitter.onNext(SCROLL_DOWN);
-                            if (scrollY < 10) {
-                                emitter.onNext(SCROLL_VIEW_BRING_FRONT);
-                            }
-                        }
-                });
-                emitter.setCancellable(() -> {
+            scrollView.setOnScrollChangeListener((
+                    View view, int scrollX, int scrollY, int oldX, int oldY) -> {
+                if (scrollY > oldY) {
+                    emitter.onNext(SCROLL_UP);
+                } else if (scrollY < oldY) {
+                    emitter.onNext(SCROLL_DOWN);
+                    if (scrollY < 10) {
+                        emitter.onNext(SCROLL_VIEW_BRING_FRONT);
+                    }
+                }
+            });
+            emitter.setCancellable(() -> {
 //                        scrollView.setOnScrollChangeListener(
 //                                (NestedScrollView.OnScrollChangeListener) null);
-                });
+            });
         });
     }
 
@@ -252,15 +251,38 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                 .setTitle(R.string.red_envelopes)
                 .setView(view)
                 .setPositiveButton(R.string.ok, (dialogInterface, which) -> {
-                        progressBar.setVisibility(View.VISIBLE);
-                        mViewModel.add(dialogViews.fromEditText.getText().toString(),
-                                dialogViews.moneyEditText.getText().toString(),
-                                dialogViews.remarkEditText.getText().toString());
                 })
                 .setNegativeButton(R.string.cancel, null)
                 .create();
         dialog.setCancelable(true);
         dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->  {
+            if (isValid(dialogViews)) {
+                dialog.dismiss();
+                progressBar.setVisibility(View.VISIBLE);
+                mViewModel.add(dialogViews.fromEditText.getText().toString(),
+                        dialogViews.moneyEditText.getText().toString(),
+                        dialogViews.remarkEditText.getText().toString());
+            }
+        });
+    }
+
+    private boolean isValid(DialogViews dialogViews) {
+        if (TextUtils.isEmpty(dialogViews.fromEditText.getText().toString().trim())) {
+            dialogViews.fromEditText.setError(getString(R.string.non_empty_field));
+            return false;
+        }
+        if (TextUtils.isEmpty(dialogViews.moneyEditText.getText().toString().trim())) {
+            dialogViews.moneyEditText.setError(getString(R.string.non_empty_field));
+            return false;
+        }
+        if (TextUtils.isEmpty(dialogViews.remarkEditText.getText().toString().trim())) {
+            dialogViews.remarkEditText.setError(getString(R.string.non_empty_field));
+            return false;
+        }
+
+        return true;
     }
 
     class DialogViews {

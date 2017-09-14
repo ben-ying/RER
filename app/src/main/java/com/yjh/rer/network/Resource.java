@@ -19,7 +19,6 @@ public class Resource<T> {
     }
 
     public static <T> Resource<T> success(@NonNull T data) {
-        Log.d("TIME", "time2: " + System.currentTimeMillis());
         return new Resource<>(Status.SUCCESS, data, null);
     }
 

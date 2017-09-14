@@ -31,8 +31,7 @@ public class MyMarkerView extends MarkerView {
 
     @Override
     public void refreshContent(Entry e, Highlight highlight) {
-        contentTextView.setText(String.valueOf(
-                Utils.formatNumber(e.getY(), 0, true)));
+        contentTextView.setText(e.getData().toString());
 
         super.refreshContent(e, highlight);
     }

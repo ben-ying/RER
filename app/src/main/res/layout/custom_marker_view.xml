@@ -15,7 +15,6 @@
         android:textSize="@dimen/marker_text_size"
         android:textColor="@android:color/white"
         android:ellipsize="end"
-        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

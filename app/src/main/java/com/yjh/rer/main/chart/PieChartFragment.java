@@ -11,6 +11,7 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -73,15 +74,25 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
             map.merge(redEnvelope.getRemark(), redEnvelope.getMoneyInt(), Integer::sum);
         }
 
+        ArrayList<Integer> colors = new ArrayList<Integer>();
+        colors.add(getResources().getColor(R.color.google_red));
+        colors.add(getResources().getColor(R.color.google_blue));
+        colors.add(getResources().getColor(R.color.colorPrimary));
+        colors.add(getResources().getColor(R.color.google_green));
+        colors.add(getResources().getColor(R.color.colorPrimaryDark));
+        colors.add(getResources().getColor(R.color.google_yellow));
+
         final int totalMoney = total;
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
         map.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .forEach(entry -> {
-                    if (sortedMap.size() <= 5 && (float) entry.getValue() / totalMoney > 0.02) {
+                    if (sortedMap.size() <= colors.size() - 1
+                            && (float) entry.getValue() / totalMoney > 0.02) {
                         entries.add(new PieEntry(entry.getValue(),
-                                entry.getKey() + "\n(" + new DecimalFormat("###,###,###")
-                                        .format(entry.getValue()) + ")"));
+                                entry.getKey() + "\n: " +
+                                        Utils.formatNumber(entry.getValue(),
+                                                0, true)));
                         sortedMap.put(entry.getKey(), entry.getValue());
                     } else {
                         sortedMap.put(getString(R.string.category_others),
@@ -91,9 +102,10 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
 
         if (sortedMap.get(getString(R.string.category_others)) > 0) {
             entries.add(new PieEntry(sortedMap.get(getString(R.string.category_others)),
-                    getString(R.string.category_others) +
-                            "\n(" + new DecimalFormat("###,###,###").format(
-                            sortedMap.get(getString(R.string.category_others))) + ")"));
+                    getString(R.string.category_others) + "\n: " +
+                            Utils.formatNumber(sortedMap.get(
+                                    getString(R.string.category_others)),
+                                    0, true)));
         }
 
         PieDataSet pieDataSet = new PieDataSet(
@@ -102,28 +114,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueTextSize(12f);
         pieDataSet.setValueFormatter((value, entry, datasetIndex, viewPortHandler)
-                -> (new DecimalFormat("###,###,##0.0").format(value) + "%"));
-
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-        colors.add(getResources().getColor(R.color.google_red));
-        colors.add(getResources().getColor(R.color.google_blue));
-        colors.add(getResources().getColor(R.color.google_green));
-        colors.add(getResources().getColor(R.color.google_yellow));
-        for (int c : ColorTemplate.VORDIPLOM_COLORS) {
-            colors.add(c);
-        }
-        for (int c : ColorTemplate.JOYFUL_COLORS) {
-            colors.add(c);
-        }
-        for (int c : ColorTemplate.COLORFUL_COLORS) {
-            colors.add(c);
-        }
-        for (int c : ColorTemplate.LIBERTY_COLORS) {
-            colors.add(c);
-        }
-        for (int c : ColorTemplate.PASTEL_COLORS) {
-            colors.add(c);
-        }
+                -> Utils.formatNumber(value, 1, true) + "%");
         pieDataSet.setColors(colors);
 
         return new PieData(pieDataSet);

@@ -8,6 +8,7 @@ import com.yjh.rer.BuildConfig;
 import com.yjh.rer.model.CustomResponse;
 
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class ApiResponse<T> {
     private final int mCode;
@@ -23,10 +24,8 @@ public class ApiResponse<T> {
     }
 
     public ApiResponse(Response<T> response) {
-        if (BuildConfig.DEBUG) {
-            Log.d("HTTP", "request: " + response.raw().request());
-            Log.d("HTTP", "response: " + new Gson().toJson(response.body()));
-        }
+        Timber.d("http request: %s", response.raw().request());
+        Timber.d("http response: %s", new Gson().toJson(response.body()));
         CustomResponse responseBody = (CustomResponse) response.body();
         mCode = responseBody.getCode();
         if (responseBody.isSuccessful()) {
