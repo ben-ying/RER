@@ -1,6 +1,5 @@
 package com.yjh.rer.room.entity;
 
-import android.arch.lifecycle.ViewModel;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
@@ -12,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 import static com.yjh.rer.room.entity.RedEnvelope.TABLE_NAME;
 
 @Entity(tableName = TABLE_NAME)
-public class RedEnvelope extends ViewModel {
+public class RedEnvelope {
     public static final int INVALID_ID = -1;
     public static final String TABLE_NAME = "red_envelopes";
     public static final String FIELD_RED_ENVELOPE_ID = "red_envelope_id";

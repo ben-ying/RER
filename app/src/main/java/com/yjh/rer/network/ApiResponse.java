@@ -1,10 +1,8 @@
 package com.yjh.rer.network;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.yjh.rer.BuildConfig;
 import com.yjh.rer.model.CustomResponse;
 
 import retrofit2.Response;
