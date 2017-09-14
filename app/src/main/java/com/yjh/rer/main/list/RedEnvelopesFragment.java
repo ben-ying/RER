@@ -3,7 +3,6 @@ package com.yjh.rer.main.list;
 
 import android.app.AlertDialog;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
@@ -11,12 +10,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -29,14 +26,12 @@ import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -65,16 +60,9 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private RedEnvelopeViewModel mViewModel;
     private RedEnvelopeAdapter mAdapter;
-    private Unbinder mUnBinder;
     private Disposable mDisposable;
     private int mScrollViewState = -1;
     private boolean reverseSorting;
-    private List<RedEnvelope> mRedEnvelopes;
-    private ChartDataChangedListener mCallback;
-
-    public interface ChartDataChangedListener {
-        void setChartData(ArrayList<RedEnvelope> envelopes);
-    }
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -84,33 +72,15 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        try {
-            mCallback = (ChartDataChangedListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement ChartDataChangedListener");
-        }
+    public int getLayoutId() {
+        return R.layout.fragment_red_envelopes;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public void initView() {
         setScrollViewOnChangedListener();
 
         initRecyclerViewData();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_red_envelopes, container, false);
-        mUnBinder = ButterKnife.bind(this, view);
-
-        return view;
     }
 
     @Override
@@ -140,12 +110,6 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mUnBinder.unbind();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort:
@@ -163,14 +127,14 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     public List<RedEnvelope> getData() {
-        return mRedEnvelopes;
+        return redEnvelopes;
     }
 
     private void sortDataByTime() {
-        if (mRedEnvelopes != null && mAdapter != null) {
+        if (redEnvelopes != null && mAdapter != null) {
             mDisposable = Observable
                     .create((ObservableEmitter<RedEnvelope> e) -> {
-                        for (RedEnvelope redEnvelope : mRedEnvelopes) {
+                        for (RedEnvelope redEnvelope : redEnvelopes) {
                             e.onNext(redEnvelope);
                         }
                         e.onComplete();
@@ -181,8 +145,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                     .subscribe((res) -> {
                         reverseSorting = !reverseSorting;
                         getActivity().invalidateOptionsMenu();
-                        mRedEnvelopes = res;
-                        mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
+                        redEnvelopes = res;
                         setAdapter();
                     });
         }
@@ -245,7 +208,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("1272dc0fe06c52383c7a9bdfef33255b940c195b");
-        mViewModel.getRedEnvelopes().observe(this, this::setData);
+        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
     }
@@ -254,20 +217,19 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         if (listResource != null && listResource.getData() != null) {
             progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
-            mRedEnvelopes = listResource.getData();
+            redEnvelopes = listResource.getData();
             int total = 0;
-            for (RedEnvelope redEnvelope : mRedEnvelopes) {
+            for (RedEnvelope redEnvelope : redEnvelopes) {
                 total += redEnvelope.getMoneyInt();
             }
             if (totalTextView.getVisibility() == View.GONE) {
                 totalTextView.setVisibility(View.VISIBLE);
             }
             totalTextView.setText(String.format(getString(
-                    R.string.red_envelope_total), mRedEnvelopes.size(), total));
+                    R.string.red_envelope_total), redEnvelopes.size(), total));
             if (reverseSorting) {
-                Collections.reverse(mRedEnvelopes);
+                Collections.reverse(redEnvelopes);
             }
-            mCallback.setChartData(new ArrayList<>(mRedEnvelopes));
             setAdapter();
         }
     }
@@ -275,10 +237,10 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private void setAdapter() {
         if (mAdapter == null) {
             mAdapter = new RedEnvelopeAdapter(getActivity(),
-                    mRedEnvelopes, totalTextView, RedEnvelopesFragment.this);
+                    redEnvelopes, totalTextView, RedEnvelopesFragment.this);
             recyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.setData(mRedEnvelopes);
+            mAdapter.setData(redEnvelopes);
         }
     }
 

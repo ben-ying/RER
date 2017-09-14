@@ -20,6 +20,10 @@ public class MyMarkerView extends MarkerView {
     @BindView(R.id.tv_content)
     TextView contentTextView;
 
+    public MyMarkerView(Context context){
+        super(context, 0);
+    }
+
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
         ButterKnife.bind(this);

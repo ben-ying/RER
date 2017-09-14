@@ -6,16 +6,16 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 public class Resource<T> {
-    private final Status status;
+    private final Status mStatus;
     @Nullable
-    private final T data;
+    private final T mData;
     @Nullable
-    private final String message;
+    private final String mMessage;
 
     private Resource(Status status, @Nullable T data, @Nullable String message) {
-        this.status = status;
-        this.data = data;
-        this.message = message;
+        this.mStatus = status;
+        this.mData = data;
+        this.mMessage = message;
     }
 
     public static <T> Resource<T> success(@NonNull T data) {
@@ -32,16 +32,16 @@ public class Resource<T> {
     }
 
     public Status getStatus() {
-        return status;
+        return mStatus;
     }
 
     @Nullable
     public T getData() {
-        return data;
+        return mData;
     }
 
     @Nullable
     public String getMessage() {
-        return message;
+        return mMessage;
     }
 }

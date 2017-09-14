@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModel;
 
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.repository.RedEnvelopeRepository;
+import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.List;
@@ -18,16 +19,19 @@ public class RedEnvelopeViewModel extends ViewModel {
     private static final int TYPE_ADD = 1;
     private static final int TYPE_DELETE = 2;
 
-    private final MutableLiveData<ReId> reIdLiveData = new MutableLiveData<>();
+    private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();
     private MutableLiveData<String> mToken = new MutableLiveData<>();
-    private LiveData<Resource<List<RedEnvelope>>> redEnvelopes;
+    private LiveData<Resource<List<RedEnvelope>>> mRedEnvelopes;
+
+    @Inject
+    RedEnvelopeDao dao;
 
     @Inject
     public RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
-        if (this.redEnvelopes != null) {
+        if (this.mRedEnvelopes != null) {
             return;
         }
-        redEnvelopes = Transformations.switchMap(reIdLiveData, reId -> {
+        mRedEnvelopes = Transformations.switchMap(mReIdLiveData, reId -> {
             switch (reId.type) {
                 case TYPE_LOAD:
                     return repository.loadRedEnvelopes(mToken.getValue(), reId.userId);
@@ -45,15 +49,19 @@ public class RedEnvelopeViewModel extends ViewModel {
         mToken.setValue(token);
     }
 
-    public LiveData<Resource<List<RedEnvelope>>> getRedEnvelopes() {
-        return redEnvelopes;
+    public LiveData<Resource<List<RedEnvelope>>> getRedEnvelopesResource() {
+        return mRedEnvelopes;
+    }
+
+    public LiveData<List<RedEnvelope>> getRedEnvelopes() {
+        return dao.loadAll();
     }
 
     public void load(String userId) {
         ReId reId = new ReId();
         reId.type = TYPE_LOAD;
         reId.userId = userId;
-        reIdLiveData.setValue(reId);
+        mReIdLiveData.setValue(reId);
     }
 
     public void add(String moneyFrom, String money, String remark) {
@@ -62,14 +70,14 @@ public class RedEnvelopeViewModel extends ViewModel {
         reId.moneyFrom = moneyFrom;
         reId.money = money;
         reId.remark = remark;
-        reIdLiveData.setValue(reId);
+        mReIdLiveData.setValue(reId);
     }
 
     public void delete(int id) {
         ReId reId = new ReId();
         reId.type = TYPE_DELETE;
         reId.id = id;
-        reIdLiveData.setValue(reId);
+        mReIdLiveData.setValue(reId);
     }
 
     static class ReId {

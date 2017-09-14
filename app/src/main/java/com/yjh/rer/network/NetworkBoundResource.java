@@ -10,21 +10,20 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 public abstract class NetworkBoundResource<ResultType, RequestType> {
-    private final MediatorLiveData<Resource<ResultType>> result = new MediatorLiveData<>();
+    private final MediatorLiveData<Resource<ResultType>> mResult = new MediatorLiveData<>();
 
     @MainThread
     public NetworkBoundResource() {
-        result.setValue(Resource.loading(null));
+        mResult.setValue(Resource.loading(null));
         final LiveData<ResultType> dbSource = loadFromDb();
 
-        result.addSource(dbSource, resultType -> {
-            result.removeSource(dbSource);
+        mResult.addSource(dbSource, resultType -> {
+            mResult.removeSource(dbSource);
             if (shouldFetch(resultType)) {
                 fetchFromNetwork(dbSource);
             } else {
-                result.addSource(dbSource, resultType1 -> {
-                    result.setValue(Resource.success(resultType));
-                    result.removeSource(dbSource);
+                mResult.addSource(dbSource, resultType1 -> {
+                    mResult.setValue(Resource.success(resultType));
                 });
             }
         });
@@ -35,22 +34,21 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
         // we re-attach dbSource as a new source,
         // it will dispatch its latest value quickly
-        result.addSource(dbSource, new Observer<ResultType>() {
+        mResult.addSource(dbSource, new Observer<ResultType>() {
             @Override
             public void onChanged(@Nullable ResultType resultType) {
-                result.setValue(Resource.loading(resultType));
+                mResult.setValue(Resource.loading(resultType));
             }
         });
-        result.addSource(apiResponse, requestTypeApiResponse -> {
-            result.removeSource(apiResponse);
-            result.removeSource(dbSource);
+        mResult.addSource(apiResponse, requestTypeApiResponse -> {
+            mResult.removeSource(apiResponse);
+            mResult.removeSource(dbSource);
             if (requestTypeApiResponse.isSuccessful()) {
                 saveResultAndReInit(requestTypeApiResponse);
             } else {
                 onFetchFailed();
-                result.addSource(dbSource, resultType -> {
+                mResult.addSource(dbSource, resultType -> {
                     Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
-                    result.removeSource(dbSource);
                 });
             }
         });
@@ -74,9 +72,8 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             @Override
             protected void onPostExecute(Void aVoid) {
                 final LiveData<ResultType> dbSource = loadFromDb();
-                result.addSource(dbSource, resultType -> {
-                    result.setValue(Resource.success(resultType));
-                    result.removeSource(dbSource);
+                mResult.addSource(dbSource, resultType -> {
+                    mResult.setValue(Resource.success(resultType));
                 });
             }
         }.execute();
@@ -108,6 +105,6 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
 
     // returns a LiveData that represents the resource
     public final LiveData<Resource<ResultType>> getAsLiveData() {
-        return result;
+        return mResult;
     }
 }

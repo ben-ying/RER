@@ -1,10 +1,6 @@
 package com.yjh.rer.main.chart;
 
 import android.graphics.Color;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -16,43 +12,32 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.yjh.rer.R;
-import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
-public class PieChartFragment extends BaseFragment implements OnChartValueSelectedListener {
-    private static final String RED_ENVELOPE = "red_envelope";
-
+public class PieChartFragment extends BaseDaggerFragment implements OnChartValueSelectedListener {
     @BindView(R.id.pie_chart)
     PieChart pieChart;
-    private ArrayList<RedEnvelope> mRedEnvelopes;
-    private Unbinder mUnBinder;
 
-    public static PieChartFragment newInstance(ArrayList<RedEnvelope> redEnvelopes) {
-
-        Bundle args = new Bundle();
-        args.putSerializable(RED_ENVELOPE, redEnvelopes);
-        PieChartFragment fragment = new PieChartFragment();
-        fragment.setArguments(args);
-
-        return fragment;
+    public static PieChartFragment newInstance() {
+        return new PieChartFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_pie_chart, container, false);
-        mUnBinder = ButterKnife.bind(this, view);
-        mRedEnvelopes = (ArrayList<RedEnvelope>) getArguments().getSerializable(RED_ENVELOPE);
+    public int getLayoutId() {
+        return R.layout.fragment_pie_chart;
+    }
 
+    @Override
+    public void initView() {
         pieChart.getDescription().setEnabled(false);
         pieChart.setCenterText(getString(R.string.action_sorted_by_category));
         pieChart.setCenterTextColor(getResources().getColor(R.color.default_text_color));
@@ -67,14 +52,11 @@ public class PieChartFragment extends BaseFragment implements OnChartValueSelect
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
-        updateData(mRedEnvelopes);
-
-        return view;
     }
 
     @Override
-    public void updateData(ArrayList<RedEnvelope> redEnvelopes) {
-        mRedEnvelopes = redEnvelopes;
+    public void setData(List<RedEnvelope> redEnvelopes) {
+        this.redEnvelopes = redEnvelopes;
         pieChart.setData(generatePieData());
         pieChart.invalidate();
     }
@@ -84,7 +66,7 @@ public class PieChartFragment extends BaseFragment implements OnChartValueSelect
         Map<String, Integer> sortedMap = new HashMap<>();
         sortedMap.put(getString(R.string.category_others), 0);
         int total = 0;
-        for (RedEnvelope redEnvelope : mRedEnvelopes) {
+        for (RedEnvelope redEnvelope : redEnvelopes) {
             total += redEnvelope.getMoneyInt();
             // if mapValue == null, mapValue = redEnvelope.getMoneyInt(),
             // else mapValue += redEnvelope.getMoneyInt()
@@ -145,12 +127,6 @@ public class PieChartFragment extends BaseFragment implements OnChartValueSelect
         pieDataSet.setColors(colors);
 
         return new PieData(pieDataSet);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mUnBinder.unbind();
     }
 
     @Override

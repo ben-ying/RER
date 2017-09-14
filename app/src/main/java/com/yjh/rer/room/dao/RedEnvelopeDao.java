@@ -31,8 +31,11 @@ public interface RedEnvelopeDao {
     LiveData<List<RedEnvelope>> loadAll();
 
     @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
-            " WHERE " + RedEnvelope.FIELD_RED_ENVELOPE_ID + " =:reId LIMIT 1")
-    LiveData<RedEnvelope> findById(int reId);
+            " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID)
+    List<RedEnvelope> loadAllList();
+
+    @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME)
+    List<RedEnvelope> loadAllList1();
 
     @Query("SELECT Count(*) FROM " + RedEnvelope.TABLE_NAME)
     int count();

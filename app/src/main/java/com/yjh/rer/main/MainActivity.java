@@ -1,6 +1,5 @@
 package com.yjh.rer.main;
 
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -19,18 +18,15 @@ import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.main.chart.ChartFragment;
 import com.yjh.rer.main.list.HomeViewPagerAdapter;
 import com.yjh.rer.main.list.RedEnvelopesFragment;
-import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends BaseDaggerActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        RedEnvelopesFragment.ChartDataChangedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -49,11 +45,12 @@ public class MainActivity extends BaseDaggerActivity
     private ChartFragment mChartFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
 
+    @Override
+    public void initView() {
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -103,11 +100,10 @@ public class MainActivity extends BaseDaggerActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -121,11 +117,5 @@ public class MainActivity extends BaseDaggerActivity
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void setChartData(ArrayList<RedEnvelope> redEnvelopes) {
-        mChartFragment.setChartData(redEnvelopes);
-//        viewPager.setCurrentItem(1);
     }
 }

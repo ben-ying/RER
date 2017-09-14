@@ -10,16 +10,16 @@ import com.yjh.rer.model.CustomResponse;
 import retrofit2.Response;
 
 public class ApiResponse<T> {
-    private  int code;
+    private final int mCode;
     @Nullable
-    private  T body;
+    private final T mBody;
     @Nullable
-    private  String errorMessage;
+    private final String mErrorMessage;
 
     public ApiResponse(Throwable error) {
-        code = 500;
-        body = null;
-        errorMessage = error.getMessage();
+        mCode = 500;
+        mBody = null;
+        mErrorMessage = error.getMessage();
     }
 
     public ApiResponse(Response<T> response) {
@@ -28,31 +28,31 @@ public class ApiResponse<T> {
             Log.d("HTTP", "response: " + new Gson().toJson(response.body()));
         }
         CustomResponse responseBody = (CustomResponse) response.body();
-        code = responseBody.getCode();
+        mCode = responseBody.getCode();
         if (responseBody.isSuccessful()) {
-            body = response.body();
-            errorMessage = null;
+            mBody = response.body();
+            mErrorMessage = null;
         } else {
-            errorMessage = responseBody.getMessage();
-            body = null;
+            mErrorMessage = responseBody.getMessage();
+            mBody = null;
         }
     }
 
     public boolean isSuccessful() {
-        return code == CustomResponse.SUCCESS_CODE;
+        return mCode == CustomResponse.SUCCESS_CODE;
     }
 
     public int getCode() {
-        return code;
+        return mCode;
     }
 
     @Nullable
     public T getBody() {
-        return body;
+        return mBody;
     }
 
     @Nullable
     public String getErrorMessage() {
-        return errorMessage;
+        return mErrorMessage;
     }
 }

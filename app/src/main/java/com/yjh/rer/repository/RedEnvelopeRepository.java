@@ -4,6 +4,7 @@ package com.yjh.rer.repository;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
@@ -23,14 +24,14 @@ import javax.inject.Singleton;
 
 @Singleton
 public class RedEnvelopeRepository {
-    private Webservice webservice;
-    private RedEnvelopeDao redEnvelopeDao;
-    private RateLimiter<String> repoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
+    private final Webservice mWebservice;
+    private final RedEnvelopeDao mRedEnvelopeDao;
+    private final RateLimiter<String> mRepoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
 
     @Inject
     public RedEnvelopeRepository(Webservice webservice, RedEnvelopeDao redEnvelopeDao) {
-        this.webservice = webservice;
-        this.redEnvelopeDao = redEnvelopeDao;
+        this.mWebservice = webservice;
+        this.mRedEnvelopeDao = redEnvelopeDao;
     }
 
     public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
@@ -40,26 +41,27 @@ public class RedEnvelopeRepository {
             @Override
             protected void saveCallResult(
                     @NonNull CustomResponse<ListResponseResult<List<RedEnvelope>>> item) {
-                redEnvelopeDao.deleteAll();
-                redEnvelopeDao.saveAll(item.getResult().getResults());
+                mRedEnvelopeDao.deleteAll();
+                mRedEnvelopeDao.saveAll(item.getResult().getResults());
+                Log.d("", "");
             }
 
             @Override
             protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
-                return data == null || data.isEmpty() || repoListRateLimit.shouldFetch(token);
+                return data == null || data.isEmpty() || mRepoListRateLimit.shouldFetch(token);
             }
 
             @NonNull
             @Override
             protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return redEnvelopeDao.loadAll();
+                return mRedEnvelopeDao.loadAll();
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<
                     CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
-                return webservice.getRedEnvelopes(token, userId);
+                return mWebservice.getRedEnvelopes(token, userId);
             }
 
             @Override
@@ -83,7 +85,7 @@ public class RedEnvelopeRepository {
 
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
-                redEnvelopeDao.save(item.getResult());
+                mRedEnvelopeDao.save(item.getResult());
             }
 
             @Override
@@ -94,13 +96,13 @@ public class RedEnvelopeRepository {
             @NonNull
             @Override
             protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return redEnvelopeDao.loadAll();
+                return mRedEnvelopeDao.loadAll();
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<CustomResponse<RedEnvelope>>> createCall() {
-                return webservice.addRedEnvelope(moneyFrom, money, remark, token);
+                return mWebservice.addRedEnvelope(moneyFrom, money, remark, token);
             }
 
             @Override
@@ -121,7 +123,7 @@ public class RedEnvelopeRepository {
 
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
-                redEnvelopeDao.delete(item.getResult());
+                mRedEnvelopeDao.delete(item.getResult());
             }
 
             @Override
@@ -132,13 +134,13 @@ public class RedEnvelopeRepository {
             @NonNull
             @Override
             protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return redEnvelopeDao.loadAll();
+                return mRedEnvelopeDao.loadAll();
             }
 
             @NonNull
             @Override
             protected LiveData<ApiResponse<CustomResponse<RedEnvelope>>> createCall() {
-                return webservice.deleteRedEnvelope(reId, token);
+                return mWebservice.deleteRedEnvelope(reId, token);
             }
 
             @Override
