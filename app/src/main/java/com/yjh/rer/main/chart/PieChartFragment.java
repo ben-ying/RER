@@ -15,6 +15,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.room.entity.RedEnvelope;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
     }
 
     protected PieData generatePieData() {
+        final DecimalFormat format = new DecimalFormat("###,###,###");
         Map<String, Integer> map = new HashMap<>();
         Map<String, Integer> sortedMap = new HashMap<>();
         sortedMap.put(getString(R.string.category_others), 0);
@@ -89,8 +91,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
                             && (float) entry.getValue() / totalMoney > 0.02) {
                         entries.add(new PieEntry(entry.getValue(),
                                 entry.getKey() + "\n: " +
-                                        Utils.formatNumber(entry.getValue(),
-                                                0, true)));
+                                        format.format(entry.getValue())));
                         sortedMap.put(entry.getKey(), entry.getValue());
                     } else {
                         sortedMap.put(getString(R.string.category_others),
@@ -101,9 +102,8 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         if (sortedMap.get(getString(R.string.category_others)) > 0) {
             entries.add(new PieEntry(sortedMap.get(getString(R.string.category_others)),
                     getString(R.string.category_others) + "\n: " +
-                            Utils.formatNumber(sortedMap.get(
-                                    getString(R.string.category_others)),
-                                    0, true)));
+                            format.format(sortedMap.get(
+                                    getString(R.string.category_others)))));
         }
 
         PieDataSet pieDataSet = new PieDataSet(
@@ -112,7 +112,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueTextSize(12f);
         pieDataSet.setValueFormatter((value, entry, datasetIndex, viewPortHandler)
-                -> Utils.formatNumber(value, 1, true) + "%");
+                -> format.format(value) + "%");
         pieDataSet.setColors(colors);
 
         return new PieData(pieDataSet);

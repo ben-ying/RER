@@ -13,6 +13,7 @@ import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.room.entity.RedEnvelope;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,7 @@ public class BarChartFragment extends BaseDaggerFragment {
     }
 
     private BarData generateBarData() {
+        final DecimalFormat format = new DecimalFormat("###,###,###");
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
 
@@ -72,8 +74,7 @@ public class BarChartFragment extends BaseDaggerFragment {
             BarEntry barEntry = new BarEntry(i, redEnvelope.getMoneyInt());
             barEntry.setData(redEnvelope.getCreatedDate() + "\n"
                     + redEnvelope.getMoneyFrom()
-                    + ": " + Utils.formatNumber(
-                            redEnvelope.getMoneyInt(), 0, true));
+                    + ": " + format.format(redEnvelope.getMoneyInt()));
             entries.add(barEntry);
         }
 
