@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.leakcanary.RefWatcher;
+//import com.squareup.leakcanary.RefWatcher;
 import com.yjh.rer.MyApplication;
 import com.yjh.rer.R;
 
@@ -57,7 +57,7 @@ public abstract class BaseFragment extends Fragment implements LifecycleRegistry
     @Override
     public void onDestroy() {
         super.onDestroy();
-        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
-        refWatcher.watch(this);
+//        RefWatcher refWatcher = MyApplication.getRefWatcher(getActivity());
+//        refWatcher.watch(this);
     }
 }

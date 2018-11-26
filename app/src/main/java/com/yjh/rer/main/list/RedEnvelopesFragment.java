@@ -217,7 +217,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
-        mViewModel.setToken("1272dc0fe06c52383c7a9bdfef33255b940c195b");
+        mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
         mViewModel.getRedEnvelopesResource().observe(this, this::setData);
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
@@ -225,7 +225,9 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
         if (listResource != null && listResource.getData() != null) {
-            progressBar.setVisibility(View.GONE);
+            if (listResource.getData().size() > 0) {
+                progressBar.setVisibility(View.GONE);
+            }
             swipeRefreshLayout.setRefreshing(false);
             redEnvelopes = listResource.getData();
             int total = 0;
