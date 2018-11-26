@@ -33,7 +33,7 @@ public interface Webservice {
             @Field("token") String token);
 
     @FormUrlEncoded
-    @HTTP(method = "DELETE", path = URL_RED_ENVELOPES + "{redEnvelopeId}", hasBody = true)
+    @HTTP(method = "DELETE", path = URL_RED_ENVELOPES + "{redEnvelopeId}/", hasBody = true)
     LiveData<ApiResponse<CustomResponse<RedEnvelope>>> deleteRedEnvelope(
             @Path("redEnvelopeId") int reId,
             @Field("token") String token);
