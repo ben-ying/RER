@@ -2,16 +2,16 @@ package com.yjh.rer.main.list;
 
 
 import android.app.AlertDialog;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +26,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.network.Resource;
+import com.yjh.rer.network.Status;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
@@ -68,7 +69,6 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private Disposable mDisposable;
     private int mScrollViewState = -1;
     private boolean reverseSorting;
-    private boolean mIsFirstOpen;
     private SharedPreferences mSharedPreferences;
 
     public static RedEnvelopesFragment newInstance() {
@@ -84,20 +84,19 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     @Override
-    public void initView() {
-        setScrollViewOnChangedListener();
-
-        initRecyclerViewData();
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSharedPreferences =
                 getActivity().getSharedPreferences(getActivity().getApplicationContext()
                         .getPackageName(), Context.MODE_PRIVATE);
-        mIsFirstOpen = mSharedPreferences.getBoolean(FIRST_OPEN_APP, true);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void initView() {
+        setScrollViewOnChangedListener();
+
+        initRecyclerViewData();
     }
 
     @Override
@@ -218,14 +217,16 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
+        mViewModel.getRedEnvelopesResource().observeForever(this::setData);
+//        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
         if (listResource != null && listResource.getData() != null) {
-            if (listResource.getData().size() > 0) {
+            if (listResource.getStatus() == Status.SUCCESS
+                    || listResource.getStatus() == Status.ERROR) {
                 progressBar.setVisibility(View.GONE);
             }
             swipeRefreshLayout.setRefreshing(false);
@@ -245,14 +246,13 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
             setAdapter();
 
             // init chart data when first open app
-            if (mIsFirstOpen && redEnvelopes.size() > 0) {
+            if (redEnvelopes.size() > 0) {
                 Fragment fragment = getActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.container);
                 if (fragment != null && fragment.isAdded()
                         && fragment instanceof BaseDaggerFragment) {
                     mSharedPreferences.edit().putBoolean(
                             FIRST_OPEN_APP, false).apply();
-                    mIsFirstOpen = false;
                     ((BaseDaggerFragment) fragment).setData(redEnvelopes);
                 }
             }

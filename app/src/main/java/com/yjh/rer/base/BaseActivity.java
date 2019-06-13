@@ -1,15 +1,15 @@
 package com.yjh.rer.base;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity implements
-        LifecycleRegistryOwner {
+        LifecycleOwner {
 
     private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 

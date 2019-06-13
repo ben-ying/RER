@@ -1,7 +1,8 @@
 package com.yjh.rer.injection;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
+
+import androidx.room.Room;
 
 import com.yjh.rer.network.Webservice;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
