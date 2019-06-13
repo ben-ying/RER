@@ -41,20 +41,4 @@ public class ChartFragment extends BaseFragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.chart, menu);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_sorted_by_date:
-                replaceFragment(BarChartFragment.newInstance());
-                break;
-            case R.id.action_sort_by_amount:
-                replaceFragment(HorizontalBarChartFragment.newInstance());
-                break;
-            case R.id.action_sort_by_category:
-                replaceFragment(PieChartFragment.newInstance());
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
