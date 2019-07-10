@@ -1,13 +1,17 @@
 package com.yjh.rer.network;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.Observer;
 import android.os.AsyncTask;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import android.widget.Toast;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
+
+import com.yjh.rer.MyApplication;
 
 public abstract class NetworkBoundResource<ResultType, RequestType> {
     private final MediatorLiveData<Resource<ResultType>> mResult = new MediatorLiveData<>();
@@ -41,15 +45,21 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             }
         });
         mResult.addSource(apiResponse, requestTypeApiResponse -> {
-            mResult.removeSource(apiResponse);
-            mResult.removeSource(dbSource);
-            if (requestTypeApiResponse.isSuccessful()) {
-                saveResultAndReInit(requestTypeApiResponse);
-            } else {
-                onFetchFailed();
-                mResult.addSource(dbSource, resultType -> {
-                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
-                });
+            if (apiResponse != null) {
+                mResult.removeSource(apiResponse);
+                mResult.removeSource(dbSource);
+                if (requestTypeApiResponse.isSuccessful()) {
+                    saveResultAndReInit(requestTypeApiResponse);
+                } else {
+                    if (apiResponse.getValue() != null &&
+                            apiResponse.getValue().getErrorMessage() != null) {
+                        onFetchFailed(apiResponse.getValue().getErrorMessage());
+                    }
+                    mResult.addSource(dbSource, resultType -> {
+                        mResult.setValue(Resource.error(
+                                requestTypeApiResponse.getErrorMessage(), resultType));
+                    });
+                }
             }
         });
     }
@@ -100,7 +110,12 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     // Called when the fetch fails. The child class may want to reset components
     // like rate limiter.
     @MainThread
-    protected void onFetchFailed() {
+    protected void onFetchFailed(String errorMessage) {
+        if (MyApplication.sInstance != null &&
+                MyApplication.sInstance.getApplicationContext() != null) {
+            Toast.makeText(MyApplication.sInstance.getApplicationContext(),
+                    errorMessage, Toast.LENGTH_SHORT).show();
+        }
     }
 
     // returns a LiveData that represents the resource

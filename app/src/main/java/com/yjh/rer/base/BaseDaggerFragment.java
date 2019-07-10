@@ -1,9 +1,9 @@
 package com.yjh.rer.base;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,13 +27,7 @@ public abstract class BaseDaggerFragment extends BaseFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-
-        RedEnvelopeViewModel viewModel = ViewModelProviders.of(
-                this, viewModelFactory).get(RedEnvelopeViewModel.class);
-        viewModel.getRedEnvelopes().observe(this, this::setData);
-
-        return view;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     public void setData(List<RedEnvelope> redEnvelopes) {}

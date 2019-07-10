@@ -1,9 +1,9 @@
 package com.yjh.rer.repository;
 
 
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
@@ -69,8 +69,8 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected void onFetchFailed() {
-                super.onFetchFailed();
+            protected void onFetchFailed(String errorMessage) {
+                super.onFetchFailed(errorMessage);
             }
         }.getAsLiveData();
     }
@@ -110,8 +110,8 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected void onFetchFailed() {
-                super.onFetchFailed();
+            protected void onFetchFailed(String errorMessage) {
+                super.onFetchFailed(errorMessage);
             }
         }.getAsLiveData();
     }
@@ -148,8 +148,8 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected void onFetchFailed() {
-                super.onFetchFailed();
+            protected void onFetchFailed(String errorMessage) {
+                super.onFetchFailed(errorMessage);
             }
         }.getAsLiveData();
     }

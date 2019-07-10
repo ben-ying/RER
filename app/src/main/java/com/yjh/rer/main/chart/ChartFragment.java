@@ -1,7 +1,7 @@
 package com.yjh.rer.main.chart;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,21 +40,5 @@ public class ChartFragment extends BaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.chart, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_sorted_by_date:
-                replaceFragment(BarChartFragment.newInstance());
-                break;
-            case R.id.action_sort_by_amount:
-                replaceFragment(HorizontalBarChartFragment.newInstance());
-                break;
-            case R.id.action_sort_by_category:
-                replaceFragment(PieChartFragment.newInstance());
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

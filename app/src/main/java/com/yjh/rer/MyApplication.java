@@ -19,14 +19,15 @@ import timber.log.Timber;
 
 public class MyApplication extends Application implements HasActivityInjector {
 
-//    private RefWatcher mRefWatcher;
+    public static MyApplication sInstance;
+    //    private RefWatcher mRefWatcher;
     @Inject
     DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        sInstance = this;
 //        if (LeakCanary.isInAnalyzerProcess(this)) {
 //            return;
 //        }

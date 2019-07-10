@@ -1,7 +1,8 @@
 package com.yjh.rer.injection;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
+
+import androidx.room.Room;
 
 import com.yjh.rer.network.Webservice;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
@@ -18,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module(includes = ViewModelModule.class)
 class AppModule {
 //    private static final String BASE_URL = "http://bensbabycare.com/webservice/";
-    private static final String BASE_URL = "http://3.13.2.78:8080/iaer/api/";
+    private static final String BASE_URL = "http://www.mybackend.xyz:8080/iaer/api/";
 
     @Singleton
     @Provides
