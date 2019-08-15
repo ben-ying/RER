@@ -1,8 +1,9 @@
 package com.yjh.rer.main.list;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;

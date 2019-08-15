@@ -1,10 +1,11 @@
 package com.yjh.rer.main.chart;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.annotation.Nullable;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseFragment;

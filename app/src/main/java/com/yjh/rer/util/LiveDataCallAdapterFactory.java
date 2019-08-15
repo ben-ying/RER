@@ -1,6 +1,6 @@
 package com.yjh.rer.util;
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 
 import com.yjh.rer.network.ApiResponse;
 

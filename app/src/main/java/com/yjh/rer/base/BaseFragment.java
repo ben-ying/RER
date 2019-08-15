@@ -1,17 +1,17 @@
 package com.yjh.rer.base;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 //import com.squareup.leakcanary.RefWatcher;
-import com.yjh.rer.MyApplication;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LifecycleRegistry;
+import androidx.lifecycle.LifecycleRegistryOwner;
+
 import com.yjh.rer.R;
 
 import butterknife.ButterKnife;

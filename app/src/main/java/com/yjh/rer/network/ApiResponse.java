@@ -1,6 +1,6 @@
 package com.yjh.rer.network;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.yjh.rer.model.CustomResponse;
