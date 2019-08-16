@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 //import com.squareup.leakcanary.RefWatcher;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleRegistry;
@@ -17,10 +19,13 @@ import com.yjh.rer.R;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public abstract class BaseFragment extends Fragment implements LifecycleRegistryOwner {
+public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
+        implements LifecycleRegistryOwner {
 
     private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
     private Unbinder mUnBinder;
+
+    public T dataBinding;
 
     @Nullable
     @Override
@@ -28,6 +33,8 @@ public abstract class BaseFragment extends Fragment implements LifecycleRegistry
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(getLayoutId(), container, false);
         mUnBinder = ButterKnife.bind(this, v);
+        dataBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false);
+
         initView();
 
         return v;

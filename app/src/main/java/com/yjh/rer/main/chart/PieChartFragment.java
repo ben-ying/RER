@@ -13,6 +13,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
@@ -23,7 +24,8 @@ import java.util.Map;
 
 import butterknife.BindView;
 
-public class PieChartFragment extends BaseDaggerFragment implements OnChartValueSelectedListener {
+public class PieChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding>
+        implements OnChartValueSelectedListener {
     @BindView(R.id.pie_chart)
     PieChart pieChart;
 

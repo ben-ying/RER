@@ -11,6 +11,7 @@ import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
+import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
@@ -19,7 +20,7 @@ import java.util.List;
 
 import butterknife.BindView;
 
-public class BarChartFragment extends BaseDaggerFragment {
+public class BarChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding> {
 
     @BindView(R.id.bar_chart)
     BarChart chart;

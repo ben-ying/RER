@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -43,11 +45,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class RedEnvelopesFragment extends BaseDaggerFragment
+public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding>
         implements RedEnvelopeAdapter.RedEnvelopeInterface {
 
-    private static final String TAG =
-            RedEnvelopesFragment.class.getSimpleName();
+    private static final String TAG = RedEnvelopesFragment.class.getSimpleName();
 
     private static final int SCROLL_UP = 0;
     private static final int SCROLL_DOWN = 1;

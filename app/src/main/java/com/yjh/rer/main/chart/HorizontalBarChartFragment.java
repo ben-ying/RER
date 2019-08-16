@@ -11,6 +11,7 @@ import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
+import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.disposables.Disposable;
 
-public class HorizontalBarChartFragment extends BaseDaggerFragment {
+public class HorizontalBarChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding> {
 
     @BindView(R.id.horizontal_bar_chart)
     HorizontalBarChart chart;

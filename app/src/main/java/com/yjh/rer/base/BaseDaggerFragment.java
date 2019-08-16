@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class BaseDaggerFragment extends BaseFragment
+public abstract class BaseDaggerFragment<T extends ViewDataBinding> extends BaseFragment<T>
         implements Injectable {
 
     @Inject
@@ -27,7 +28,8 @@ public abstract class BaseDaggerFragment extends BaseFragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         RedEnvelopeViewModel viewModel = ViewModelProviders.of(

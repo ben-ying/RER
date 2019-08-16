@@ -2,7 +2,6 @@ package com.yjh.rer.main;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
-import androidx.viewpager.widget.ViewPager;
 
 import android.view.MenuItem;
 
@@ -19,13 +18,8 @@ import com.yjh.rer.main.list.RedEnvelopesFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-
 public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @BindView(R.id.view_pager)
-    ViewPager viewPager;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
@@ -40,11 +34,12 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
         dataBinding.setHandler(this);
         setSupportActionBar(dataBinding.appBarMain.toolbar.toolbar);
         setSupportActionBar(dataBinding.appBarMain.toolbar.toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dataBinding.drawerLayout,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                dataBinding.drawerLayout,
                 dataBinding.appBarMain.toolbar.toolbar,
                 R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        dataBinding.drawerLayout.setDrawerListener(toggle);
+        dataBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         List<BaseFragment> fragments = new ArrayList<>();
@@ -54,11 +49,11 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
         fragments.add(mChartFragment);
         HomeViewPagerAdapter homeViewPagerAdapter = new HomeViewPagerAdapter(
                 this, getSupportFragmentManager(), fragments);
-        viewPager.setOffscreenPageLimit(1);
-        viewPager.setAdapter(homeViewPagerAdapter);
-        dataBinding.appBarMain.tabLayoutMain.setupWithViewPager(viewPager);
+        dataBinding.appBarMain.viewPager.setOffscreenPageLimit(1);
+        dataBinding.appBarMain.viewPager.setAdapter(homeViewPagerAdapter);
+        dataBinding.appBarMain.tabLayoutMain.setupWithViewPager(dataBinding.appBarMain.viewPager);
 
-        RxViewPager.pageSelections(viewPager).subscribe(integer -> {
+        RxViewPager.pageSelections(dataBinding.appBarMain.viewPager).subscribe(integer -> {
             if (integer == 0) {
                 dataBinding.appBarMain.fab.show();
             } else {

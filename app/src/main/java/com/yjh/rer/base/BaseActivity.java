@@ -10,8 +10,6 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LifecycleRegistryOwner;
 
-import com.yjh.rer.databinding.ActivityMainBinding;
-
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity
@@ -19,7 +17,7 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
     private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 
-    public ActivityMainBinding dataBinding;
+    public T dataBinding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
