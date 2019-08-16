@@ -28,13 +28,11 @@ import butterknife.OnClick;
 public class MainActivity extends BaseDaggerActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @BindView(R.id.fab)
-    public FloatingActionButton fab;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.tab_layout_main)
     TabLayout tabLayout;
-    private ActivityMainBinding mBinding;
+    public ActivityMainBinding mBinding;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
@@ -75,9 +73,9 @@ public class MainActivity extends BaseDaggerActivity
 
         RxViewPager.pageSelections(viewPager).subscribe(integer -> {
             if (integer == 0) {
-                fab.show();
+                mBinding.appBarMain.fab.show();
             } else {
-                fab.hide();
+                mBinding.appBarMain.fab.hide();
             }
         });
     }
@@ -88,7 +86,6 @@ public class MainActivity extends BaseDaggerActivity
 //        MyApplication.getRefWatcher(this).watch(this);
     }
 
-    @OnClick(R.id.fab)
     public void addRedEnvelopDialog() {
         mRedEnvelopesFragment.addRedEnvelopDialog();
     }

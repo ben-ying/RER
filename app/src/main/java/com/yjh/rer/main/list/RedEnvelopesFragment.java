@@ -184,11 +184,15 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                     mScrollViewState = integer;
                     switch (integer) {
                         case SCROLL_UP:
-                            ((MainActivity) getActivity()).fab.hide();
-                            totalTextView.bringToFront();
+                            if (getActivity() != null) {
+                                ((MainActivity) getActivity()).mBinding.appBarMain.fab.hide();
+                                totalTextView.bringToFront();
+                            }
                             break;
                         case SCROLL_DOWN:
-                            ((MainActivity) getActivity()).fab.show();
+                            if (getActivity() != null) {
+                                ((MainActivity) getActivity()).mBinding.appBarMain.fab.show();
+                            }
                             break;
                         case SCROLL_VIEW_BRING_FRONT:
                             swipeRefreshLayout.bringToFront();

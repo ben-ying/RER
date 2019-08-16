@@ -2,6 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="handler"
+            type="com.yjh.rer.main.MainActivity" />
+    </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cl_layout"
         android:layout_width="match_parent"
@@ -37,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
+            android:onClick="@{() -> handler.addRedEnvelopDialog()}"
             app:srcCompat="@mipmap/fab_add" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
