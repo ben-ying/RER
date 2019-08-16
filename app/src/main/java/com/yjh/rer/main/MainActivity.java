@@ -1,10 +1,8 @@
 package com.yjh.rer.main;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.MenuItem;
@@ -30,16 +28,13 @@ import butterknife.OnClick;
 public class MainActivity extends BaseDaggerActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
     @BindView(R.id.fab)
     public FloatingActionButton fab;
-    @BindView(R.id.drawer_layout)
-    DrawerLayout drawer;
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.tab_layout_main)
     TabLayout tabLayout;
+    private ActivityMainBinding mBinding;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
@@ -52,18 +47,21 @@ public class MainActivity extends BaseDaggerActivity
     @Override
     public void setDataBinding() {
         super.setDataBinding();
-        ActivityMainBinding binding = DataBindingUtil
+        mBinding = DataBindingUtil
                 .setContentView(this, R.layout.activity_main);
-        binding.setHandler(this);
+        mBinding.setHandler(this);
+        setSupportActionBar(mBinding.appBarMain.toolbar.toolbar);
+        setSupportActionBar(mBinding.appBarMain.toolbar.toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mBinding.drawerLayout,
+                mBinding.appBarMain.toolbar.toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mBinding.drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
     }
 
     @Override
     public void initView() {
-        setSupportActionBar(toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer,
-                toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
         List<BaseFragment> fragments = new ArrayList<>();
         mRedEnvelopesFragment = RedEnvelopesFragment.newInstance();
         fragments.add(mRedEnvelopesFragment);
@@ -97,8 +95,8 @@ public class MainActivity extends BaseDaggerActivity
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -122,7 +120,7 @@ public class MainActivity extends BaseDaggerActivity
         } else if (id == R.id.nav_send) {
 
         }
-        drawer.closeDrawer(GravityCompat.START);
+        mBinding.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }
