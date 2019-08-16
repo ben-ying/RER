@@ -3,6 +3,7 @@ package com.yjh.rer.main;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.ViewPager;
 
@@ -15,6 +16,7 @@ import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerActivity;
 import com.yjh.rer.base.BaseFragment;
+import com.yjh.rer.databinding.ActivityMainBinding;
 import com.yjh.rer.main.chart.ChartFragment;
 import com.yjh.rer.main.list.HomeViewPagerAdapter;
 import com.yjh.rer.main.list.RedEnvelopesFragment;
@@ -38,15 +40,21 @@ public class MainActivity extends BaseDaggerActivity
     ViewPager viewPager;
     @BindView(R.id.tab_layout_main)
     TabLayout tabLayout;
-    @BindView(R.id.nav_view)
-    NavigationView navigationView;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_main;
+        return 0;
+    }
+
+    @Override
+    public void setDataBinding() {
+        super.setDataBinding();
+        ActivityMainBinding binding = DataBindingUtil
+                .setContentView(this, R.layout.activity_main);
+        binding.setHandler(this);
     }
 
     @Override
@@ -56,7 +64,6 @@ public class MainActivity extends BaseDaggerActivity
                 toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
         List<BaseFragment> fragments = new ArrayList<>();
         mRedEnvelopesFragment = RedEnvelopesFragment.newInstance();
         fragments.add(mRedEnvelopesFragment);

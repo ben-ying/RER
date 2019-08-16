@@ -17,10 +17,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutId());
+        if (getLayoutId() > 0) {
+            setContentView(getLayoutId());
+        } else {
+            setDataBinding();
+        }
         ButterKnife.bind(this);
 
         initView();
+    }
+
+    public void setDataBinding() {
+
     }
 
     @Override
