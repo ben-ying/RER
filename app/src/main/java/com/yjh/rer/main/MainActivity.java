@@ -7,9 +7,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.view.MenuItem;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
 import com.jakewharton.rxbinding2.support.v4.view.RxViewPager;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerActivity;
@@ -23,15 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
-public class MainActivity extends BaseDaggerActivity
+public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @BindView(R.id.view_pager)
     ViewPager viewPager;
-    @BindView(R.id.tab_layout_main)
-    TabLayout tabLayout;
     public ActivityMainBinding mBinding;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
@@ -69,7 +64,7 @@ public class MainActivity extends BaseDaggerActivity
                 this, getSupportFragmentManager(), fragments);
         viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(homeViewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+        mBinding.appBarMain.tabLayoutMain.setupWithViewPager(viewPager);
 
         RxViewPager.pageSelections(viewPager).subscribe(integer -> {
             if (integer == 0) {
