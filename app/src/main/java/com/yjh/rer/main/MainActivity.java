@@ -2,7 +2,6 @@ package com.yjh.rer.main;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
 import androidx.viewpager.widget.ViewPager;
 
 import android.view.MenuItem;
@@ -27,34 +26,27 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
 
     @BindView(R.id.view_pager)
     ViewPager viewPager;
-    public ActivityMainBinding mBinding;
 
     private RedEnvelopesFragment mRedEnvelopesFragment;
     private ChartFragment mChartFragment;
 
     @Override
     public int getLayoutId() {
-        return 0;
-    }
-
-    @Override
-    public void setDataBinding() {
-        super.setDataBinding();
-        mBinding = DataBindingUtil
-                .setContentView(this, R.layout.activity_main);
-        mBinding.setHandler(this);
-        setSupportActionBar(mBinding.appBarMain.toolbar.toolbar);
-        setSupportActionBar(mBinding.appBarMain.toolbar.toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mBinding.drawerLayout,
-                mBinding.appBarMain.toolbar.toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        mBinding.drawerLayout.setDrawerListener(toggle);
-        toggle.syncState();
+        return R.layout.activity_main;
     }
 
     @Override
     public void initView() {
+        dataBinding.setHandler(this);
+        setSupportActionBar(dataBinding.appBarMain.toolbar.toolbar);
+        setSupportActionBar(dataBinding.appBarMain.toolbar.toolbar);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, dataBinding.drawerLayout,
+                dataBinding.appBarMain.toolbar.toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        dataBinding.drawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
         List<BaseFragment> fragments = new ArrayList<>();
         mRedEnvelopesFragment = RedEnvelopesFragment.newInstance();
         fragments.add(mRedEnvelopesFragment);
@@ -64,13 +56,13 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
                 this, getSupportFragmentManager(), fragments);
         viewPager.setOffscreenPageLimit(1);
         viewPager.setAdapter(homeViewPagerAdapter);
-        mBinding.appBarMain.tabLayoutMain.setupWithViewPager(viewPager);
+        dataBinding.appBarMain.tabLayoutMain.setupWithViewPager(viewPager);
 
         RxViewPager.pageSelections(viewPager).subscribe(integer -> {
             if (integer == 0) {
-                mBinding.appBarMain.fab.show();
+                dataBinding.appBarMain.fab.show();
             } else {
-                mBinding.appBarMain.fab.hide();
+                dataBinding.appBarMain.fab.hide();
             }
         });
     }
@@ -87,8 +79,8 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
 
     @Override
     public void onBackPressed() {
-        if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        if (dataBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            dataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -112,7 +104,7 @@ public class MainActivity extends BaseDaggerActivity<ActivityMainBinding>
         } else if (id == R.id.nav_send) {
 
         }
-        mBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        dataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 }

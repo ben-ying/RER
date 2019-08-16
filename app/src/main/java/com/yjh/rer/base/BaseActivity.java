@@ -5,9 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LifecycleRegistryOwner;
+
+import com.yjh.rer.databinding.ActivityMainBinding;
 
 import butterknife.ButterKnife;
 
@@ -16,21 +19,15 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
     private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 
+    public ActivityMainBinding dataBinding;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getLayoutId() > 0) {
-            setContentView(getLayoutId());
-        } else {
-            setDataBinding();
-        }
+        dataBinding = DataBindingUtil.setContentView(this, getLayoutId());
         ButterKnife.bind(this);
 
         initView();
-    }
-
-    public void setDataBinding() {
-
     }
 
     @Override

@@ -185,13 +185,13 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                     switch (integer) {
                         case SCROLL_UP:
                             if (getActivity() != null) {
-                                ((MainActivity) getActivity()).mBinding.appBarMain.fab.hide();
+                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.hide();
                                 totalTextView.bringToFront();
                             }
                             break;
                         case SCROLL_DOWN:
                             if (getActivity() != null) {
-                                ((MainActivity) getActivity()).mBinding.appBarMain.fab.show();
+                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.show();
                             }
                             break;
                         case SCROLL_VIEW_BRING_FRONT:
