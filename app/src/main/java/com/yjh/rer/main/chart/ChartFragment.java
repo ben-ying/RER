@@ -12,7 +12,7 @@ import com.yjh.rer.base.BaseFragment;
 
 public class ChartFragment extends BaseFragment {
 
-    public static final int CHART_PAGE_SIZE = 8;
+    static final int CHART_PAGE_SIZE = 8;
 
     public static ChartFragment newInstance() {
         Bundle args = new Bundle();

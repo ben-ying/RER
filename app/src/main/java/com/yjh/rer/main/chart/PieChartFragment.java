@@ -2,7 +2,6 @@ package com.yjh.rer.main.chart;
 
 import android.graphics.Color;
 
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
@@ -10,9 +9,9 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.databinding.FragmentPieChartBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
@@ -22,14 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
 
-public class PieChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding>
+public class PieChartFragment extends BaseDaggerFragment<FragmentPieChartBinding>
         implements OnChartValueSelectedListener {
-    @BindView(R.id.pie_chart)
-    PieChart pieChart;
 
-    public static PieChartFragment newInstance() {
+    static PieChartFragment newInstance() {
         return new PieChartFragment();
     }
 
@@ -40,16 +36,16 @@ public class PieChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBin
 
     @Override
     public void initView() {
-        pieChart.getDescription().setEnabled(false);
-        pieChart.setCenterText(getString(R.string.action_sorted_by_category));
-        pieChart.setCenterTextColor(getResources().getColor(R.color.default_text_color));
-        pieChart.setCenterTextSize(14f);
-        pieChart.setDrawEntryLabels(false);
-        pieChart.setHoleRadius(45f);
-        pieChart.setTransparentCircleRadius(50f);
-        pieChart.setUsePercentValues(true);
-        pieChart.setOnChartValueSelectedListener(this);
-        Legend l = pieChart.getLegend();
+        dataBinding.pieChart.getDescription().setEnabled(false);
+        dataBinding.pieChart.setCenterText(getString(R.string.action_sorted_by_category));
+        dataBinding.pieChart.setCenterTextColor(getResources().getColor(R.color.default_text_color));
+        dataBinding.pieChart.setCenterTextSize(14f);
+        dataBinding.pieChart.setDrawEntryLabels(false);
+        dataBinding.pieChart.setHoleRadius(45f);
+        dataBinding.pieChart.setTransparentCircleRadius(50f);
+        dataBinding.pieChart.setUsePercentValues(true);
+        dataBinding.pieChart.setOnChartValueSelectedListener(this);
+        Legend l = dataBinding.pieChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
@@ -59,8 +55,8 @@ public class PieChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBin
     @Override
     public void setData(List<RedEnvelope> redEnvelopes) {
         this.redEnvelopes = redEnvelopes;
-        pieChart.setData(generatePieData());
-        pieChart.invalidate();
+        dataBinding.pieChart.setData(generatePieData());
+        dataBinding.pieChart.invalidate();
     }
 
     protected PieData generatePieData() {
@@ -122,11 +118,11 @@ public class PieChartFragment extends BaseDaggerFragment<FragmentRedEnvelopesBin
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
-        pieChart.setCenterText(((PieEntry) e).getLabel());
+        dataBinding.pieChart.setCenterText(((PieEntry) e).getLabel());
     }
 
     @Override
     public void onNothingSelected() {
-        pieChart.setCenterText(getString(R.string.action_sorted_by_category));
+        dataBinding.pieChart.setCenterText(getString(R.string.action_sorted_by_category));
     }
 }
