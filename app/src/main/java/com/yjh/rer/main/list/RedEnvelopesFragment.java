@@ -7,26 +7,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.main.MainActivity;
 import com.yjh.rer.network.Resource;
@@ -37,8 +31,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -55,17 +47,6 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private static final int SCROLL_VIEW_BRING_FRONT = 2;
     private static final String FIRST_OPEN_APP = "first_open_app";
 
-    @BindView(R.id.tv_total)
-    TextView totalTextView;
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-    @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.progress_bar)
-    ProgressBar progressBar;
-    @BindView(R.id.scroll_view)
-    NestedScrollView scrollView;
-
     private RedEnvelopeViewModel mViewModel;
     private RedEnvelopeAdapter mAdapter;
     private Disposable mDisposable;
@@ -73,6 +54,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private boolean reverseSorting;
     private boolean mIsFirstOpen;
     private SharedPreferences mSharedPreferences;
+    private ObservableEmitter<Integer> mEmitter;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -88,6 +70,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
 
     @Override
     public void initView() {
+        dataBinding.setHandler(this);
+
         setScrollViewOnChangedListener();
 
         initRecyclerViewData();
@@ -111,7 +95,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
 
     @Override
     public void delete(int reId) {
-        progressBar.setVisibility(View.VISIBLE);
+        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
         mViewModel.delete(reId);
     }
 
@@ -157,25 +141,23 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                             Comparator.comparing(RedEnvelope::getRedEnvelopeId).reversed() :
                             Comparator.comparing(RedEnvelope::getRedEnvelopeId))
                     .subscribe((res) -> {
-                        reverseSorting = !reverseSorting;
-                        getActivity().invalidateOptionsMenu();
-                        redEnvelopes = res;
-                        setAdapter();
+                        if (getActivity() != null) {
+                            reverseSorting = !reverseSorting;
+                            getActivity().invalidateOptionsMenu();
+                            redEnvelopes = res;
+                            setAdapter();
+                        }
                     });
         }
     }
 
     private void setScrollViewOnChangedListener() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setNestedScrollingEnabled(false);
-        swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
+        dataBinding.recyclerView.setLayoutManager(layoutManager);
+        dataBinding.recyclerView.setHasFixedSize(false);
+        dataBinding.recyclerView.setNestedScrollingEnabled(false);
+        dataBinding.swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
                 R.color.google_green, R.color.google_red, R.color.google_yellow);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            mViewModel.load("1");
-            progressBar.setVisibility(View.VISIBLE);
-        });
 
         mDisposable = createScrollViewObservable()
                 .filter(integer -> mScrollViewState != integer)
@@ -187,7 +169,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                         case SCROLL_UP:
                             if (getActivity() != null) {
                                 ((MainActivity) getActivity()).dataBinding.appBarMain.fab.hide();
-                                totalTextView.bringToFront();
+                                dataBinding.tvTotal.bringToFront();
                             }
                             break;
                         case SCROLL_DOWN:
@@ -196,16 +178,33 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                             }
                             break;
                         case SCROLL_VIEW_BRING_FRONT:
-                            swipeRefreshLayout.bringToFront();
+                            dataBinding.swipeRefreshLayout.bringToFront();
                             break;
                     }
                 });
     }
 
+    public void onRefreshListener() {
+        mViewModel.load("1");
+        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void onScrollChangeListener(View view, int scrollX, int scrollY, int oldX, int oldY) {
+        if (scrollY > oldY) {
+            mEmitter.onNext(SCROLL_UP);
+        } else if (scrollY < oldY) {
+            mEmitter.onNext(SCROLL_DOWN);
+            if (scrollY < 10) {
+                mEmitter.onNext(SCROLL_VIEW_BRING_FRONT);
+            }
+        }
+    }
+
     private Observable<Integer> createScrollViewObservable() {
         return Observable.create((ObservableEmitter<Integer> emitter) -> {
-            scrollView.setOnScrollChangeListener((
+            dataBinding.scrollView.setOnScrollChangeListener((
                     View view, int scrollX, int scrollY, int oldX, int oldY) -> {
+                mEmitter = emitter;
                 if (scrollY > oldY) {
                     emitter.onNext(SCROLL_UP);
                 } else if (scrollY < oldY) {
@@ -226,25 +225,25 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
         mViewModel.getRedEnvelopesResource().observeForever(this::setData);
-        progressBar.setVisibility(View.VISIBLE);
         mViewModel.load("1");
+        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
         if (listResource != null && listResource.getData() != null) {
             if (listResource.getData().size() > 0) {
-                progressBar.setVisibility(View.GONE);
+                dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
             }
-            swipeRefreshLayout.setRefreshing(false);
+            dataBinding.swipeRefreshLayout.setRefreshing(false);
             redEnvelopes = listResource.getData();
             int total = 0;
             for (RedEnvelope redEnvelope : redEnvelopes) {
                 total += redEnvelope.getMoneyInt();
             }
-            if (totalTextView.getVisibility() == View.GONE) {
-                totalTextView.setVisibility(View.VISIBLE);
+            if (dataBinding.tvTotal.getVisibility() == View.GONE) {
+                dataBinding.tvTotal.setVisibility(View.VISIBLE);
             }
-            totalTextView.setText(String.format(getString(
+            dataBinding.tvTotal.setText(String.format(getString(
                     R.string.red_envelope_total), redEnvelopes.size(), total));
             if (reverseSorting) {
                 Collections.reverse(redEnvelopes);
@@ -252,7 +251,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
             setAdapter();
 
             // init chart data when first open app
-            if (mIsFirstOpen && redEnvelopes.size() > 0) {
+            if (getActivity() != null && mIsFirstOpen && redEnvelopes.size() > 0) {
                 Fragment fragment = getActivity().getSupportFragmentManager()
                         .findFragmentById(R.id.container);
                 if (fragment != null && fragment.isAdded()
@@ -269,17 +268,16 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private void setAdapter() {
         if (mAdapter == null) {
             mAdapter = new RedEnvelopeAdapter(getActivity(),
-                    redEnvelopes, totalTextView, RedEnvelopesFragment.this);
-            recyclerView.setAdapter(mAdapter);
+                    redEnvelopes, dataBinding.tvTotal, RedEnvelopesFragment.this);
+            dataBinding.recyclerView.setAdapter(mAdapter);
         } else {
             mAdapter.setData(redEnvelopes);
         }
     }
 
     public void addRedEnvelopDialog() {
-        final DialogViews dialogViews = new DialogViews();
         View view = View.inflate(getActivity(), R.layout.dialog_add_red_envelope, null);
-        ButterKnife.bind(dialogViews, view);
+        DialogAddRedEnvelopeBinding binding = DataBindingUtil.bind(view);
         final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
                 .setTitle(R.string.red_envelopes)
                 .setView(view)
@@ -291,39 +289,30 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         dialog.show();
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->  {
-            if (isValid(dialogViews)) {
+            if (binding!= null && isValid(binding)) {
                 dialog.dismiss();
-                progressBar.setVisibility(View.VISIBLE);
-                mViewModel.add(dialogViews.fromEditText.getText().toString(),
-                        dialogViews.moneyEditText.getText().toString(),
-                        dialogViews.remarkEditText.getText().toString());
+                dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+                mViewModel.add(binding.etFrom.getText().toString(),
+                        binding.etMoney.getText().toString(),
+                        binding.etRemark.getText().toString());
             }
         });
     }
 
-    private boolean isValid(DialogViews dialogViews) {
-        if (TextUtils.isEmpty(dialogViews.fromEditText.getText().toString().trim())) {
-            dialogViews.fromEditText.setError(getString(R.string.non_empty_field));
+    private boolean isValid(DialogAddRedEnvelopeBinding binding) {
+        if (TextUtils.isEmpty(binding.etFrom.getText().toString().trim())) {
+            binding.etFrom.setError(getString(R.string.non_empty_field));
             return false;
         }
-        if (TextUtils.isEmpty(dialogViews.moneyEditText.getText().toString().trim())) {
-            dialogViews.moneyEditText.setError(getString(R.string.non_empty_field));
+        if (TextUtils.isEmpty(binding.etMoney.getText().toString().trim())) {
+            binding.etMoney.setError(getString(R.string.non_empty_field));
             return false;
         }
-        if (TextUtils.isEmpty(dialogViews.remarkEditText.getText().toString().trim())) {
-            dialogViews.remarkEditText.setError(getString(R.string.non_empty_field));
+        if (TextUtils.isEmpty(binding.etRemark.getText().toString().trim())) {
+            binding.etRemark.setError(getString(R.string.non_empty_field));
             return false;
         }
 
         return true;
-    }
-
-    class DialogViews {
-        @BindView(R.id.et_from)
-        EditText fromEditText;
-        @BindView(R.id.et_money)
-        EditText moneyEditText;
-        @BindView(R.id.et_remark)
-        AutoCompleteTextView remarkEditText;
     }
 }

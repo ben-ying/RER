@@ -17,7 +17,7 @@
     <string name="red_envelope_from">红包来自于</string>
     <string name="red_envelope_how_much">红包金额(元)</string>
     <string name="red_envelope_total">%1$,d个红包，总计%2$,d(元)</string>
-    <string name="red_envelope_yuan">%,d(元)</string>
+    <string name="red_envelope_yuan">%1$,d(元)，%2$s</string>
     <string name="delete_red_envelope_alert">点击确定将永久删除此红包，是否确定删除？</string>
 
     <string name="ok">确定</string>

@@ -23,7 +23,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
         implements LifecycleRegistryOwner {
 
     private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
-    private Unbinder mUnBinder;
+//    private Unbinder mUnBinder;
 
     public T dataBinding;
 
@@ -32,8 +32,8 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(getLayoutId(), container, false);
-        mUnBinder = ButterKnife.bind(this, v);
-        dataBinding = DataBindingUtil.inflate(inflater, getLayoutId(), container, false);
+//        mUnBinder = ButterKnife.bind(this, v);
+        dataBinding = DataBindingUtil.bind(v);
 
         initView();
 
@@ -58,7 +58,7 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mUnBinder.unbind();
+//        mUnBinder.unbind();
     }
 
     @Override

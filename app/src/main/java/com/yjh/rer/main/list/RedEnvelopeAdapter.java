@@ -6,18 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yjh.rer.R;
+import com.yjh.rer.databinding.ItemRedEnvelopeBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.util.AlertUtils;
 
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnLongClick;
 
 public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         RedEnvelopeAdapter.RedEnvelopeViewHolder> {
@@ -44,21 +42,18 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
-    public RedEnvelopeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RedEnvelopeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RedEnvelopeViewHolder(LayoutInflater.from(mContext)
                 .inflate(R.layout.item_red_envelope, parent, false));
     }
 
 
     @Override
-    public void onBindViewHolder(RedEnvelopeViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RedEnvelopeViewHolder holder, int position) {
         final RedEnvelope redEnvelope = mRedEnvelopes.get(position);
-        holder.fromTextView.setText(redEnvelope.getMoneyFrom());
-        holder.dateTextView.setText(redEnvelope.getCreatedDate());
-        holder.moneyTextView.setText(String.format(mContext.getString(R.string.red_envelope_yuan),
-                redEnvelope.getMoneyInt()) + ", " + redEnvelope.getRemark());
-        holder.rootView.setTag(redEnvelope);
+        holder.setText(redEnvelope);
     }
 
     @Override
@@ -66,27 +61,29 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         return mRedEnvelopes.size();
     }
 
-    class RedEnvelopeViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.content_layout)
-        View rootView;
-        @BindView(R.id.tv_from)
-        TextView fromTextView;
-        @BindView(R.id.tv_datetime)
-        TextView dateTextView;
-        @BindView(R.id.tv_money)
-        TextView moneyTextView;
+    public class RedEnvelopeViewHolder extends RecyclerView.ViewHolder {
+        private ItemRedEnvelopeBinding mBinding;
 
         RedEnvelopeViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            mBinding = DataBindingUtil.bind(itemView);
+            if (mBinding != null) {
+                mBinding.setHandler(this);
+            }
         }
 
-        @OnClick(R.id.content_layout)
-        void intent2DetailView(View v) {
+        public void setText(RedEnvelope redEnvelope) {
+            mBinding.tvFrom.setText(redEnvelope.getMoneyFrom());
+            mBinding.tvDatetime.setText(redEnvelope.getCreatedDate());
+            mBinding.tvMoney.setText(String.format(mContext.getString(R.string.red_envelope_yuan),
+                    redEnvelope.getMoneyInt(), redEnvelope.getRemark()));
+            mBinding.getRoot().setTag(redEnvelope);
         }
 
-        @OnLongClick(R.id.content_layout)
-        boolean showDeleteDialog(View view) {
+        public void intent2DetailView(View v) {
+        }
+
+        public boolean showDeleteDialog(View view) {
             AlertUtils.showConfirmDialog(mContext, R.string.delete_red_envelope_alert,
                     (dialogInterface, i) -> {
                         mInterface.delete(((RedEnvelope) view.getTag()).getRedEnvelopeId());
