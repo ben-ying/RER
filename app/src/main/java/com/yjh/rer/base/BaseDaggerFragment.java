@@ -34,7 +34,7 @@ public abstract class BaseDaggerFragment<T extends ViewDataBinding> extends Base
 
         RedEnvelopeViewModel viewModel = ViewModelProviders.of(
                 this, viewModelFactory).get(RedEnvelopeViewModel.class);
-        viewModel.getRedEnvelopes().observe(this, this::setData);
+        viewModel.getRedEnvelopes().observeForever(this::setData);
 
         return view;
     }

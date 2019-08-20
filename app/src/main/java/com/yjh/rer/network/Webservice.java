@@ -21,7 +21,9 @@ public interface Webservice {
 
     @GET(URL_RED_ENVELOPES)
     LiveData<ApiResponse<CustomResponse<ListResponseResult<List<RedEnvelope>>>>> getRedEnvelopes(
-            @Query("token") String token, @Query("user_id") String userId);
+            @Query("token") String token,
+            @Query("user_id") String userId,
+            @Query("page_size") int pageSize);
 
     @FormUrlEncoded
     @POST(URL_RED_ENVELOPES)

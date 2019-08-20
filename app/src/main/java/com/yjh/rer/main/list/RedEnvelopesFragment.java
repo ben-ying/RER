@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
@@ -145,6 +146,9 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                             reverseSorting = !reverseSorting;
                             getActivity().invalidateOptionsMenu();
                             redEnvelopes = res;
+                            Toast.makeText(getContext(), reverseSorting ?
+                                    R.string.action_sorted_by_reverse_date :
+                                    R.string.action_sorted_by_date, Toast.LENGTH_SHORT).show();
                             setAdapter();
                         }
                     });

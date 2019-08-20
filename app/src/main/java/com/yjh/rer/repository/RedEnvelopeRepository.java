@@ -58,7 +58,7 @@ public class RedEnvelopeRepository {
             @Override
             protected LiveData<ApiResponse<
                     CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
-                return mWebservice.getRedEnvelopes(token, userId);
+                return mWebservice.getRedEnvelopes(token, userId, 100);
             }
 
             @Override
