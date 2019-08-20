@@ -12,7 +12,6 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.databinding.FragmentPieChartBinding;
-import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
@@ -88,7 +87,7 @@ public class PieChartFragment extends BaseDaggerFragment<FragmentPieChartBinding
                     if (sortedMap.size() <= colors.size() - 1
                             && (float) entry.getValue() / totalMoney > 0.02) {
                         entries.add(new PieEntry(entry.getValue(),
-                                entry.getKey() + "\n: " +
+                                entry.getKey() + "\n" +
                                         format.format(entry.getValue())));
                         sortedMap.put(entry.getKey(), entry.getValue());
                     } else {

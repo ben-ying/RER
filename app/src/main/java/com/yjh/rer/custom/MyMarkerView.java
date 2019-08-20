@@ -4,10 +4,14 @@ package com.yjh.rer.custom;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.yjh.rer.R;
 import com.yjh.rer.databinding.CustomMarkerViewBinding;
 
 
@@ -21,9 +25,9 @@ public class MyMarkerView extends MarkerView {
 
     public MyMarkerView(Context context, int layoutResource) {
         super(context, layoutResource);
-        LayoutInflater inflater = (LayoutInflater)
-                context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mBinding = CustomMarkerViewBinding.inflate(inflater);
+        removeAllViews();
+        mBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context), layoutResource, this, true);
     }
 
     @Override
