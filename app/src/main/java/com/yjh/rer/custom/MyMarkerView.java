@@ -4,14 +4,12 @@ package com.yjh.rer.custom;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.yjh.rer.R;
 import com.yjh.rer.databinding.CustomMarkerViewBinding;
 
 
