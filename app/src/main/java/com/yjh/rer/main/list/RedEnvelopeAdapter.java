@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yjh.rer.R;
+import com.yjh.rer.databinding.DataBindingAdapter;
 import com.yjh.rer.databinding.ItemRedEnvelopeBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.util.AlertUtils;
