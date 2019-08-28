@@ -6,6 +6,9 @@
         <variable
             name="handler"
             type="com.yjh.rer.main.list.RedEnvelopeAdapter.RedEnvelopeViewHolder" />
+        <variable
+            name="redenvelope"
+            type="com.yjh.rer.room.entity.RedEnvelope" />
     </data>
 
     <RelativeLayout
@@ -27,6 +30,7 @@
             android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{String.format(@string/red_envelope_yuan, redenvelope.moneyInt, redenvelope.remark)}"
             tools:text="100" />
 
         <LinearLayout
@@ -41,14 +45,16 @@
                 android:textSize="@dimen/actions_text_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{redenvelope.moneyFrom}"
                 tools:text="123" />
 
             <TextView
-                android:id="@+id/tv_datetime"
                 style="@style/TextAppearance.AppCompat.Body1"
+                android:id="@+id/tv_datetime"
                 android:textColor="@color/hint_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{redenvelope.createdDate}"
                 tools:text="2017-06-10" />
         </LinearLayout>
     </RelativeLayout>

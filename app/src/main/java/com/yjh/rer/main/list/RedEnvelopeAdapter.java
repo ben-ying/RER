@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yjh.rer.R;
@@ -52,8 +51,10 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(@NonNull RedEnvelopeViewHolder holder, int position) {
-        final RedEnvelope redEnvelope = mRedEnvelopes.get(position);
-        holder.setText(redEnvelope);
+        RedEnvelope redEnvelope = mRedEnvelopes.get(position);
+        holder.getBinding().setRedenvelope(redEnvelope);
+        holder.getBinding().setHandler(holder);
+//        holder.getBinding().executePendingBindings();
     }
 
     @Override
@@ -64,20 +65,13 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
     public class RedEnvelopeViewHolder extends RecyclerView.ViewHolder {
         private ItemRedEnvelopeBinding mBinding;
 
-        RedEnvelopeViewHolder(View itemView) {
-            super(itemView);
-            mBinding = DataBindingUtil.bind(itemView);
-            if (mBinding != null) {
-                mBinding.setHandler(this);
-            }
+        ItemRedEnvelopeBinding getBinding() {
+            return mBinding;
         }
 
-        public void setText(RedEnvelope redEnvelope) {
-            mBinding.tvFrom.setText(redEnvelope.getMoneyFrom());
-            mBinding.tvDatetime.setText(redEnvelope.getCreatedDate());
-            mBinding.tvMoney.setText(String.format(mContext.getString(R.string.red_envelope_yuan),
-                    redEnvelope.getMoneyInt(), redEnvelope.getRemark()));
-            mBinding.getRoot().setTag(redEnvelope);
+        RedEnvelopeViewHolder(View itemView) {
+            super(itemView);
+            mBinding = ItemRedEnvelopeBinding.bind(itemView);
         }
 
         public void intent2DetailView(View v) {
