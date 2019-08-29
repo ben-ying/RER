@@ -16,9 +16,6 @@ import androidx.lifecycle.LifecycleRegistryOwner;
 
 import com.yjh.rer.R;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
         implements LifecycleRegistryOwner {
 
@@ -32,7 +29,6 @@ public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(getLayoutId(), container, false);
-//        mUnBinder = ButterKnife.bind(this, v);
         dataBinding = DataBindingUtil.bind(v);
 
         initView();

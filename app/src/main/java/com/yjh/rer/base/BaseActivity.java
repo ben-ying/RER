@@ -10,7 +10,6 @@ import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.lifecycle.LifecycleRegistryOwner;
 
-import butterknife.ButterKnife;
 
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity
         implements LifecycleRegistryOwner {
@@ -23,7 +22,6 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dataBinding = DataBindingUtil.setContentView(this, getLayoutId());
-        ButterKnife.bind(this);
 
         initView();
     }
