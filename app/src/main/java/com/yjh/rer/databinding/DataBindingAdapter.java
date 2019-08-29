@@ -3,6 +3,7 @@ package com.yjh.rer.databinding;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.format.Time;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -11,6 +12,8 @@ import androidx.databinding.BindingAdapter;
 import androidx.databinding.BindingConversion;
 import androidx.databinding.BindingMethod;
 import androidx.databinding.BindingMethods;
+import androidx.databinding.InverseBindingAdapter;
+import androidx.databinding.InverseBindingListener;
 import androidx.databinding.adapters.ListenerUtil;
 import androidx.databinding.adapters.ViewBindingAdapter;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -130,4 +133,26 @@ public class DataBindingAdapter {
     public static ColorDrawable convertColorToDrawable(int color) {
         return new ColorDrawable(color);
     }
+
+    /*
+    app:timeAttrChanged="xxxx"
+     */
+//    @BindingAdapter("time")
+//    public static void setTime(MyView view, Time newValue) {
+//        // Important to break potential infinite loops.
+//        if (view.time != newValue) {
+//            view.time = newValue;
+//        }
+//    }
+//
+//    @InverseBindingAdapter("time")
+//    public static Time getTime(MyView view) {
+//        return view.getTime();
+//    }
+//
+//    @BindingAdapter("app:timeAttrChanged")
+//    public static void setListeners(
+//            MyView view, final InverseBindingListener attrChange) {
+//        // Set a listener for click, focus, touch, etc.
+//    }
 }
