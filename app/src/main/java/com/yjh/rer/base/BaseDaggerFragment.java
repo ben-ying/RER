@@ -22,9 +22,9 @@ public abstract class BaseDaggerFragment<T extends ViewDataBinding> extends Base
         implements Injectable {
 
     @Inject
-    public ViewModelProvider.Factory viewModelFactory;
+    protected ViewModelProvider.Factory viewModelFactory;
 
-    public List<RedEnvelope> redEnvelopes;
+    protected List<RedEnvelope> redEnvelopes;
 
     @Nullable
     @Override
@@ -34,7 +34,7 @@ public abstract class BaseDaggerFragment<T extends ViewDataBinding> extends Base
 
         RedEnvelopeViewModel viewModel = ViewModelProviders.of(
                 this, viewModelFactory).get(RedEnvelopeViewModel.class);
-        viewModel.getRedEnvelopes().observeForever(this::setData);
+        viewModel.getRedEnvelopes().observe(getViewLifecycleOwner(), this::setData);
 
         return view;
     }

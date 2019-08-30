@@ -228,7 +228,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-        mViewModel.getRedEnvelopesResource().observeForever(this::setData);
+        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
+        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
         mViewModel.load("1");
         dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
     }

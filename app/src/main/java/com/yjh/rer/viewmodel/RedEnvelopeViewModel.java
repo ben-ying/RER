@@ -1,6 +1,5 @@
 package com.yjh.rer.viewmodel;
 
-import androidx.databinding.BaseObservable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
@@ -23,15 +22,13 @@ public class RedEnvelopeViewModel extends ViewModel {
     private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();
     private MutableLiveData<String> mToken = new MutableLiveData<>();
     private LiveData<Resource<List<RedEnvelope>>> mRedEnvelopes;
+    private ReId mReId = new ReId();
 
     @Inject
     RedEnvelopeDao dao;
 
     @Inject
-    public RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
-        if (this.mRedEnvelopes != null) {
-            return;
-        }
+    RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
         mRedEnvelopes = Transformations.switchMap(mReIdLiveData, reId -> {
             switch (reId.type) {
                 case TYPE_LOAD:
@@ -59,26 +56,23 @@ public class RedEnvelopeViewModel extends ViewModel {
     }
 
     public void load(String userId) {
-        ReId reId = new ReId();
-        reId.type = TYPE_LOAD;
-        reId.userId = userId;
-        mReIdLiveData.setValue(reId);
+        mReId.type = TYPE_LOAD;
+        mReId.userId = userId;
+        mReIdLiveData.setValue(mReId);
     }
 
     public void add(String moneyFrom, String money, String remark) {
-        ReId reId = new ReId();
-        reId.type = TYPE_ADD;
-        reId.moneyFrom = moneyFrom;
-        reId.money = money;
-        reId.remark = remark;
-        mReIdLiveData.setValue(reId);
+        mReId.type = TYPE_ADD;
+        mReId.moneyFrom = moneyFrom;
+        mReId.money = money;
+        mReId.remark = remark;
+        mReIdLiveData.setValue(mReId);
     }
 
     public void delete(int id) {
-        ReId reId = new ReId();
-        reId.type = TYPE_DELETE;
-        reId.id = id;
-        mReIdLiveData.setValue(reId);
+        mReId.type = TYPE_DELETE;
+        mReId.id = id;
+        mReIdLiveData.setValue(mReId);
     }
 
     static class ReId {
