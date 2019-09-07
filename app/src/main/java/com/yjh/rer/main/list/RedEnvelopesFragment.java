@@ -9,11 +9,13 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -57,6 +59,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private boolean mIsFirstOpen;
     private SharedPreferences mSharedPreferences;
     private ObservableEmitter<Integer> mEmitter;
+    private boolean mLoadFromDB;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -230,21 +233,26 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-//        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
         mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), this::setAdapterData);
         dataBinding.recyclerView.setAdapter(mAdapter);
-//        mViewModel.load("1");
-//        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+        mViewModel.loadFromDB("1");
     }
 
     private void setAdapterData(PagedList<RedEnvelope> redEnvelopes) {
-        mAdapter.submitList(redEnvelopes);
-        int total = 0;
-        for (RedEnvelope redEnvelope : redEnvelopes) {
-            total += redEnvelope.getMoneyInt();
-        }
-        dataBinding.tvTotal.setText(String.format(getString(
-                R.string.red_envelope_total), redEnvelopes.size(), total));
+        mAdapter.submitList(redEnvelopes, () -> {
+                if (!mLoadFromDB) {
+                    mViewModel.loadFromNetwork("1");
+                    mLoadFromDB = true;
+                    if (redEnvelopes.size() > 0) {
+                        int total = 0;
+                        for (RedEnvelope redEnvelope : redEnvelopes) {
+                            total += redEnvelope.getMoneyInt();
+                        }
+                        dataBinding.tvTotal.setText(String.format(getString(
+                                R.string.red_envelope_total), redEnvelopes.size(), total));
+                    }
+                }
+        });
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {

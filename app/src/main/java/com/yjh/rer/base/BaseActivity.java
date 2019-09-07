@@ -8,11 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.LifecycleRegistry;
-import androidx.lifecycle.LifecycleRegistryOwner;
 
 
-public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity
-        implements LifecycleRegistryOwner {
+public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
 
     private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 

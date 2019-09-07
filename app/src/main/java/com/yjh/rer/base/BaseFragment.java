@@ -16,8 +16,7 @@ import androidx.lifecycle.LifecycleRegistryOwner;
 
 import com.yjh.rer.R;
 
-public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment
-        implements LifecycleRegistryOwner {
+public abstract class BaseFragment<T extends ViewDataBinding> extends Fragment {
 
     private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 //    private Unbinder mUnBinder;

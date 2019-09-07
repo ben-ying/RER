@@ -22,24 +22,21 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
 public class RedEnvelopeViewModel extends ViewModel {
-    private static final int TYPE_LOAD = 0;
-    private static final int TYPE_ADD = 1;
-    private static final int TYPE_DELETE = 2;
+    private static final int TYPE_LOAD_FROM_DB = 0;
+    private static final int TYPE_LOAD_FROM_NETWORK = 1;
+    private static final int TYPE_ADD = 2;
+    private static final int TYPE_DELETE = 3;
     private static final int PAGE_SIZE = 20;
+    private static final int MAX_SIZE = 1000;
 
     private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();
+
     private MutableLiveData<String> mToken = new MutableLiveData<>();
     private LiveData<Resource<List<RedEnvelope>>> mRedEnvelopes;
     private ReId mReId = new ReId();
-    private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList;
+    private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList1;
     private RedEnvelopeDataSource mDataSource;
-
-    private PagedList.Config mPagingConfig = new PagedList.Config.Builder()
-            .setPageSize(PAGE_SIZE)
-            .setInitialLoadSizeHint(PAGE_SIZE * 2)
-            .setPrefetchDistance(PAGE_SIZE * 2)
-            .setEnablePlaceholders(false)
-            .build();
+    private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList;
 
     @Inject
     RedEnvelopeDao dao;
@@ -47,12 +44,28 @@ public class RedEnvelopeViewModel extends ViewModel {
     @Inject
     RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
         Executor executor = Executors.newFixedThreadPool(5);;
-        RedEnvelopeDataSourceFactory dataSourceFactory = new RedEnvelopeDataSourceFactory(1, repository);
+        RedEnvelopeDataSourceFactory dataSourceFactory =
+                new RedEnvelopeDataSourceFactory(1, repository);
         mDataSource = dataSourceFactory.create();
-        mRedEnvelopeList = new LivePagedListBuilder<>(dataSourceFactory, mPagingConfig)
-                .setBoundaryCallback(new RedEnvelopeBoundaryCallback(repository))
-                .setFetchExecutor(executor)
-                .build();
+
+        mRedEnvelopeList = Transformations.switchMap(mReIdLiveData, reId -> {
+            switch (reId.type) {
+                case TYPE_LOAD_FROM_DB:
+                    return new LivePagedListBuilder<>(
+                            repository.getDao().getList(), getPageListConfig(true))
+                            .setBoundaryCallback(new RedEnvelopeBoundaryCallback(repository))
+                            .setFetchExecutor(executor)
+                            .build();
+                case TYPE_LOAD_FROM_NETWORK:
+                    return new LivePagedListBuilder<>(
+                            dataSourceFactory, getPageListConfig(false))
+                            .setBoundaryCallback(new RedEnvelopeBoundaryCallback(repository))
+                            .setFetchExecutor(executor)
+                            .build();
+            }
+
+            return null;
+        });
 
 //        mRedEnvelopes = Transformations.switchMap(mReIdLiveData, reId -> {
 //            switch (reId.type) {
@@ -72,6 +85,10 @@ public class RedEnvelopeViewModel extends ViewModel {
         return mRedEnvelopeList;
     }
 
+    public LiveData<PagedList<RedEnvelope>> getRedEnvelopeList1() {
+        return mRedEnvelopeList1;
+    }
+
     public void setToken(String token) {
         mToken.setValue(token);
     }
@@ -84,8 +101,14 @@ public class RedEnvelopeViewModel extends ViewModel {
         return dao.loadAll();
     }
 
-    public void load(String userId) {
-        mReId.type = TYPE_LOAD;
+    public void loadFromDB(String userId) {
+        mReId.type = TYPE_LOAD_FROM_DB;
+        mReId.userId = userId;
+        mReIdLiveData.setValue(mReId);
+    }
+
+    public void loadFromNetwork(String userId) {
+        mReId.type = TYPE_LOAD_FROM_NETWORK;
         mReId.userId = userId;
         mReIdLiveData.setValue(mReId);
     }
@@ -115,5 +138,14 @@ public class RedEnvelopeViewModel extends ViewModel {
 
     public void invalidateDataSource() {
         mDataSource.invalidate();
+    }
+
+    private PagedList.Config getPageListConfig(boolean isDb) {
+        return new PagedList.Config.Builder()
+                .setPageSize(isDb ? PAGE_SIZE * 5 : PAGE_SIZE)
+                .setInitialLoadSizeHint(isDb ? PAGE_SIZE * 20 : PAGE_SIZE * 2)
+                .setPrefetchDistance(PAGE_SIZE * 2)
+                .setEnablePlaceholders(false)
+                .build();
     }
 }

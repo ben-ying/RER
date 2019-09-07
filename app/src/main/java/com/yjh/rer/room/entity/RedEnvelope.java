@@ -143,8 +143,25 @@ public class RedEnvelope {
         if (getClass() != obj.getClass()) {
             return false;
         }
+
         RedEnvelope redEnvelope = (RedEnvelope) obj;
-        return  redEnvelope.getRedEnvelopeId() == getRedEnvelopeId()
+        if (getMoneyInt() != redEnvelope.getMoneyInt()) {
+            return false;
+        }
+        if (!getMoneyFrom().equals(redEnvelope.getMoneyFrom())) {
+            return false;
+        }
+        if (getType() != redEnvelope.getType()) {
+            return false;
+        }
+        if (!getRemark().equals(redEnvelope.getRemark())) {
+            return false;
+        }
+        if (getUserId() != redEnvelope.getUserId()) {
+            return false;
+        }
+
+        return redEnvelope.getRedEnvelopeId() == getRedEnvelopeId()
                 && redEnvelope.getCreated().equals(getCreated());
     }
 }
