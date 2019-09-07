@@ -29,6 +29,7 @@ class AppModule {
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(CustomCallAdapterFactory.create())
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .build()
                 .create(Webservice.class);
     }

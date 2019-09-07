@@ -30,7 +30,7 @@ public interface Webservice {
 
 
     @GET(URL_RED_ENVELOPES)
-    CustomCall<CustomResponse<ListResponseResult<RedEnvelope>>> getRedEnvelopeList(
+    CustomCall<CustomResponse<ListResponseResult<List<RedEnvelope>>>> getRedEnvelopeList(
             @Query("token") String token,
             @Query("user_id") String userId,
             @Query("page") int page,

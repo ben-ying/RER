@@ -47,7 +47,6 @@ public class RedEnvelopeViewModel extends ViewModel {
 
     @Inject
     RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
-        dao = repository.getRedEnvelopeDao();
         Executor executor = Executors.newFixedThreadPool(5);;
         RedEnvelopeDataSourceFactory dataSourceFactory = new RedEnvelopeDataSourceFactory(1, repository);
         mDataSource = dataSourceFactory.create();
