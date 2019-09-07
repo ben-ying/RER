@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.paging.PagedList;
 import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +20,17 @@ public class RedEnvelopeAdapter extends PagedListAdapter<
         RedEnvelope, RedEnvelopeAdapter.RedEnvelopeViewHolder> {
 
     private RedEnvelopeInterface mInterface;
+
+    @Nullable
+    @Override
+    public PagedList<RedEnvelope> getCurrentList() {
+        return super.getCurrentList();
+    }
+
+    @Override
+    public void onCurrentListChanged(@Nullable PagedList<RedEnvelope> previousList, @Nullable PagedList<RedEnvelope> currentList) {
+        super.onCurrentListChanged(previousList, currentList);
+    }
 
     interface RedEnvelopeInterface {
         void delete(int reId);

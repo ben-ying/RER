@@ -32,6 +32,10 @@ public class RedEnvelopeRepository {
     private final RedEnvelopeDao mRedEnvelopeDao;
     private final RateLimiter<String> mRepoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
 
+    public RedEnvelopeDao getDao() {
+        return mRedEnvelopeDao;
+    }
+
     @Inject
     RedEnvelopeRepository(Webservice webservice, RedEnvelopeDao redEnvelopeDao) {
         this.mWebservice = webservice;
@@ -39,11 +43,21 @@ public class RedEnvelopeRepository {
     }
 
     public List<RedEnvelope> getRedEnvelopeList(int page, int size) {
+        return getRedEnvelopeList(page, size, 0);
+    }
+
+    private List<RedEnvelope> getRedEnvelopeList(int page, int size, int retryCount) {
+        Log.d(TAG, "page: " + page + ", size: " + size + ", retryCount: " + retryCount);
+
         CustomCall<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call =
                 mWebservice.getRedEnvelopeList(
                         "83cd0f7a0483db73ce4223658cb61deac6531e85", "1", page, size);
         try {
             CustomResponse<ListResponseResult<List<RedEnvelope>>> response = call.get();
+            if (page == 1) {
+                mRedEnvelopeDao.deleteAll();
+            }
+            mRedEnvelopeDao.saveAll(response.getResult().getResults());
             return response.getResult().getResults();
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,6 +68,10 @@ public class RedEnvelopeRepository {
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "Exception: " + e.getLocalizedMessage());
+        }
+
+        if (retryCount < 3) {
+            return getRedEnvelopeList(page, size, retryCount + 1);
         }
 
         return null;
@@ -102,9 +120,9 @@ public class RedEnvelopeRepository {
     }
 
     public LiveData<Resource<List<RedEnvelope>>> addRedEnvelope(final String moneyFrom,
-                                                          final String money,
-                                                          final String remark,
-                                                          final String token) {
+                                                                final String money,
+                                                                final String remark,
+                                                                final String token) {
         return new NetworkBoundResource<List<RedEnvelope>, CustomResponse<RedEnvelope>>() {
 
             @Override

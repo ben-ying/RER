@@ -33,11 +33,10 @@ public class RedEnvelopeViewModel extends ViewModel {
     private ReId mReId = new ReId();
     private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList;
     private RedEnvelopeDataSource mDataSource;
-    private RedEnvelopeRepository repository;
 
     private PagedList.Config mPagingConfig = new PagedList.Config.Builder()
             .setPageSize(PAGE_SIZE)
-            .setInitialLoadSizeHint(PAGE_SIZE)
+            .setInitialLoadSizeHint(PAGE_SIZE * 2)
             .setPrefetchDistance(PAGE_SIZE * 2)
             .setEnablePlaceholders(false)
             .build();

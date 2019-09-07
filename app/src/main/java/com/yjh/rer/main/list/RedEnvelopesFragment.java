@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.text.TextUtils;
@@ -230,10 +231,20 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
 //        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
-        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), this::setAdapterData);
         dataBinding.recyclerView.setAdapter(mAdapter);
 //        mViewModel.load("1");
 //        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void setAdapterData(PagedList<RedEnvelope> redEnvelopes) {
+        mAdapter.submitList(redEnvelopes);
+        int total = 0;
+        for (RedEnvelope redEnvelope : redEnvelopes) {
+            total += redEnvelope.getMoneyInt();
+        }
+        dataBinding.tvTotal.setText(String.format(getString(
+                R.string.red_envelope_total), redEnvelopes.size(), total));
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {

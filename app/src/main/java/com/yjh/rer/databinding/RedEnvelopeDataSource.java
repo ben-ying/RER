@@ -14,32 +14,45 @@ import java.util.List;
 public class RedEnvelopeDataSource extends PageKeyedDataSource<Integer, RedEnvelope> {
     private final static String TAG = RedEnvelopeDataSource.class.getSimpleName();
 
-    private int type;
-    private RedEnvelopeRepository repository;
+    private int mType;
+    private RedEnvelopeRepository mRepository;
 
     RedEnvelopeDataSource(int type, RedEnvelopeRepository redEnvelopeRepository) {
-        this.type = type;
-        this.repository = redEnvelopeRepository;
+        this.mType = type;
+        this.mRepository = redEnvelopeRepository;
     }
 
     @Override
     public void loadInitial(@NonNull LoadInitialParams<Integer> params,
                             @NonNull LoadInitialCallback<Integer, RedEnvelope> callback) {
-        Log.d(TAG, "loadInitial: " + params.requestedLoadSize);
+//        callback.onResult(mRepository.getDao().loadFromDb(
+//                params.requestedLoadSize), null, 2);
         List<RedEnvelope> redEnvelopes = getRedEnvelopes(1, params.requestedLoadSize);
+        Log.d(TAG, "loadInitial: " + params.requestedLoadSize);
 
         if (redEnvelopes != null) {
-            callback.onResult(redEnvelopes, null, 2);
+            Log.d(TAG, ", " + redEnvelopes.size());
+            if (redEnvelopes.size() == params.requestedLoadSize) {
+                callback.onResult(redEnvelopes, null, 2);
+            } else {
+                callback.onResult(redEnvelopes, null, null);
+            }
         }
     }
 
     @Override
     public void loadAfter(@NonNull LoadParams<Integer> params,
                           @NonNull LoadCallback<Integer, RedEnvelope> callback) {
-        Log.d(TAG, "loadAfter: " + params.key + ", " + params.requestedLoadSize);
         List<RedEnvelope> redEnvelopes = getRedEnvelopes(params.key, params.requestedLoadSize);
+        Log.d(TAG, "loadAfter: " + params.key + ", " + params.requestedLoadSize);
+
         if (redEnvelopes != null) {
-            callback.onResult(redEnvelopes, params.key + 1);
+            Log.d(TAG, ", " + redEnvelopes.size());
+            if (redEnvelopes.size() == params.requestedLoadSize) {
+                callback.onResult(redEnvelopes, params.key + 1);
+            } else {
+                callback.onResult(redEnvelopes, null);
+            }
         }
     }
 
@@ -48,12 +61,18 @@ public class RedEnvelopeDataSource extends PageKeyedDataSource<Integer, RedEnvel
                            @NonNull LoadCallback<Integer, RedEnvelope> callback) {
         Log.d(TAG, "loadBefore: " + params.key + ", " + params.requestedLoadSize);
         List<RedEnvelope> redEnvelopes = getRedEnvelopes(params.key, params.requestedLoadSize);
+
         if (redEnvelopes != null) {
-            callback.onResult(redEnvelopes, params.key - 1);
+            Log.d(TAG, ", " + redEnvelopes.size());
+            if (redEnvelopes.size() == params.requestedLoadSize) {
+                callback.onResult(redEnvelopes, params.key - 1);
+            } else {
+                callback.onResult(redEnvelopes, null);
+            }
         }
     }
 
-    public List<RedEnvelope> getRedEnvelopes(int page, int size) {
-        return repository.getRedEnvelopeList(page, size);
+    private List<RedEnvelope> getRedEnvelopes(int page, int size) {
+        return mRepository.getRedEnvelopeList(page, size);
     }
 }
