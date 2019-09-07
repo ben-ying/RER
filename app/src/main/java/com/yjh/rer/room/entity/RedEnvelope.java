@@ -1,6 +1,7 @@
 package com.yjh.rer.room.entity;
 
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -129,5 +130,21 @@ public class RedEnvelope {
     @Override
     public String toString() {
         return new Gson().toJson(this);
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RedEnvelope redEnvelope = (RedEnvelope) obj;
+        return  redEnvelope.getRedEnvelopeId() == getRedEnvelopeId()
+                && redEnvelope.getCreated().equals(getCreated());
     }
 }

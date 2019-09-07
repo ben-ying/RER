@@ -26,6 +26,14 @@ public class RedEnvelopeRepository {
     private final RedEnvelopeDao mRedEnvelopeDao;
     private final RateLimiter<String> mRepoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
 
+    public RedEnvelopeDao getRedEnvelopeDao() {
+        return mRedEnvelopeDao;
+    }
+
+    public Webservice getWebservice() {
+        return mWebservice;
+    }
+
     @Inject
     public RedEnvelopeRepository(Webservice webservice, RedEnvelopeDao redEnvelopeDao) {
         this.mWebservice = webservice;

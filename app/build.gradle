@@ -85,4 +85,5 @@ dependencies {
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
 
     implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'androidx.paging:paging-runtime:2.1.0'
 }

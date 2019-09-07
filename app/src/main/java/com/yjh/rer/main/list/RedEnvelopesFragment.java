@@ -49,7 +49,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private static final String FIRST_OPEN_APP = "first_open_app";
 
     private RedEnvelopeViewModel mViewModel;
-    private RedEnvelopeAdapter mAdapter;
+    private RedEnvelopeAdapter mAdapter = new RedEnvelopeAdapter(this);
     private Disposable mDisposable;
     private int mScrollViewState = -1;
     private boolean reverseSorting;
@@ -189,8 +189,9 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     }
 
     public void onRefreshListener() {
-        mViewModel.load("1");
-        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+//        mViewModel.load("1");
+//        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+        mViewModel.invalidateDataSource();
     }
 
     public void onScrollChangeListener(View view, int scrollX, int scrollY, int oldX, int oldY) {
@@ -228,10 +229,11 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
-        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
-        mViewModel.load("1");
-        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
+//        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
+        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        dataBinding.recyclerView.setAdapter(mAdapter);
+//        mViewModel.load("1");
+//        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
@@ -271,13 +273,13 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     }
 
     private void setAdapter() {
-        if (mAdapter == null) {
-            mAdapter = new RedEnvelopeAdapter(getActivity(),
-                    redEnvelopes, dataBinding.tvTotal, RedEnvelopesFragment.this);
-            dataBinding.recyclerView.setAdapter(mAdapter);
-        } else {
-            mAdapter.setData(redEnvelopes);
-        }
+//        if (mAdapter == null) {
+//            mAdapter = new RedEnvelopeAdapter(getActivity(),
+//                    redEnvelopes, dataBinding.tvTotal, RedEnvelopesFragment.this);
+//            dataBinding.recyclerView.setAdapter(mAdapter);
+//        } else {
+//            mAdapter.setData(redEnvelopes);
+//        }
     }
 
     public void addRedEnvelopDialog() {

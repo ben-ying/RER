@@ -13,9 +13,7 @@
     <dimen name="actions_text_size">14sp</dimen>
 
     <!--chart-->
-    <dimen name="line_chart_size">300dp</dimen>
     <dimen name="bar_chart_size">300dp</dimen>
-    <dimen name="pie_chart_size">350dp</dimen>
     <dimen name="marker_text_size">12sp</dimen>
     <dimen name="marker_height">60dp</dimen>
     <dimen name="marker_margin">6dp</dimen>

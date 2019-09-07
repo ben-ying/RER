@@ -7,6 +7,7 @@ import androidx.room.Room;
 import com.yjh.rer.network.Webservice;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.db.MyDatabase;
+import com.yjh.rer.custom.CustomCallAdapterFactory;
 import com.yjh.rer.util.LiveDataCallAdapterFactory;
 
 import javax.inject.Singleton;
@@ -27,7 +28,7 @@ class AppModule {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
+                .addCallAdapterFactory(CustomCallAdapterFactory.create())
                 .build()
                 .create(Webservice.class);
     }

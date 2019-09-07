@@ -2,12 +2,15 @@ package com.yjh.rer.network;
 
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.JsonObject;
+import com.yjh.rer.custom.CustomCall;
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.List;
 
+import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -23,6 +26,14 @@ public interface Webservice {
     LiveData<ApiResponse<CustomResponse<ListResponseResult<List<RedEnvelope>>>>> getRedEnvelopes(
             @Query("token") String token,
             @Query("user_id") String userId,
+            @Query("page_size") int pageSize);
+
+
+    @GET(URL_RED_ENVELOPES)
+    CustomCall<CustomResponse<ListResponseResult<RedEnvelope>>> getRedEnvelopeList(
+            @Query("token") String token,
+            @Query("user_id") String userId,
+            @Query("page") int page,
             @Query("page_size") int pageSize);
 
     @FormUrlEncoded
