@@ -1,5 +1,6 @@
 package com.yjh.rer.network;
 
+import com.yjh.rer.network.NetworkState.Status;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

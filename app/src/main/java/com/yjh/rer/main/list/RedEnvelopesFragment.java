@@ -59,7 +59,6 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private boolean mIsFirstOpen;
     private SharedPreferences mSharedPreferences;
     private ObservableEmitter<Integer> mEmitter;
-    private boolean mLoadFromDB;
 
     public static RedEnvelopesFragment newInstance() {
         Bundle args = new Bundle();
@@ -167,92 +166,97 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         dataBinding.swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
                 R.color.google_green, R.color.google_red, R.color.google_yellow);
 
-        mDisposable = createScrollViewObservable()
-                .filter(integer -> mScrollViewState != integer)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(integer -> {
-                    mScrollViewState = integer;
-                    switch (integer) {
-                        case SCROLL_UP:
-                            if (getActivity() != null) {
-                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.hide();
-                                dataBinding.tvTotal.bringToFront();
-                            }
-                            break;
-                        case SCROLL_DOWN:
-                            if (getActivity() != null) {
-                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.show();
-                            }
-                            break;
-                        case SCROLL_VIEW_BRING_FRONT:
-                            dataBinding.swipeRefreshLayout.bringToFront();
-                            break;
-                    }
-                });
+//        mDisposable = createScrollViewObservable()
+//                .filter(integer -> mScrollViewState != integer)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(integer -> {
+//                    mScrollViewState = integer;
+//                    switch (integer) {
+//                        case SCROLL_UP:
+//                            if (getActivity() != null) {
+//                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.hide();
+//                                dataBinding.tvTotal.bringToFront();
+//                            }
+//                            break;
+//                        case SCROLL_DOWN:
+//                            if (getActivity() != null) {
+//                                ((MainActivity) getActivity()).dataBinding.appBarMain.fab.show();
+//                            }
+//                            break;
+//                        case SCROLL_VIEW_BRING_FRONT:
+//                            dataBinding.swipeRefreshLayout.bringToFront();
+//                            break;
+//                    }
+//                });
     }
 
     public void onRefreshListener() {
 //        mViewModel.load("1");
 //        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
-        mViewModel.invalidateDataSource();
+//        mViewModel.invalidateDataSource();
     }
 
-    public void onScrollChangeListener(View view, int scrollX, int scrollY, int oldX, int oldY) {
-        if (scrollY > oldY) {
-            mEmitter.onNext(SCROLL_UP);
-        } else if (scrollY < oldY) {
-            mEmitter.onNext(SCROLL_DOWN);
-            if (scrollY < 10) {
-                mEmitter.onNext(SCROLL_VIEW_BRING_FRONT);
-            }
-        }
-    }
+//    public void onScrollChangeListener(View view, int scrollX, int scrollY, int oldX, int oldY) {
+//        if (scrollY > oldY) {
+//            mEmitter.onNext(SCROLL_UP);
+//        } else if (scrollY < oldY) {
+//            mEmitter.onNext(SCROLL_DOWN);
+//            if (scrollY < 10) {
+//                mEmitter.onNext(SCROLL_VIEW_BRING_FRONT);
+//            }
+//        }
+//    }
 
-    private Observable<Integer> createScrollViewObservable() {
-        return Observable.create((ObservableEmitter<Integer> emitter) -> {
-            dataBinding.scrollView.setOnScrollChangeListener((
-                    View view, int scrollX, int scrollY, int oldX, int oldY) -> {
-                mEmitter = emitter;
-                if (scrollY > oldY) {
-                    emitter.onNext(SCROLL_UP);
-                } else if (scrollY < oldY) {
-                    emitter.onNext(SCROLL_DOWN);
-                    if (scrollY < 10) {
-                        emitter.onNext(SCROLL_VIEW_BRING_FRONT);
-                    }
-                }
-            });
-            emitter.setCancellable(() -> {
-//                        scrollView.setOnScrollChangeListener(
-//                                (NestedScrollView.OnScrollChangeListener) null);
-            });
-        });
-    }
+//    private Observable<Integer> createScrollViewObservable() {
+//        return Observable.create((ObservableEmitter<Integer> emitter) -> {
+//            dataBinding.scrollView.setOnScrollChangeListener((
+//                    View view, int scrollX, int scrollY, int oldX, int oldY) -> {
+//                mEmitter = emitter;
+//                if (scrollY > oldY) {
+//                    emitter.onNext(SCROLL_UP);
+//                } else if (scrollY < oldY) {
+//                    emitter.onNext(SCROLL_DOWN);
+//                    if (scrollY < 10) {
+//                        emitter.onNext(SCROLL_VIEW_BRING_FRONT);
+//                    }
+//                }
+//            });
+//            emitter.setCancellable(() -> {
+////                        scrollView.setOnScrollChangeListener(
+////                                (NestedScrollView.OnScrollChangeListener) null);
+//            });
+//        });
+//    }
 
     private void initRecyclerViewData() {
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
         mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), this::setAdapterData);
+        mViewModel.getNetworkErrors().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                Log.d(TAG, s);
+            }
+        });
         dataBinding.recyclerView.setAdapter(mAdapter);
         mViewModel.loadFromDB("1");
     }
 
     private void setAdapterData(PagedList<RedEnvelope> redEnvelopes) {
-        mAdapter.submitList(redEnvelopes, () -> {
-                if (!mLoadFromDB) {
-                    mViewModel.loadFromNetwork("1");
-                    mLoadFromDB = true;
-                    if (redEnvelopes.size() > 0) {
-                        int total = 0;
-                        for (RedEnvelope redEnvelope : redEnvelopes) {
-                            total += redEnvelope.getMoneyInt();
-                        }
-                        dataBinding.tvTotal.setText(String.format(getString(
-                                R.string.red_envelope_total), redEnvelopes.size(), total));
-                    }
-                }
-        });
+        mAdapter.submitList(redEnvelopes);
+//        mAdapter.submitList(redEnvelopes, () -> {
+////                if (redEnvelopes.size() > 0) {
+////                    int total = 0;
+////                    for (RedEnvelope redEnvelope : redEnvelopes) {
+////                        if (redEnvelope != null) {
+////                            total += redEnvelope.getMoneyInt();
+////                        }
+////                    }
+////                    dataBinding.tvTotal.setText(String.format(getString(
+////                            R.string.red_envelope_total), redEnvelopes.size(), total));
+////                }
+//        });
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {

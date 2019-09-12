@@ -5,87 +5,160 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.paging.DataSource;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PagedList;
 
 import com.yjh.rer.custom.CustomCall;
+import com.yjh.rer.databinding.RedEnvelopeBoundaryCallback;
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
+import com.yjh.rer.model.RedEnvelopeResult;
 import com.yjh.rer.network.ApiResponse;
 import com.yjh.rer.network.NetworkBoundResource;
+import com.yjh.rer.network.NetworkState;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.network.Webservice;
+import com.yjh.rer.room.dao.RedEnvelopeCache;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.util.RateLimiter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 @Singleton
 public class RedEnvelopeRepository {
     private final static String TAG = RedEnvelopeRepository.class.getSimpleName();
+    private final static String UNKNOWN_ERROR = "Unknown Error";
+    private static final int DATABASE_PAGE_SIZE = 5;
 
     private final Webservice mWebservice;
     private final RedEnvelopeDao mRedEnvelopeDao;
     private final RateLimiter<String> mRepoListRateLimit = new RateLimiter<>(3, TimeUnit.SECONDS);
+
+    private RedEnvelopeCache mCache;
 
     public RedEnvelopeDao getDao() {
         return mRedEnvelopeDao;
     }
 
     @Inject
-    RedEnvelopeRepository(Webservice webservice, RedEnvelopeDao redEnvelopeDao) {
+    RedEnvelopeRepository(Webservice webservice,
+                          RedEnvelopeDao redEnvelopeDao,
+                          RedEnvelopeCache cache) {
         this.mWebservice = webservice;
         this.mRedEnvelopeDao = redEnvelopeDao;
+        this.mCache = cache;
     }
 
-    public List<RedEnvelope> getRedEnvelopeList(int page, int size) {
-        return getRedEnvelopeList(page, size, 0);
+    public static void loadRedEnvelopesFromNetwork(Webservice webservice, int page, int size,
+                                                   final NetworkState.callback callbacks) {
+        loadRedEnvelopesFromNetwork(webservice, page, size, 0, callbacks);
     }
 
-    private List<RedEnvelope> getRedEnvelopeList(int page, int size, int retryCount) {
+    private static void loadRedEnvelopesFromNetwork(Webservice webservice, int page, int size,
+                                        int retryCount, final NetworkState.callback callbacks) {
         Log.d(TAG, "page: " + page + ", size: " + size + ", retryCount: " + retryCount);
+        String error = UNKNOWN_ERROR;
 
-        CustomCall<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call =
-                mWebservice.getRedEnvelopeList(
-                        "83cd0f7a0483db73ce4223658cb61deac6531e85", "1", page, size);
         try {
-            CustomResponse<ListResponseResult<List<RedEnvelope>>> response = call.get();
-            if (page == 1) {
-                mRedEnvelopeDao.deleteAll();
-            }
-            mRedEnvelopeDao.saveAll(response.getResult().getResults());
-            return response.getResult().getResults();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(TAG, "IOException: " + e.getLocalizedMessage());
+            Call<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call =
+                    webservice.requestRedEnvelopes("83cd0f7a0483db73ce4223658cb61deac6531e85", "1", page, size);
+            call.enqueue(new Callback<CustomResponse<ListResponseResult<List<RedEnvelope>>>>() {
+                 @Override
+                 public void onResponse(@NonNull Call<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call,
+                                        @NonNull Response<CustomResponse<ListResponseResult<List<RedEnvelope>>>> response) {
+                     Log.d(TAG, "onResponse url: " + call.request().url());
+                     if (response.isSuccessful()) {
+                         List<RedEnvelope> redEnvelopes;
+                         if (response.body() != null && response.body().getResult() != null) {
+                             redEnvelopes = response.body().getResult().getResults();
+                             callbacks.onSuccess(redEnvelopes,
+                                     response.body().getResult().getNext() == null);
+                         } else {
+                             callbacks.onError("Empty Response");
+                             Log.d(TAG, "Empty Response: " + response.toString());
+                         }
+                     } else {
+                         try {
+                             if (response.errorBody() != null) {
+                                 callbacks.onError(response.errorBody().string());
+                             } else {
+                                 callbacks.onError(UNKNOWN_ERROR);
+                             }
+                         }  catch (IOException e) {
+                             e.printStackTrace();
+                             Log.d(TAG, "onFailure: " + e.toString());
+                             callbacks.onError(e.toString());
+                         }
+                     }
+                 }
+
+                 @Override
+                 public void onFailure(@NonNull Call<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call,
+                                       @NonNull Throwable t) {
+                     Log.d(TAG, "onFailure: " + t.getMessage());
+                     if (retryCount < 3) {
+                         loadRedEnvelopesFromNetwork(webservice, page, size, retryCount + 1, callbacks);
+                     } else {
+                         callbacks.onError(t.getMessage());
+                     }
+
+                 }
+             });
         } catch (IllegalStateException e) {
-            e.printStackTrace();
-            Log.d(TAG, "IllegalStateException: " + e.getLocalizedMessage());
+            Log.d(TAG, "IllegalStateException: " + e.toString());
+            callbacks.onError(e.toString());
+            error = "IOException: " + e.toString();
+            callbacks.onError(error);
         } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Exception: " + e.getLocalizedMessage());
+            Log.d(TAG, "Exception: " + e.toString());
+            callbacks.onError(e.toString());
+            error = "IOException: " + e.toString();
+            callbacks.onError(error);
         }
+    }
 
-        if (retryCount < 3) {
-            return getRedEnvelopeList(page, size, retryCount + 1);
-        }
+    public RedEnvelopeResult loadRedEnvelopesFromLocal() {
+        RedEnvelopeBoundaryCallback boundaryCallback =
+                new RedEnvelopeBoundaryCallback(mWebservice, mCache);
+        LiveData<String> networkErrors = boundaryCallback.getNetworkErrors();
+        DataSource.Factory<Integer, RedEnvelope> dataSourceFactory = mCache.getList();
 
-        return null;
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setPrefetchDistance(DATABASE_PAGE_SIZE * 3)
+                .setInitialLoadSizeHint(DATABASE_PAGE_SIZE * 3)
+                .setPageSize(DATABASE_PAGE_SIZE)
+                .build();
+
+
+        LiveData<PagedList<RedEnvelope>> data =
+                new LivePagedListBuilder<>(dataSourceFactory, config)
+                        .setBoundaryCallback(boundaryCallback)
+                        .build();
+
+        return new RedEnvelopeResult(data, networkErrors);
     }
 
     public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
-            final String token, final String userId) {
+            final String token, final String userId, final int pageSize) {
         return new NetworkBoundResource<List<RedEnvelope>,
                 CustomResponse<ListResponseResult<List<RedEnvelope>>>>() {
             @Override
             protected void saveCallResult(
                     @NonNull CustomResponse<ListResponseResult<List<RedEnvelope>>> item) {
                 mRedEnvelopeDao.deleteAll();
-                mRedEnvelopeDao.saveAll(item.getResult().getResults());
+                mRedEnvelopeDao.insert(item.getResult().getResults());
             }
 
             @Override
@@ -103,7 +176,7 @@ public class RedEnvelopeRepository {
             @Override
             protected LiveData<ApiResponse<
                     CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
-                return mWebservice.getRedEnvelopes(token, userId, 100);
+                return mWebservice.getRedEnvelopes(token, userId, pageSize);
             }
 
             @Override

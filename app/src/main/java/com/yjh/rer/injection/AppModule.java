@@ -5,10 +5,13 @@ import android.app.Application;
 import androidx.room.Room;
 
 import com.yjh.rer.network.Webservice;
+import com.yjh.rer.room.dao.RedEnvelopeCache;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.db.MyDatabase;
 import com.yjh.rer.custom.CustomCallAdapterFactory;
 import com.yjh.rer.util.LiveDataCallAdapterFactory;
+
+import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -44,5 +47,11 @@ class AppModule {
     @Provides
     RedEnvelopeDao provideRedEnvelopeDao(MyDatabase db) {
         return db.redEnvelopeDao();
+    }
+
+    @Singleton
+    @Provides
+    RedEnvelopeCache provideCache(MyDatabase db) {
+        return new RedEnvelopeCache(db.redEnvelopeDao(), Executors.newSingleThreadExecutor());
     }
 }

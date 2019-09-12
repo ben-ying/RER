@@ -36,6 +36,13 @@ public interface Webservice {
             @Query("page") int page,
             @Query("page_size") int pageSize);
 
+    @GET(URL_RED_ENVELOPES)
+    Call<CustomResponse<ListResponseResult<List<RedEnvelope>>>> requestRedEnvelopes(
+            @Query("token") String token,
+            @Query("user_id") String userId,
+            @Query("page") int page,
+            @Query("page_size") int pageSize);
+
     @FormUrlEncoded
     @POST(URL_RED_ENVELOPES)
     LiveData<ApiResponse<CustomResponse<RedEnvelope>>> addRedEnvelope(

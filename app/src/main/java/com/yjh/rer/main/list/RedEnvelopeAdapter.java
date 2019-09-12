@@ -21,12 +21,6 @@ public class RedEnvelopeAdapter extends PagedListAdapter<
 
     private RedEnvelopeInterface mInterface;
 
-    @Nullable
-    @Override
-    public PagedList<RedEnvelope> getCurrentList() {
-        return super.getCurrentList();
-    }
-
     @Override
     public void onCurrentListChanged(@Nullable PagedList<RedEnvelope> previousList, @Nullable PagedList<RedEnvelope> currentList) {
         super.onCurrentListChanged(previousList, currentList);
