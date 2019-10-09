@@ -8,12 +8,10 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -26,20 +24,17 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
-import com.yjh.rer.main.MainActivity;
+import com.yjh.rer.network.NetworkState;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelopesBinding>
         implements RedEnvelopeAdapter.RedEnvelopeInterface {
@@ -52,7 +47,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     private static final String FIRST_OPEN_APP = "first_open_app";
 
     private RedEnvelopeViewModel mViewModel;
-    private RedEnvelopeAdapter mAdapter = new RedEnvelopeAdapter(this);
+    private RedEnvelopeAdapter mAdapter;
+    private LinearLayoutManager mLayoutManager;
     private Disposable mDisposable;
     private int mScrollViewState = -1;
     private boolean reverseSorting;
@@ -152,15 +148,15 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                             Toast.makeText(getContext(), reverseSorting ?
                                     R.string.action_sorted_by_reverse_date :
                                     R.string.action_sorted_by_date, Toast.LENGTH_SHORT).show();
-                            setAdapter();
+//                            setAdapter();
                         }
                     });
         }
     }
 
     private void setScrollViewOnChangedListener() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        dataBinding.recyclerView.setLayoutManager(layoutManager);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        dataBinding.recyclerView.setLayoutManager(mLayoutManager);
         dataBinding.recyclerView.setHasFixedSize(false);
         dataBinding.recyclerView.setNestedScrollingEnabled(false);
         dataBinding.swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
@@ -230,79 +226,42 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
 //    }
 
     private void initRecyclerViewData() {
+        mAdapter = new RedEnvelopeAdapter(this, getContext());
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), this::setAdapterData);
-        mViewModel.getNetworkErrors().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                Log.d(TAG, s);
-            }
-        });
+        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mViewModel.getOperatingItem().observe(getViewLifecycleOwner(), this::operateResult);
+        mViewModel.getNetworkErrors().observe(getViewLifecycleOwner(), this::handleNetworkResult);
         dataBinding.recyclerView.setAdapter(mAdapter);
-        mViewModel.loadFromDB("1");
+        mViewModel.load("1");
     }
 
-    private void setAdapterData(PagedList<RedEnvelope> redEnvelopes) {
-        mAdapter.submitList(redEnvelopes);
-//        mAdapter.submitList(redEnvelopes, () -> {
-////                if (redEnvelopes.size() > 0) {
-////                    int total = 0;
-////                    for (RedEnvelope redEnvelope : redEnvelopes) {
-////                        if (redEnvelope != null) {
-////                            total += redEnvelope.getMoneyInt();
-////                        }
-////                    }
-////                    dataBinding.tvTotal.setText(String.format(getString(
-////                            R.string.red_envelope_total), redEnvelopes.size(), total));
-////                }
-//        });
-    }
-
-    private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
-        if (listResource != null && listResource.getData() != null) {
-            if (listResource.getData().size() > 0) {
+    private void operateResult(@Nullable Resource<RedEnvelope> listResource) {
+        if (listResource != null) {
+            if (listResource.getStatus() == NetworkState.Status.SUCCESS){
                 dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
-            }
-            dataBinding.swipeRefreshLayout.setRefreshing(false);
-            redEnvelopes = listResource.getData();
-            int total = 0;
-            for (RedEnvelope redEnvelope : redEnvelopes) {
-                total += redEnvelope.getMoneyInt();
-            }
-            if (dataBinding.tvTotal.getVisibility() == View.GONE) {
-                dataBinding.tvTotal.setVisibility(View.VISIBLE);
-            }
-            dataBinding.tvTotal.setText(String.format(getString(
-                    R.string.red_envelope_total), redEnvelopes.size(), total));
-            if (reverseSorting) {
-                Collections.reverse(redEnvelopes);
-            }
-            setAdapter();
-
-            // init chart data when first open app
-            if (getActivity() != null && mIsFirstOpen && redEnvelopes.size() > 0) {
-                Fragment fragment = getActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.container);
-                if (fragment != null && fragment.isAdded()
-                        && fragment instanceof BaseDaggerFragment) {
-                    mSharedPreferences.edit().putBoolean(
-                            FIRST_OPEN_APP, false).apply();
-                    mIsFirstOpen = false;
-                    ((BaseDaggerFragment) fragment).setData(redEnvelopes);
+                if (listResource.getData() != null) {
+                    Log.d(TAG, "Item added");
+                    new Handler().postDelayed(() -> {
+                        Toast.makeText(getContext(), R.string.item_added, Toast.LENGTH_SHORT).show();
+                        mLayoutManager.scrollToPositionWithOffset(0, 0);
+                    }, 100);
+                } else {
+                    Log.d(TAG, "Item deleted");
+                    Toast.makeText(getContext(), R.string.item_deleted, Toast.LENGTH_SHORT).show();
                 }
+            } else if (listResource.getStatus() == NetworkState.Status.ERROR) {
+                dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "OperateResult ERROR");
+                Toast.makeText(getContext(), R.string.operate_error, Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    private void setAdapter() {
-//        if (mAdapter == null) {
-//            mAdapter = new RedEnvelopeAdapter(getActivity(),
-//                    redEnvelopes, dataBinding.tvTotal, RedEnvelopesFragment.this);
-//            dataBinding.recyclerView.setAdapter(mAdapter);
-//        } else {
-//            mAdapter.setData(redEnvelopes);
-//        }
+    private void handleNetworkResult(String s) {
+        Log.e(TAG, "Network ERROR: " + s);
+        Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG).show();
+        dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
     }
 
     public void addRedEnvelopDialog() {
@@ -318,8 +277,8 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         dialog.setCancelable(true);
         dialog.show();
 
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->  {
-            if (binding!= null && isValid(binding)) {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (binding != null && isValid(binding)) {
                 dialog.dismiss();
                 dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
                 mViewModel.add(binding.etFrom.getText().toString(),

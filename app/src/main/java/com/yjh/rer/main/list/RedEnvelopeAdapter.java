@@ -1,5 +1,6 @@
 package com.yjh.rer.main.list;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,11 @@ public class RedEnvelopeAdapter extends PagedListAdapter<
         RedEnvelope, RedEnvelopeAdapter.RedEnvelopeViewHolder> {
 
     private RedEnvelopeInterface mInterface;
+    private Context mContext;
 
     @Override
-    public void onCurrentListChanged(@Nullable PagedList<RedEnvelope> previousList, @Nullable PagedList<RedEnvelope> currentList) {
+    public void onCurrentListChanged(@Nullable PagedList<RedEnvelope> previousList,
+                                     @Nullable PagedList<RedEnvelope> currentList) {
         super.onCurrentListChanged(previousList, currentList);
     }
 
@@ -30,9 +33,10 @@ public class RedEnvelopeAdapter extends PagedListAdapter<
         void delete(int reId);
     }
 
-    RedEnvelopeAdapter(RedEnvelopeInterface redEnvelopeInterface) {
+    RedEnvelopeAdapter(RedEnvelopeInterface redEnvelopeInterface, Context context) {
         super(DIFF_CALLBACK);
         this.mInterface = redEnvelopeInterface;
+        this.mContext = context;
     }
 
     @NonNull
@@ -71,10 +75,10 @@ public class RedEnvelopeAdapter extends PagedListAdapter<
         public void intent2DetailView(View v) {
         }
 
-        public boolean showDeleteDialog(View view) {
-            AlertUtils.showConfirmDialog(view.getContext(), R.string.delete_red_envelope_alert,
+        public boolean showDeleteDialog(RedEnvelope redEnvelope) {
+            AlertUtils.showConfirmDialog(mContext, R.string.delete_red_envelope_alert,
                     (dialogInterface, i) -> {
-                        mInterface.delete(((RedEnvelope) view.getTag()).getRedEnvelopeId());
+                        mInterface.delete(redEnvelope.getRedEnvelopeId());
                     });
             return true;
         }

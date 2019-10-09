@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.paging.PagedList;
 
 import com.yjh.rer.model.RedEnvelopeResult;
+import com.yjh.rer.network.Resource;
 import com.yjh.rer.repository.RedEnvelopeRepository;
 import com.yjh.rer.room.dao.RedEnvelopeDao;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -21,42 +22,50 @@ public class RedEnvelopeViewModel extends ViewModel {
     private static final int TYPE_ADD = 2;
     private static final int TYPE_DELETE = 3;
 
+    private final MutableLiveData<String> mQueryLiveData = new MutableLiveData<>();
     private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();
 
     private MutableLiveData<String> mToken = new MutableLiveData<>();
     private ReId mReId = new ReId();
     private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList;
     private LiveData<String> mNetworkErrors;
+    private LiveData<Resource<RedEnvelope>> mOperatingItem;
 
     @Inject
     RedEnvelopeDao dao;
 
     @Inject
     RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
-        LiveData<RedEnvelopeResult> repoResult = Transformations.map(mReIdLiveData, input -> {
-            switch (input.type) {
-                case TYPE_LOAD:
-                    return repository.loadRedEnvelopesFromLocal();
-                case TYPE_REFRESH:
-                case TYPE_ADD:
-                case TYPE_DELETE:
-            }
+        LiveData<RedEnvelopeResult> repoResult = Transformations.map(mQueryLiveData,
+                repository::loadRedEnvelopes
+        );
 
+        mOperatingItem = Transformations.switchMap(mReIdLiveData, reId -> {
+            switch (reId.type) {
+                case TYPE_ADD:
+                    return repository.addRedEnvelope(
+                            reId.moneyFrom, reId.money, reId.remark, mToken.getValue());
+                case TYPE_DELETE:
+                    return repository.deleteRedEnvelope(reId.id, mToken.getValue());
+            }
             return null;
         });
 
-
-        mRedEnvelopeList = Transformations.switchMap(repoResult, input ->
-            input.getData()
+        mRedEnvelopeList = Transformations.switchMap(repoResult,
+                RedEnvelopeResult::getData
         );
 
-        mNetworkErrors = Transformations.switchMap(repoResult, input ->
-            input.getNetworkErrors()
+        mNetworkErrors = Transformations.switchMap(repoResult,
+                RedEnvelopeResult::getNetworkErrors
         );
     }
 
     public LiveData<PagedList<RedEnvelope>> getRedEnvelopeList() {
         return mRedEnvelopeList;
+    }
+
+    public LiveData<Resource<RedEnvelope>> getOperatingItem() {
+        return mOperatingItem;
     }
 
     public LiveData<String> getNetworkErrors() {
@@ -71,10 +80,8 @@ public class RedEnvelopeViewModel extends ViewModel {
         return dao.loadAll();
     }
 
-    public void loadFromDB(String userId) {
-        mReId.type = TYPE_LOAD;
-        mReId.userId = userId;
-        mReIdLiveData.postValue(mReId);
+    public void load(String query) {
+        mQueryLiveData.postValue(query);
     }
 
     public void add(String moneyFrom, String money, String remark) {

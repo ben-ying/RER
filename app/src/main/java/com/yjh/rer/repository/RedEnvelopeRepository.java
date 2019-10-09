@@ -9,7 +9,6 @@ import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 
-import com.yjh.rer.custom.CustomCall;
 import com.yjh.rer.databinding.RedEnvelopeBoundaryCallback;
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
@@ -25,7 +24,6 @@ import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.util.RateLimiter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -129,7 +127,7 @@ public class RedEnvelopeRepository {
         }
     }
 
-    public RedEnvelopeResult loadRedEnvelopesFromLocal() {
+    public RedEnvelopeResult loadRedEnvelopes(String query) {
         RedEnvelopeBoundaryCallback boundaryCallback =
                 new RedEnvelopeBoundaryCallback(mWebservice, mCache);
         LiveData<String> networkErrors = boundaryCallback.getNetworkErrors();
@@ -192,26 +190,28 @@ public class RedEnvelopeRepository {
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<List<RedEnvelope>>> addRedEnvelope(final String moneyFrom,
+    public LiveData<Resource<RedEnvelope>> addRedEnvelope(final String moneyFrom,
                                                                 final String money,
                                                                 final String remark,
                                                                 final String token) {
-        return new NetworkBoundResource<List<RedEnvelope>, CustomResponse<RedEnvelope>>() {
+        return new NetworkBoundResource<RedEnvelope, CustomResponse<RedEnvelope>>() {
+            int mRedEnvelopeId = -1;
 
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
                 mRedEnvelopeDao.save(item.getResult());
+                mRedEnvelopeId = item.getResult().getRedEnvelopeId();
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
+            protected boolean shouldFetch(@Nullable RedEnvelope data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return mRedEnvelopeDao.loadAll();
+            protected LiveData<RedEnvelope> loadFromDb() {
+                return mRedEnvelopeDao.loadById(mRedEnvelopeId);
             }
 
             @NonNull
@@ -233,23 +233,22 @@ public class RedEnvelopeRepository {
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<List<RedEnvelope>>> deleteRedEnvelope(final int reId, final String token) {
-        return new NetworkBoundResource<List<RedEnvelope>, CustomResponse<RedEnvelope>>() {
-
+    public LiveData<Resource<RedEnvelope>> deleteRedEnvelope(final int reId, final String token) {
+        return new NetworkBoundResource<RedEnvelope, CustomResponse<RedEnvelope>>() {
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
                 mRedEnvelopeDao.delete(item.getResult());
             }
 
             @Override
-            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
+            protected boolean shouldFetch(@Nullable RedEnvelope data) {
                 return true;
             }
 
             @NonNull
             @Override
-            protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return mRedEnvelopeDao.loadAll();
+            protected LiveData<RedEnvelope> loadFromDb() {
+                return mRedEnvelopeDao.loadById(reId);
             }
 
             @NonNull

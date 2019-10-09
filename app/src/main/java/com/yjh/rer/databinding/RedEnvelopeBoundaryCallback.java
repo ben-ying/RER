@@ -30,6 +30,7 @@ public class RedEnvelopeBoundaryCallback
     private boolean mIsRequestInProgress = false;
     private Webservice mService;
     private RedEnvelopeCache mCache;
+    private boolean mIsRefreshed;
 
     public RedEnvelopeBoundaryCallback(Webservice service, RedEnvelopeCache cache) {
         this.mService = service;
@@ -50,23 +51,27 @@ public class RedEnvelopeBoundaryCallback
         requestAndSaveData();
     }
 
-//    @Override
-//    public void onItemAtFrontLoaded(@NonNull RedEnvelope itemAtFront) {
-//        super.onItemAtFrontLoaded(itemAtFront);
-//        Log.d(TAG, "onItemAtFrontLoaded");
-//    }
+    @Override
+    public void onItemAtFrontLoaded(@NonNull RedEnvelope itemAtFront) {
+        super.onItemAtFrontLoaded(itemAtFront);
+        Log.d(TAG, "onItemAtFrontLoaded");
+        if (!mIsRefreshed) {
+            requestAndSaveData();
+        }
+    }
 
     private void requestAndSaveData() {
+        Log.d(TAG, "requestAndSaveData: " + mIsRequestInProgress);
         if (mIsRequestInProgress) return;
 
         mIsRequestInProgress = true;
-//        loadRedEnvelopes("83cd0f7a0483db73ce4223658cb61deac6531e85", "1", NETWORK_PAGE_SIZE);
         RedEnvelopeRepository.loadRedEnvelopesFromNetwork(
                 mService, mLastRequestedPage, NETWORK_PAGE_SIZE, this);
     }
 
     @Override
     public void onSuccess(List<RedEnvelope> redEnvelopes, boolean isLastPage) {
+        mIsRefreshed = true;
         mCache.insert(redEnvelopes, () -> {
             if (!isLastPage) {
                 mLastRequestedPage++;

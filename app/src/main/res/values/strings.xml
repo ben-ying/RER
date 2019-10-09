@@ -23,6 +23,10 @@
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="non_empty_field">输入框不能为空</string>
+    <string name="item_added">添加成功</string>
+    <string name="item_deleted">删除成功</string>
+    <string name="operate_error">操作失败</string>
+    <string name="network_error">网络错误</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

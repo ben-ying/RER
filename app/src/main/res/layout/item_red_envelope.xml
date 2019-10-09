@@ -20,7 +20,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:orientation="vertical"
         android:onClick="@{handler::intent2DetailView}"
-        android:onLongClick="@{handler::showDeleteDialog}">
+        android:onLongClick="@{() -> handler.showDeleteDialog(redenvelope)}">
 
         <TextView
             android:id="@+id/tv_money"

@@ -25,13 +25,19 @@ public class ApiResponse<T> {
         Timber.d("http request: %s", response.raw().request());
         Timber.d("http response: %s", new Gson().toJson(response.body()));
         CustomResponse responseBody = (CustomResponse) response.body();
-        mCode = responseBody.getCode();
-        if (responseBody.isSuccessful()) {
-            mBody = response.body();
-            mErrorMessage = null;
-        } else {
-            mErrorMessage = responseBody.getMessage();
+        if (responseBody == null) {
+            mCode = 500;
+            mErrorMessage = "Network Error";
             mBody = null;
+        } else {
+            mCode = responseBody.getCode();
+            if (responseBody.isSuccessful()) {
+                mBody = response.body();
+                mErrorMessage = null;
+            } else {
+                mErrorMessage = responseBody.getMessage();
+                mBody = null;
+            }
         }
     }
 

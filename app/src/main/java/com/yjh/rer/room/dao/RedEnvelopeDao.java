@@ -39,6 +39,11 @@ public interface RedEnvelopeDao {
             " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID)
     LiveData<List<RedEnvelope>> loadAll();
 
+    @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
+            " WHERE " + RedEnvelope.FIELD_RED_ENVELOPE_ID + " = :id" +
+            " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID)
+    LiveData<RedEnvelope> loadById(int id);
+
     @Query("SELECT Count(*) FROM " + RedEnvelope.TABLE_NAME)
     int count();
 }
