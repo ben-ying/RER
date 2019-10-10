@@ -19,7 +19,7 @@ public interface RedEnvelopeDao {
     void save(RedEnvelope redEnvelope);
 
     @Insert(onConflict = REPLACE)
-    void insert(List<RedEnvelope> redEnvelopes);
+    void insert(RedEnvelope redEnvelopes);
 
     @Delete
     void delete(RedEnvelope redEnvelope);
@@ -32,8 +32,9 @@ public interface RedEnvelopeDao {
     DataSource.Factory<Integer, RedEnvelope> getList();
 
     @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
-            " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID + " LIMIT :size " )
-    List<RedEnvelope> loadFromDb(int size);
+            " WHERE " + RedEnvelope.FIELD_PAGE + " = :page " +
+            "OR " + RedEnvelope.FIELD_PAGE + " = 0")
+    List<RedEnvelope> loadFromDb(int page);
 
     @Query("SELECT * FROM " + RedEnvelope.TABLE_NAME +
             " ORDER BY -" + RedEnvelope.FIELD_RED_ENVELOPE_ID)

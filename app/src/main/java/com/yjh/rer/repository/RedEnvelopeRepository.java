@@ -148,48 +148,6 @@ public class RedEnvelopeRepository {
         return new RedEnvelopeResult(data, networkErrors);
     }
 
-    public LiveData<Resource<List<RedEnvelope>>> loadRedEnvelopes(
-            final String token, final String userId, final int pageSize) {
-        return new NetworkBoundResource<List<RedEnvelope>,
-                CustomResponse<ListResponseResult<List<RedEnvelope>>>>() {
-            @Override
-            protected void saveCallResult(
-                    @NonNull CustomResponse<ListResponseResult<List<RedEnvelope>>> item) {
-                mRedEnvelopeDao.deleteAll();
-                mRedEnvelopeDao.insert(item.getResult().getResults());
-            }
-
-            @Override
-            protected boolean shouldFetch(@Nullable List<RedEnvelope> data) {
-                return data == null || data.isEmpty() || mRepoListRateLimit.shouldFetch(token);
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<List<RedEnvelope>> loadFromDb() {
-                return mRedEnvelopeDao.loadAll();
-            }
-
-            @NonNull
-            @Override
-            protected LiveData<ApiResponse<
-                    CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
-                return mWebservice.getRedEnvelopes(token, userId, pageSize);
-            }
-
-            @Override
-            protected CustomResponse<ListResponseResult<List<RedEnvelope>>> processResponse(
-                    ApiResponse<CustomResponse<ListResponseResult<List<RedEnvelope>>>> response) {
-                return response.getBody();
-            }
-
-            @Override
-            protected void onFetchFailed() {
-                super.onFetchFailed();
-            }
-        }.getAsLiveData();
-    }
-
     public LiveData<Resource<RedEnvelope>> addRedEnvelope(final String moneyFrom,
                                                                 final String money,
                                                                 final String remark,

@@ -23,6 +23,8 @@ public class RedEnvelope {
     public static final String FIELD_MONEY_FROM = "money_from";
     public static final String FIELD_REMARK = "remark";
     public static final String FIELD_CREATED = "created";
+    public static final String FIELD_INSERTED_TIME = "inserted_time";
+    public static final String FIELD_PAGE = "page";
 
     @PrimaryKey
     @SerializedName(FIELD_RED_ENVELOPE_ID)
@@ -46,6 +48,13 @@ public class RedEnvelope {
     @SerializedName(FIELD_CREATED)
     @ColumnInfo(name = FIELD_CREATED)
     private String created;
+    // Added in database start
+    @ColumnInfo(name = FIELD_INSERTED_TIME)
+    private long insertedTime = System.currentTimeMillis();
+    @ColumnInfo(name = FIELD_PAGE)
+    private int page;
+    // Added in database end
+
 
     public int getMoneyInt() {
         return Integer.valueOf(money);
@@ -125,6 +134,27 @@ public class RedEnvelope {
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    public long getInsertedTime() {
+        return insertedTime;
+    }
+
+    public void setInsertedTime(long insertedTime) {
+        this.insertedTime = insertedTime;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public String getLabel() {
+        return "From: " + moneyFrom + ", Money: " + money +
+                ", Remark: " + remark + ", Page: " + page + "\n";
     }
 
     @Override

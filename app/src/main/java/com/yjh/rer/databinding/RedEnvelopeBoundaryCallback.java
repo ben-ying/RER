@@ -72,7 +72,7 @@ public class RedEnvelopeBoundaryCallback
     @Override
     public void onSuccess(List<RedEnvelope> redEnvelopes, boolean isLastPage) {
         mIsRefreshed = true;
-        mCache.insert(redEnvelopes, () -> {
+        mCache.insert(mLastRequestedPage, redEnvelopes, () -> {
             if (!isLastPage) {
                 mLastRequestedPage++;
                 mIsRequestInProgress = false;
