@@ -46,8 +46,14 @@ public class RedEnvelopeRepository {
 
     private RedEnvelopeCache mCache;
 
+    private static ListResponseResult<List<RedEnvelope>> mResult;
+
     public RedEnvelopeDao getDao() {
         return mRedEnvelopeDao;
+    }
+
+    public ListResponseResult<List<RedEnvelope>> getResult() {
+        return mResult;
     }
 
     @Inject
@@ -83,6 +89,7 @@ public class RedEnvelopeRepository {
                              redEnvelopes = response.body().getResult().getResults();
                              callbacks.onSuccess(redEnvelopes,
                                      response.body().getResult().getNext() == null);
+                             mResult = response.body().getResult();
                          } else {
                              callbacks.onError("Empty Response");
                              Log.d(TAG, "Empty Response: " + response.toString());
@@ -157,8 +164,13 @@ public class RedEnvelopeRepository {
 
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
-                mRedEnvelopeDao.save(item.getResult());
-                mRedEnvelopeId = item.getResult().getRedEnvelopeId();
+                RedEnvelope addItem = item.getResult();
+                addItem.setPage(1);
+                mRedEnvelopeDao.save(addItem);
+                mRedEnvelopeId = addItem.getRedEnvelopeId();
+                if (mResult != null && mResult.getResults() != null) {
+                    mResult.getResults().add(0, addItem);
+                }
             }
 
             @Override
@@ -195,7 +207,17 @@ public class RedEnvelopeRepository {
         return new NetworkBoundResource<RedEnvelope, CustomResponse<RedEnvelope>>() {
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
+                RedEnvelope deletedItem = item.getResult();
                 mRedEnvelopeDao.delete(item.getResult());
+                if (mResult != null && mResult.getResults() != null) {
+                    List<RedEnvelope> redEnvelopes = mResult.getResults();
+                    for (RedEnvelope redEnvelope : redEnvelopes) {
+                        if (redEnvelope.getRedEnvelopeId() == deletedItem.getRedEnvelopeId()) {
+                            mResult.getResults().remove(redEnvelope);
+                            break;
+                        }
+                    }
+                }
             }
 
             @Override

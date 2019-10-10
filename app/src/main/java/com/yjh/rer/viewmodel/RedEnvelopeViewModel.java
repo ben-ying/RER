@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 import androidx.paging.PagedList;
 
+import com.yjh.rer.model.ListResponseResult;
 import com.yjh.rer.model.RedEnvelopeResult;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.repository.RedEnvelopeRepository;
@@ -30,12 +31,15 @@ public class RedEnvelopeViewModel extends ViewModel {
     private LiveData<PagedList<RedEnvelope>> mRedEnvelopeList;
     private LiveData<String> mNetworkErrors;
     private LiveData<Resource<RedEnvelope>> mOperatingItem;
+    private RedEnvelopeRepository mRepository;
 
     @Inject
     RedEnvelopeDao dao;
 
     @Inject
     RedEnvelopeViewModel(final RedEnvelopeRepository repository) {
+        this.mRepository = repository;
+
         LiveData<RedEnvelopeResult> repoResult = Transformations.map(mQueryLiveData,
                 repository::loadRedEnvelopes
         );
@@ -58,6 +62,10 @@ public class RedEnvelopeViewModel extends ViewModel {
         mNetworkErrors = Transformations.switchMap(repoResult,
                 RedEnvelopeResult::getNetworkErrors
         );
+    }
+
+    public ListResponseResult<List<RedEnvelope>> getResult() {
+        return mRepository.getResult();
     }
 
     public LiveData<PagedList<RedEnvelope>> getRedEnvelopeList() {

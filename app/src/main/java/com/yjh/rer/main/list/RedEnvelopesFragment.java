@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Handler;
@@ -24,6 +25,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
+import com.yjh.rer.model.ListResponseResult;
 import com.yjh.rer.network.NetworkState;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
@@ -226,20 +228,27 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
 //    }
 
     private void initRecyclerViewData() {
+        dataBinding.tvTotal.setVisibility(View.GONE);
         mAdapter = new RedEnvelopeAdapter(this, getContext());
         mViewModel = ViewModelProviders.of(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
-        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), mAdapter::submitList);
+        mViewModel.getRedEnvelopeList().observe(getViewLifecycleOwner(), this::submitList);
         mViewModel.getOperatingItem().observe(getViewLifecycleOwner(), this::operateResult);
         mViewModel.getNetworkErrors().observe(getViewLifecycleOwner(), this::handleNetworkResult);
         dataBinding.recyclerView.setAdapter(mAdapter);
         mViewModel.load("1");
     }
 
+    private void submitList(PagedList<RedEnvelope> list) {
+        mAdapter.submitList(list);
+        setLabel();
+    }
+
     private void operateResult(@Nullable Resource<RedEnvelope> listResource) {
         if (listResource != null) {
             if (listResource.getStatus() == NetworkState.Status.SUCCESS){
                 dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+                setLabel();
                 if (listResource.getData() != null) {
                     Log.d(TAG, "Item added");
                     new Handler().postDelayed(() -> {
@@ -256,6 +265,16 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                 Toast.makeText(getContext(), R.string.operate_error, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void setLabel() {
+        ListResponseResult<List<RedEnvelope>> responseResult = mViewModel.getResult();
+        if (responseResult != null && responseResult.getCount() != 0) {
+            dataBinding.tvTotal.setVisibility(View.VISIBLE);
+            dataBinding.tvTotal.setText(String.format(getString(R.string.red_envelope_total),
+                    responseResult.getCount(), responseResult.getTotal()));
+        }
+
     }
 
     private void handleNetworkResult(String s) {
