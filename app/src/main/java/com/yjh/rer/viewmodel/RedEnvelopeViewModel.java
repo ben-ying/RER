@@ -18,12 +18,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class RedEnvelopeViewModel extends ViewModel {
-    private static final int TYPE_LOAD = 0;
-    private static final int TYPE_REFRESH = 1;
+    public static final int TYPE_LOAD = 0;
+    public static final int TYPE_REFRESH = 1;
     private static final int TYPE_ADD = 2;
     private static final int TYPE_DELETE = 3;
 
-    private final MutableLiveData<String> mQueryLiveData = new MutableLiveData<>();
+    private final MutableLiveData<Integer> mQueryLiveData = new MutableLiveData<>();
     private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();
 
     private MutableLiveData<String> mToken = new MutableLiveData<>();
@@ -88,8 +88,8 @@ public class RedEnvelopeViewModel extends ViewModel {
         return dao.loadAll();
     }
 
-    public void load(String query) {
-        mQueryLiveData.postValue(query);
+    public void load(int type) {
+        mQueryLiveData.postValue(type);
     }
 
     public void add(String moneyFrom, String money, String remark) {

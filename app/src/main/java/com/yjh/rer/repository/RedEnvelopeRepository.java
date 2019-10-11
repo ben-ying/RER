@@ -39,6 +39,7 @@ public class RedEnvelopeRepository {
     private final static String TAG = RedEnvelopeRepository.class.getSimpleName();
     private final static String UNKNOWN_ERROR = "Unknown Error";
     private static final int DATABASE_PAGE_SIZE = 5;
+    private static final int MAX_RETRY_COUNT = 5;
 
     private final Webservice mWebservice;
     private final RedEnvelopeDao mRedEnvelopeDao;
@@ -91,20 +92,22 @@ public class RedEnvelopeRepository {
                                      response.body().getResult().getNext() == null);
                              mResult = response.body().getResult();
                          } else {
-                             callbacks.onError("Empty Response");
+                             retryLoad(webservice, page, size,
+                                     retryCount, "Empty Response", callbacks);
                              Log.d(TAG, "Empty Response: " + response.toString());
                          }
                      } else {
                          try {
                              if (response.errorBody() != null) {
-                                 callbacks.onError(response.errorBody().string());
+                                 retryLoad(webservice, page, size,
+                                         retryCount, response.errorBody().string(), callbacks);
                              } else {
-                                 callbacks.onError(UNKNOWN_ERROR);
+                                 retryLoad(webservice, page, size,
+                                         retryCount, UNKNOWN_ERROR, callbacks);
                              }
                          }  catch (IOException e) {
-                             e.printStackTrace();
                              Log.d(TAG, "onFailure: " + e.toString());
-                             callbacks.onError(e.toString());
+                             retryLoad(webservice, page, size, retryCount, e.toString(), callbacks);
                          }
                      }
                  }
@@ -113,30 +116,33 @@ public class RedEnvelopeRepository {
                  public void onFailure(@NonNull Call<CustomResponse<ListResponseResult<List<RedEnvelope>>>> call,
                                        @NonNull Throwable t) {
                      Log.d(TAG, "onFailure: " + t.getMessage());
-                     if (retryCount < 3) {
-                         loadRedEnvelopesFromNetwork(webservice, page, size, retryCount + 1, callbacks);
-                     } else {
-                         callbacks.onError(t.getMessage());
-                     }
-
+                     retryLoad(webservice, page, size, retryCount, t.getMessage(), callbacks);
                  }
              });
         } catch (IllegalStateException e) {
             Log.d(TAG, "IllegalStateException: " + e.toString());
-            callbacks.onError(e.toString());
             error = "IOException: " + e.toString();
-            callbacks.onError(error);
+            retryLoad(webservice, page, size, retryCount, error, callbacks);
         } catch (Exception e) {
             Log.d(TAG, "Exception: " + e.toString());
-            callbacks.onError(e.toString());
             error = "IOException: " + e.toString();
-            callbacks.onError(error);
+            retryLoad(webservice, page, size, retryCount, error, callbacks);
         }
     }
 
-    public RedEnvelopeResult loadRedEnvelopes(String query) {
+    private static void retryLoad(final Webservice webservice, final int page, final int size,
+                           int retryCount, final String errorMessage,
+                           final NetworkState.callback callbacks) {
+        if (retryCount < MAX_RETRY_COUNT) {
+            loadRedEnvelopesFromNetwork(webservice, page, size, retryCount + 1, callbacks);
+        } else {
+            callbacks.onError(errorMessage);
+        }
+    }
+
+    public RedEnvelopeResult loadRedEnvelopes(int type) {
         RedEnvelopeBoundaryCallback boundaryCallback =
-                new RedEnvelopeBoundaryCallback(mWebservice, mCache);
+                new RedEnvelopeBoundaryCallback(mWebservice, mCache, type);
         LiveData<String> networkErrors = boundaryCallback.getNetworkErrors();
         DataSource.Factory<Integer, RedEnvelope> dataSourceFactory = mCache.getList();
 

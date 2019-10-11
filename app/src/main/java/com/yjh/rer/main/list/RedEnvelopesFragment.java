@@ -190,9 +190,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     }
 
     public void onRefreshListener() {
-//        mViewModel.load("1");
-//        dataBinding.progressLayout.progressBar.setVisibility(View.VISIBLE);
-//        mViewModel.invalidateDataSource();
+        mViewModel.load(RedEnvelopeViewModel.TYPE_REFRESH);
     }
 
 //    public void onScrollChangeListener(View view, int scrollX, int scrollY, int oldX, int oldY) {
@@ -236,18 +234,21 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         mViewModel.getOperatingItem().observe(getViewLifecycleOwner(), this::operateResult);
         mViewModel.getNetworkErrors().observe(getViewLifecycleOwner(), this::handleNetworkResult);
         dataBinding.recyclerView.setAdapter(mAdapter);
-        mViewModel.load("1");
+        mViewModel.load(RedEnvelopeViewModel.TYPE_LOAD);
     }
 
     private void submitList(PagedList<RedEnvelope> list) {
-        mAdapter.submitList(list);
         setLabel();
+        mAdapter.submitList(list);
+        dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+        dataBinding.swipeRefreshLayout.setRefreshing(false);
     }
 
     private void operateResult(@Nullable Resource<RedEnvelope> listResource) {
         if (listResource != null) {
             if (listResource.getStatus() == NetworkState.Status.SUCCESS){
                 dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+                dataBinding.swipeRefreshLayout.setRefreshing(false);
                 setLabel();
                 if (listResource.getData() != null) {
                     Log.d(TAG, "Item added");
@@ -261,6 +262,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                 }
             } else if (listResource.getStatus() == NetworkState.Status.ERROR) {
                 dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+                dataBinding.swipeRefreshLayout.setRefreshing(false);
                 Log.e(TAG, "OperateResult ERROR");
                 Toast.makeText(getContext(), R.string.operate_error, Toast.LENGTH_LONG).show();
             }
@@ -281,6 +283,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
         Log.e(TAG, "Network ERROR: " + s);
         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG).show();
         dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
+        dataBinding.swipeRefreshLayout.setRefreshing(false);
     }
 
     public void addRedEnvelopDialog() {

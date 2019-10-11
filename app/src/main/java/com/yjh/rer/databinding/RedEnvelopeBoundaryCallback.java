@@ -12,6 +12,7 @@ import com.yjh.rer.network.Webservice;
 import com.yjh.rer.repository.RedEnvelopeRepository;
 import com.yjh.rer.room.dao.RedEnvelopeCache;
 import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import java.util.List;
 
@@ -31,10 +32,12 @@ public class RedEnvelopeBoundaryCallback
     private Webservice mService;
     private RedEnvelopeCache mCache;
     private boolean mIsRefreshed;
+    private int mType;
 
-    public RedEnvelopeBoundaryCallback(Webservice service, RedEnvelopeCache cache) {
+    public RedEnvelopeBoundaryCallback(Webservice service, RedEnvelopeCache cache, int type) {
         this.mService = service;
         this.mCache = cache;
+        this.mType = type;
     }
 
     @Override
@@ -54,8 +57,8 @@ public class RedEnvelopeBoundaryCallback
     @Override
     public void onItemAtFrontLoaded(@NonNull RedEnvelope itemAtFront) {
         super.onItemAtFrontLoaded(itemAtFront);
-        Log.d(TAG, "onItemAtFrontLoaded");
-        if (!mIsRefreshed) {
+        Log.d(TAG, "onItemAtFrontLoaded isRefreshed: " + mIsRefreshed + ", type: " + mType);
+        if (!mIsRefreshed || mType == RedEnvelopeViewModel.TYPE_REFRESH) {
             requestAndSaveData();
         }
     }
