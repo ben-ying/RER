@@ -69,7 +69,7 @@ public class RedEnvelopeBoundaryCallback
 
         mIsRequestInProgress = true;
         RedEnvelopeRepository.loadRedEnvelopesFromNetwork(
-                mService, mLastRequestedPage, NETWORK_PAGE_SIZE, this);
+                mService, mLastRequestedPage, NETWORK_PAGE_SIZE, 0,this);
     }
 
     @Override

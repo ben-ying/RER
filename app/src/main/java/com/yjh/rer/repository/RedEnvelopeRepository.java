@@ -38,7 +38,7 @@ import retrofit2.Response;
 public class RedEnvelopeRepository {
     private final static String TAG = RedEnvelopeRepository.class.getSimpleName();
     private final static String UNKNOWN_ERROR = "Unknown Error";
-    private static final int DATABASE_PAGE_SIZE = 5;
+    private static final int DATABASE_PAGE_SIZE = 20;
     private static final int MAX_RETRY_COUNT = 5;
 
     private final Webservice mWebservice;
@@ -67,11 +67,6 @@ public class RedEnvelopeRepository {
     }
 
     public static void loadRedEnvelopesFromNetwork(Webservice webservice, int page, int size,
-                                                   final NetworkState.callback callbacks) {
-        loadRedEnvelopesFromNetwork(webservice, page, size, 0, callbacks);
-    }
-
-    private static void loadRedEnvelopesFromNetwork(Webservice webservice, int page, int size,
                                         int retryCount, final NetworkState.callback callbacks) {
         Log.d(TAG, "page: " + page + ", size: " + size + ", retryCount: " + retryCount);
         String error = UNKNOWN_ERROR;
@@ -147,8 +142,8 @@ public class RedEnvelopeRepository {
         DataSource.Factory<Integer, RedEnvelope> dataSourceFactory = mCache.getList();
 
         PagedList.Config config = new PagedList.Config.Builder()
-                .setPrefetchDistance(DATABASE_PAGE_SIZE * 3)
-                .setInitialLoadSizeHint(DATABASE_PAGE_SIZE * 3)
+                .setPrefetchDistance(DATABASE_PAGE_SIZE * 6)
+                .setInitialLoadSizeHint(DATABASE_PAGE_SIZE * 2)
                 .setPageSize(DATABASE_PAGE_SIZE)
                 .build();
 

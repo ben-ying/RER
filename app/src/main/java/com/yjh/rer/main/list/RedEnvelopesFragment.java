@@ -280,7 +280,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
     }
 
     private void handleNetworkResult(String s) {
-        Log.e(TAG, "Network ERROR: " + s);
+        Log.e(TAG, "Network ERROR: \n" + s);
         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG).show();
         dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
         dataBinding.swipeRefreshLayout.setRefreshing(false);
