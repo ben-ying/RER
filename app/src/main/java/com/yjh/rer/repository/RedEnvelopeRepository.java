@@ -164,24 +164,22 @@ public class RedEnvelopeRepository {
     public LiveData<Resource<RedEnvelope>> addRedEnvelope(final String moneyFrom,
                                                                 final String money,
                                                                 final String remark,
-                                                                final String token) {
+                                                                final String token,
+                                                                final int retry) {
         return new NetworkBoundResource<RedEnvelope, CustomResponse<RedEnvelope>>() {
             int mRedEnvelopeId = -1;
 
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
-                RedEnvelope addItem = item.getResult();
-                addItem.setPage(1);
-                mRedEnvelopeDao.save(addItem);
-                mRedEnvelopeId = addItem.getRedEnvelopeId();
+                RedEnvelope addedItem = item.getResult();
+                addedItem.setPage(1);
+                mRedEnvelopeDao.save(addedItem);
+                mRedEnvelopeId = addedItem.getRedEnvelopeId();
                 if (mResult != null && mResult.getResults() != null) {
-                    mResult.getResults().add(0, addItem);
+                    mResult.getResults().add(0, addedItem);
+                    mResult.setCount(mResult.getCount() + 1);
+                    mResult.setTotal(mResult.getTotal() + addedItem.getMoneyInt());
                 }
-            }
-
-            @Override
-            protected boolean shouldFetch(@Nullable RedEnvelope data) {
-                return true;
             }
 
             @NonNull
@@ -197,19 +195,19 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected CustomResponse<RedEnvelope> processResponse(
-                    ApiResponse<CustomResponse<RedEnvelope>> response) {
-                return response.getBody();
-            }
-
-            @Override
             protected void onFetchFailed() {
-                super.onFetchFailed();
+                if (retry < MAX_RETRY_COUNT) {
+                    addRedEnvelope(moneyFrom, money, remark, token, retry);
+                } else {
+                    super.onFetchFailed();
+                }
             }
         }.getAsLiveData();
     }
 
-    public LiveData<Resource<RedEnvelope>> deleteRedEnvelope(final int reId, final String token) {
+    public LiveData<Resource<RedEnvelope>> deleteRedEnvelope(final int reId,
+                                                             final String token,
+                                                             final int retry) {
         return new NetworkBoundResource<RedEnvelope, CustomResponse<RedEnvelope>>() {
             @Override
             protected void saveCallResult(@NonNull CustomResponse<RedEnvelope> item) {
@@ -220,15 +218,12 @@ public class RedEnvelopeRepository {
                     for (RedEnvelope redEnvelope : redEnvelopes) {
                         if (redEnvelope.getRedEnvelopeId() == deletedItem.getRedEnvelopeId()) {
                             mResult.getResults().remove(redEnvelope);
+                            mResult.setCount(mResult.getCount() - 1);
+                            mResult.setTotal(mResult.getTotal() - deletedItem.getMoneyInt());
                             break;
                         }
                     }
                 }
-            }
-
-            @Override
-            protected boolean shouldFetch(@Nullable RedEnvelope data) {
-                return true;
             }
 
             @NonNull
@@ -244,14 +239,12 @@ public class RedEnvelopeRepository {
             }
 
             @Override
-            protected CustomResponse<RedEnvelope> processResponse(
-                    ApiResponse<CustomResponse<RedEnvelope>> response) {
-                return response.getBody();
-            }
-
-            @Override
             protected void onFetchFailed() {
-                super.onFetchFailed();
+                if (retry < MAX_RETRY_COUNT) {
+                    deleteRedEnvelope(reId, token, retry);
+                } else {
+                    super.onFetchFailed();
+                }
             }
         }.getAsLiveData();
     }

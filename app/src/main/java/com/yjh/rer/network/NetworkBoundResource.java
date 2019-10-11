@@ -14,9 +14,9 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     private final MediatorLiveData<Resource<ResultType>> mResult = new MediatorLiveData<>();
 
     @MainThread
-    public NetworkBoundResource() {
+    protected NetworkBoundResource() {
         mResult.setValue(Resource.loading(null));
-        final LiveData<ResultType> dbSource = loadFromDb();
+        LiveData<ResultType> dbSource = loadFromDb();
 
         mResult.addSource(dbSource, resultType -> {
             mResult.removeSource(dbSource);
@@ -48,8 +48,12 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                 saveResultAndReInit(requestTypeApiResponse);
             } else {
                 onFetchFailed();
+//                mResult.addSource(dbSource, resultType -> {
+//                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
+//                });
                 mResult.addSource(dbSource, resultType -> {
-                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
+                    mResult.setValue(Resource.error(
+                            requestTypeApiResponse.getErrorMessage(), resultType));
                 });
             }
         });
@@ -74,7 +78,9 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             protected void onPostExecute(Void aVoid) {
                 final LiveData<ResultType> dbSource = loadFromDb();
                 mResult.addSource(dbSource, resultType -> {
-                    mResult.setValue(Resource.success(resultType));
+                    if (resultType != null) {
+                        mResult.setValue(Resource.success(resultType));
+                    }
                 });
             }
         }.execute();
@@ -86,7 +92,9 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     // Called with the data in the database to decide whether it should be
     // fetched from the network.
     @MainThread
-    protected abstract boolean shouldFetch(@Nullable ResultType data);
+    private boolean shouldFetch(@Nullable ResultType data) {
+        return true;
+    }
 
     // Called to get the cached data from the database
     @NonNull

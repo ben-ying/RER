@@ -254,7 +254,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
                     Log.d(TAG, "Item added");
                     new Handler().postDelayed(() -> {
                         Toast.makeText(getContext(), R.string.item_added, Toast.LENGTH_SHORT).show();
-                        mLayoutManager.scrollToPositionWithOffset(0, 0);
+                        dataBinding.recyclerView.smoothScrollToPosition(0);
                     }, 100);
                 } else {
                     Log.d(TAG, "Item deleted");
@@ -263,7 +263,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment<FragmentRedEnvelope
             } else if (listResource.getStatus() == NetworkState.Status.ERROR) {
                 dataBinding.progressLayout.progressBar.setVisibility(View.GONE);
                 dataBinding.swipeRefreshLayout.setRefreshing(false);
-                Log.e(TAG, "OperateResult ERROR");
+                Log.e(TAG, "OperateResult ERROR: " + listResource.getMessage());
                 Toast.makeText(getContext(), R.string.operate_error, Toast.LENGTH_LONG).show();
             }
         }

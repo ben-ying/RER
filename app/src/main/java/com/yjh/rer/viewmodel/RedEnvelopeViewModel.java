@@ -48,9 +48,9 @@ public class RedEnvelopeViewModel extends ViewModel {
             switch (reId.type) {
                 case TYPE_ADD:
                     return repository.addRedEnvelope(
-                            reId.moneyFrom, reId.money, reId.remark, mToken.getValue());
+                            reId.moneyFrom, reId.money, reId.remark, mToken.getValue(), 0);
                 case TYPE_DELETE:
-                    return repository.deleteRedEnvelope(reId.id, mToken.getValue());
+                    return repository.deleteRedEnvelope(reId.id, mToken.getValue(), 0);
             }
             return null;
         });
