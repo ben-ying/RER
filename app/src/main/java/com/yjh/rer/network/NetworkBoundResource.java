@@ -1,5 +1,6 @@
 package com.yjh.rer.network;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
 import androidx.annotation.MainThread;
@@ -9,6 +10,8 @@ import androidx.annotation.WorkerThread;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
+
+import java.util.Objects;
 
 public abstract class NetworkBoundResource<ResultType, RequestType> {
     private final MediatorLiveData<Resource<ResultType>> mResult = new MediatorLiveData<>();
@@ -23,11 +26,17 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             if (shouldFetch(resultType)) {
                 fetchFromNetwork(dbSource);
             } else {
-                mResult.addSource(dbSource, resultType1 -> {
-                    mResult.setValue(Resource.success(resultType));
-                });
+                mResult.addSource(dbSource, newData -> setValue(Resource.success(newData)));
+
             }
         });
+    }
+
+    @MainThread
+    private void setValue(Resource<ResultType> newValue) {
+        if (!Objects.equals(mResult.getValue(), newValue)) {
+            mResult.setValue(newValue);
+        }
     }
 
     private void fetchFromNetwork(final LiveData<ResultType> dbSource) {
@@ -35,12 +44,7 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
         final LiveData<ApiResponse<RequestType>> apiResponse = createCall();
         // we re-attach dbSource as a new source,
         // it will dispatch its latest value quickly
-        mResult.addSource(dbSource, new Observer<ResultType>() {
-            @Override
-            public void onChanged(@Nullable ResultType resultType) {
-                mResult.setValue(Resource.loading(resultType));
-            }
-        });
+        mResult.addSource(dbSource, newData -> setValue(Resource.loading(newData)));
         mResult.addSource(apiResponse, requestTypeApiResponse -> {
             mResult.removeSource(apiResponse);
             mResult.removeSource(dbSource);
@@ -48,13 +52,8 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                 saveResultAndReInit(requestTypeApiResponse);
             } else {
                 onFetchFailed();
-//                mResult.addSource(dbSource, resultType -> {
-//                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
-//                });
-                mResult.addSource(dbSource, resultType -> {
-                    mResult.setValue(Resource.error(
-                            requestTypeApiResponse.getErrorMessage(), resultType));
-                });
+                mResult.addSource(dbSource, newData -> setValue(
+                        Resource.error(requestTypeApiResponse.getErrorMessage(), newData)));
             }
         });
     }
@@ -77,10 +76,11 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
             @Override
             protected void onPostExecute(Void aVoid) {
                 final LiveData<ResultType> dbSource = loadFromDb();
-                mResult.addSource(dbSource, resultType -> {
-                    if (resultType != null) {
-                        mResult.setValue(Resource.success(resultType));
-                    }
+//                mResult.addSource(dbSource, newData -> setValue(Resource.success(newData)));
+                mResult.addSource(dbSource, newData -> {
+                    // prevent updating insertTime to fire this observer.
+                    mResult.removeSource(dbSource);
+                    setValue(Resource.success(newData));
                 });
             }
         }.execute();

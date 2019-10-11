@@ -18,10 +18,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class RedEnvelopeViewModel extends ViewModel {
-    public static final int TYPE_LOAD = 0;
-    public static final int TYPE_REFRESH = 1;
-    private static final int TYPE_ADD = 2;
-    private static final int TYPE_DELETE = 3;
+    public static final int TYPE_LOAD = 1;
+    public static final int TYPE_REFRESH = 2;
+    private static final int TYPE_ADD = 3;
+    private static final int TYPE_DELETE = 4;
 
     private final MutableLiveData<Integer> mQueryLiveData = new MutableLiveData<>();
     private final MutableLiveData<ReId> mReIdLiveData = new MutableLiveData<>();

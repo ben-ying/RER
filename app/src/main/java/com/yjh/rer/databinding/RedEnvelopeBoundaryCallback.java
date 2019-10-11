@@ -58,7 +58,7 @@ public class RedEnvelopeBoundaryCallback
     public void onItemAtFrontLoaded(@NonNull RedEnvelope itemAtFront) {
         super.onItemAtFrontLoaded(itemAtFront);
         Log.d(TAG, "onItemAtFrontLoaded isRefreshed: " + mIsRefreshed + ", type: " + mType);
-        if (!mIsRefreshed || mType == RedEnvelopeViewModel.TYPE_REFRESH) {
+        if (!mIsRefreshed) {
             requestAndSaveData();
         }
     }
