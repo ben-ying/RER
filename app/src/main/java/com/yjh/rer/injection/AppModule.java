@@ -23,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 @Module(includes = ViewModelModule.class)
 class AppModule {
 //    private static final String BASE_URL = "http://bensbabycare.com/webservice/";
-    private static final String BASE_URL = "http://mybackend.xyz:8080/iaer/api/";
+    private static final String BASE_URL = "http://mybackend.xyz:8000/iaer/api/";
 
     @Singleton
     @Provides

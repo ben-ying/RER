@@ -12,8 +12,9 @@ import androidx.lifecycle.LifecycleRegistry;
 
 public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatActivity {
 
-    private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
+//    private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
 
+    private LifecycleRegistry mLifecycleRegistry;
     public T dataBinding;
 
     @Override
@@ -27,6 +28,10 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
     @Override
     @NonNull
     public LifecycleRegistry getLifecycle() {
+        if (mLifecycleRegistry == null) {
+            mLifecycleRegistry = new LifecycleRegistry(this);
+        }
+
         return mLifecycleRegistry;
     }
 
