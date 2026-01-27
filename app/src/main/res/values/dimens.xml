@@ -12,6 +12,20 @@
 
     <dimen name="actions_text_size">14sp</dimen>
 
+    <!-- spacing -->
+    <dimen name="space_xs">4dp</dimen>
+    <dimen name="space_s">8dp</dimen>
+    <dimen name="space_m">12dp</dimen>
+    <dimen name="space_l">16dp</dimen>
+
+    <!-- surface / card -->
+    <dimen name="card_radius">12dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+
+    <!-- total bar -->
+    <dimen name="total_bar_height">48dp</dimen>
+    <dimen name="total_bar_offset">72dp</dimen>
+
     <!--chart-->
     <dimen name="line_chart_size">300dp</dimen>
     <dimen name="bar_chart_size">300dp</dimen>

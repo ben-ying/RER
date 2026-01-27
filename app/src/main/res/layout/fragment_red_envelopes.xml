@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/app_background">
 
     <TextView
         android:id="@+id/tv_total"
         android:textColor="@color/default_text_color"
-        android:textSize="@dimen/setting_text_size"
-        android:paddingStart="@dimen/recycler_view_padding"
-        android:paddingEnd="@dimen/recycler_view_padding"
-        android:background="@color/light_bg_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingStart="@dimen/space_l"
+        android:paddingEnd="@dimen/space_l"
+        android:background="@drawable/bg_total_bar"
+        android:elevation="@dimen/card_elevation"
         android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/sticky_height" />
+        android:layout_height="@dimen/total_bar_height"
+        android:layout_marginStart="@dimen/space_m"
+        android:layout_marginEnd="@dimen/space_m"
+        android:layout_marginTop="@dimen/space_m" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -27,7 +33,9 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:background="@android:color/transparent"
-                android:paddingTop="@dimen/sticky_height"
+                android:paddingTop="@dimen/total_bar_offset"
+                android:paddingBottom="@dimen/space_l"
+                android:clipToPadding="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

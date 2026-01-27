@@ -20,6 +20,8 @@
     <string name="red_envelope_yuan">%.2f(元)</string>
     <string name="delete_red_envelope_alert">点击确定将永久删除此红包，是否确定删除？</string>
 
+    <string name="nav_header_subtitle">记录每一笔红包</string>
+
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
