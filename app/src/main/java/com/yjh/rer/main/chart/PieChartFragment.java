@@ -62,16 +62,17 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
     }
 
     protected PieData generatePieData() {
-        final DecimalFormat format = new DecimalFormat("###,###,###");
-        Map<String, Integer> map = new HashMap<>();
-        Map<String, Integer> sortedMap = new HashMap<>();
-        sortedMap.put(getString(R.string.category_others), 0);
-        int total = 0;
+        final DecimalFormat format = new DecimalFormat("###,###,###.##");
+        Map<String, Double> map = new HashMap<>();
+        Map<String, Double> sortedMap = new HashMap<>();
+        sortedMap.put(getString(R.string.category_others), 0.0);
+        double total = 0.0;
         for (RedEnvelope redEnvelope : redEnvelopes) {
-            total += redEnvelope.getMoneyInt();
-            // if mapValue == null, mapValue = redEnvelope.getMoneyInt(),
-            // else mapValue += redEnvelope.getMoneyInt()
-            map.merge(redEnvelope.getRemark(), redEnvelope.getMoneyInt(), Integer::sum);
+            double money = redEnvelope.getMoneyDouble();
+            total += money;
+            // if mapValue == null, mapValue = redEnvelope.getMoneyDouble(),
+            // else mapValue += redEnvelope.getMoneyDouble()
+            map.merge(redEnvelope.getRemark(), money, Double::sum);
         }
 
         ArrayList<Integer> colors = new ArrayList<Integer>();
@@ -82,14 +83,14 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         colors.add(getResources().getColor(R.color.colorPrimaryDark));
         colors.add(getResources().getColor(R.color.google_yellow));
 
-        final int totalMoney = total;
+        final double totalMoney = total;
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
         map.entrySet().stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
                 .forEach(entry -> {
                     if (sortedMap.size() <= colors.size() - 1
-                            && (float) entry.getValue() / totalMoney > 0.02) {
-                        entries.add(new PieEntry(entry.getValue(),
+                            && entry.getValue() / totalMoney > 0.02) {
+                        entries.add(new PieEntry(entry.getValue().floatValue(),
                                 entry.getKey() + "\n: " +
                                         format.format(entry.getValue())));
                         sortedMap.put(entry.getKey(), entry.getValue());
@@ -99,8 +100,8 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
                     }
                 });
 
-        if (sortedMap.get(getString(R.string.category_others)) > 0) {
-            entries.add(new PieEntry(sortedMap.get(getString(R.string.category_others)),
+        if (sortedMap.get(getString(R.string.category_others)) > 0.0) {
+            entries.add(new PieEntry(sortedMap.get(getString(R.string.category_others)).floatValue(),
                     getString(R.string.category_others) + "\n: " +
                             format.format(sortedMap.get(
                                     getString(R.string.category_others)))));

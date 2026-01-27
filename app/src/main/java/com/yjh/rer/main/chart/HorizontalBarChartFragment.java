@@ -83,7 +83,7 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
                     }
                     e.onComplete();
                 })
-                .toSortedList(Comparator.comparing(RedEnvelope::getMoneyInt))
+                .toSortedList(Comparator.comparing(RedEnvelope::getMoneyDouble))
                 .subscribe((res) -> this.redEnvelopes = res);
     }
 
@@ -93,11 +93,12 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
 
         for (int i = 0; i < redEnvelopes.size(); i++) {
             RedEnvelope redEnvelope = redEnvelopes.get(i);
-            BarEntry barEntry = new BarEntry(i, redEnvelope.getMoneyInt());
+            double money = redEnvelope.getMoneyDouble();
+            BarEntry barEntry = new BarEntry(i, (float) money);
             barEntry.setData(redEnvelope.getCreatedDate() + "\n"
                     + redEnvelope.getMoneyFrom()
                     + ": " + Utils.formatNumber(
-                    redEnvelope.getMoneyInt(), 0, true));
+                    money, 2, true));
             entries.add(barEntry);
         }
 

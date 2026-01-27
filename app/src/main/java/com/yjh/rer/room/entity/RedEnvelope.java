@@ -49,6 +49,19 @@ public class RedEnvelope {
         return Integer.valueOf(money);
     }
 
+    public double getMoneyDouble() {
+        try {
+            return Double.parseDouble(money);
+        } catch (NumberFormatException e) {
+            // 如果解析失败，尝试作为整数解析
+            try {
+                return Integer.parseInt(money);
+            } catch (NumberFormatException e2) {
+                return 0.0;
+            }
+        }
+    }
+
     public String getCreatedDate() {
         return created == null ? "" : created.split(" ")[0];
     }

@@ -230,9 +230,9 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
             }
             swipeRefreshLayout.setRefreshing(false);
             redEnvelopes = listResource.getData();
-            int total = 0;
+            double total = 0.0;
             for (RedEnvelope redEnvelope : redEnvelopes) {
-                total += redEnvelope.getMoneyInt();
+                total += redEnvelope.getMoneyDouble();
             }
             if (totalTextView.getVisibility() == View.GONE) {
                 totalTextView.setVisibility(View.VISIBLE);

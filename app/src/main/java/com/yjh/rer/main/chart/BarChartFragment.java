@@ -65,16 +65,17 @@ public class BarChartFragment extends BaseDaggerFragment {
     }
 
     private BarData generateBarData() {
-        final DecimalFormat format = new DecimalFormat("###,###,###");
+        final DecimalFormat format = new DecimalFormat("###,###,###.##");
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < redEnvelopes.size(); i++) {
             RedEnvelope redEnvelope = redEnvelopes.get(i);
-            BarEntry barEntry = new BarEntry(i, redEnvelope.getMoneyInt());
+            double money = redEnvelope.getMoneyDouble();
+            BarEntry barEntry = new BarEntry(i, (float) money);
             barEntry.setData(redEnvelope.getCreatedDate() + "\n"
                     + redEnvelope.getMoneyFrom()
-                    + ": " + format.format(redEnvelope.getMoneyInt()));
+                    + ": " + format.format(money));
             entries.add(barEntry);
         }
 
