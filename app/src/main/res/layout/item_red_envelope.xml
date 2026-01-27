@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/tv_from"
         android:layout_width="0dp"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:text="123"
         android:textStyle="bold"
