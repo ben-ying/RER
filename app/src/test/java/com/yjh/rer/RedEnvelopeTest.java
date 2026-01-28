@@ -2,7 +2,7 @@ package com.yjh.rer;
 
 import static org.junit.Assert.assertEquals;
 
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 
 import org.junit.Test;
 

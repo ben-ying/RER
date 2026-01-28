@@ -1,4 +1,4 @@
-package com.yjh.rer.network;
+package com.yjh.rer.data.network;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;

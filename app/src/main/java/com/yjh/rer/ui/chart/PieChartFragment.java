@@ -16,11 +16,10 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.databinding.FragmentPieChartBinding;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.yjh.rer.injection.Injectable;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import java.util.List;

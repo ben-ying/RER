@@ -1,9 +1,9 @@
-package com.yjh.rer.room.entity;
+package com.yjh.rer.data.room.entity;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import static com.yjh.rer.room.entity.RedEnvelope.TABLE_NAME;
+import static com.yjh.rer.data.room.entity.RedEnvelope.TABLE_NAME;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

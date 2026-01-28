@@ -1,4 +1,4 @@
-package com.yjh.rer.repository;
+package com.yjh.rer.data.repository;
 
 
 import androidx.lifecycle.LiveData;
@@ -7,12 +7,12 @@ import androidx.annotation.Nullable;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
-import com.yjh.rer.network.ApiResponse;
-import com.yjh.rer.network.NetworkBoundResource;
-import com.yjh.rer.network.Resource;
-import com.yjh.rer.network.Webservice;
-import com.yjh.rer.room.dao.RedEnvelopeDao;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.network.ApiResponse;
+import com.yjh.rer.data.network.NetworkBoundResource;
+import com.yjh.rer.data.network.Resource;
+import com.yjh.rer.data.network.Webservice;
+import com.yjh.rer.data.room.dao.RedEnvelopeDao;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.util.RateLimiter;
 
 import java.util.List;

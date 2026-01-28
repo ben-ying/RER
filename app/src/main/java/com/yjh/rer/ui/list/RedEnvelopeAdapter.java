@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.databinding.ItemRedEnvelopeBinding;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.util.AlertUtils;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         RedEnvelopeViewHolder(ItemRedEnvelopeBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            
+
             // 设置点击监听器
             binding.contentLayout.setOnClickListener(v -> intent2DetailView(v));
             binding.contentLayout.setOnLongClickListener(v -> showDeleteDialog(v));

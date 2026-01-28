@@ -2,7 +2,7 @@ package com.yjh.rer.util;
 
 import androidx.lifecycle.LiveData;
 
-import com.yjh.rer.network.ApiResponse;
+import com.yjh.rer.data.network.ApiResponse;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;

@@ -1,4 +1,4 @@
-package com.yjh.rer.room.dao;
+package com.yjh.rer.data.room.dao;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
@@ -8,7 +8,8 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.yjh.rer.room.entity.RedEnvelope;
+
+import com.yjh.rer.data.room.entity.RedEnvelope;
 
 import java.util.List;
 

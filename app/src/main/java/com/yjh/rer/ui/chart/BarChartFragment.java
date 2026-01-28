@@ -18,7 +18,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.databinding.FragmentBarChartBinding;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.util.MoneyFormatter;
 
 import java.util.ArrayList;

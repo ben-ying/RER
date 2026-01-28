@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.yjh.rer.network.Resource;
-import com.yjh.rer.repository.RedEnvelopeRepository;
-import com.yjh.rer.room.dao.RedEnvelopeDao;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.network.Resource;
+import com.yjh.rer.data.repository.RedEnvelopeRepository;
+import com.yjh.rer.data.room.dao.RedEnvelopeDao;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 
 import java.util.List;
 

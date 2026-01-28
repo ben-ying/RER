@@ -1,9 +1,9 @@
 package com.yjh.rer.ui.list;
 
 
-import android.app.AlertDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
@@ -31,8 +31,8 @@ import com.yjh.rer.config.AppConfig;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.ui.MainActivity;
-import com.yjh.rer.network.Resource;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.network.Resource;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
 
 import java.util.Collections;
@@ -88,16 +88,16 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentRedEnvelopesBinding.inflate(inflater, container, false);
-        
+
         // 初始化视图引用
         totalTextView = binding.tvTotal;
         recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefreshLayout;
         progressBar = binding.progressLayout.progressBar;
         scrollView = binding.scrollView;
-        
+
         initView();
-        
+
         return binding.getRoot();
     }
 
@@ -225,7 +225,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private void initRecyclerViewData() {
         mViewModel = new ViewModelProvider(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken(AppConfig.DEFAULT_TOKEN);
-        mViewModel.getRedEnvelopesResource().observe(this, this::setData);
+        mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
         progressBar.setVisibility(View.VISIBLE);
         mViewModel.load(AppConfig.DEFAULT_USER_ID);
     }
@@ -279,7 +279,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     public void addRedEnvelopDialog() {
         DialogAddRedEnvelopeBinding dialogBinding = DialogAddRedEnvelopeBinding.inflate(
                 LayoutInflater.from(getActivity()));
-        
+
         final AlertDialog dialog = new MaterialAlertDialogBuilder(getActivity(), R.style.MyDialogTheme)
                 .setTitle(R.string.red_envelopes)
                 .setView(dialogBinding.getRoot())

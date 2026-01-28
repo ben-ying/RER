@@ -9,9 +9,8 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/default_text_color</item>
-        <item name="colorBackground">@color/app_background</item>
+        <item name="android:colorBackground">@color/app_background</item>
         <item name="colorOnBackground">@color/default_text_color</item>
-        <item name="materialToolbarStyle">@style/Widget.RER.Toolbar</item>
         <item name="tabStyle">@style/Widget.RER.TabLayout</item>
         <item name="materialCardViewStyle">@style/Widget.RER.Card</item>
         <item name="textInputStyle">@style/Widget.RER.TextInputLayout</item>
@@ -66,17 +65,21 @@
         <item name="itemShapeFillColor">@color/surface</item>
     </style>
 
-    <style name="ShapeAppearanceOverlay.RER.Card">
+    <style name="ShapeAppearanceOverlay" />
+
+    <style name="ShapeAppearanceOverlay.RER" />
+
+    <style name="ShapeAppearanceOverlay.RER.Card" parent="ShapeAppearanceOverlay.RER">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/card_radius</item>
     </style>
 
-    <style name="ShapeAppearanceOverlay.RER.Input">
+    <style name="ShapeAppearanceOverlay.RER.Input" parent="ShapeAppearanceOverlay.RER">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/card_radius</item>
     </style>
 
-    <style name="ShapeAppearanceOverlay.RER.NavItem">
+    <style name="ShapeAppearanceOverlay.RER.NavItem" parent="ShapeAppearanceOverlay.RER">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/space_s</item>
     </style>

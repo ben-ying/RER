@@ -1,11 +1,11 @@
-package com.yjh.rer.network;
+package com.yjh.rer.data.network;
 
 
 import androidx.lifecycle.LiveData;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;
-import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.data.room.entity.RedEnvelope;
 
 import java.util.List;
 
