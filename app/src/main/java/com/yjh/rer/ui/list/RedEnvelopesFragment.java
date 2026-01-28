@@ -28,8 +28,10 @@ import android.widget.TextView;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.config.AppConfig;
+import com.yjh.rer.util.AlertUtils;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
+import com.yjh.rer.data.network.Status;
 import com.yjh.rer.ui.MainActivity;
 import com.yjh.rer.data.network.Resource;
 import com.yjh.rer.data.room.entity.RedEnvelope;
@@ -69,6 +71,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private int mScrollViewState = -1;
     private boolean reverseSorting;
     private boolean mIsFirstOpen;
+    private boolean hasShownError;
     private SharedPreferences mSharedPreferences;
 
     public static RedEnvelopesFragment newInstance() {
@@ -231,37 +234,62 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
-        if (listResource != null && listResource.getData() != null) {
-            if (listResource.getData().size() > 0) {
-                progressBar.setVisibility(View.GONE);
-            }
+        if (listResource == null) {
+            progressBar.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
-            redEnvelopes = listResource.getData();
-            double total = 0.0;
-            for (RedEnvelope redEnvelope : redEnvelopes) {
-                total += redEnvelope.getMoneyDouble();
-            }
-            if (totalTextView.getVisibility() == View.GONE) {
-                totalTextView.setVisibility(View.VISIBLE);
-            }
-            totalTextView.setText(String.format(getString(
-                    R.string.red_envelope_total), redEnvelopes.size(), total));
-            if (reverseSorting) {
-                Collections.reverse(redEnvelopes);
-            }
-            setAdapter();
+            return;
+        }
 
-            // init chart data when first open app
-            if (mIsFirstOpen && redEnvelopes.size() > 0) {
-                Fragment fragment = getActivity().getSupportFragmentManager()
-                        .findFragmentById(R.id.container);
-                if (fragment != null && fragment.isAdded()
-                        && fragment instanceof BaseDaggerFragment) {
-                    mSharedPreferences.edit().putBoolean(
-                            FIRST_OPEN_APP, false).apply();
-                    mIsFirstOpen = false;
-                    ((BaseDaggerFragment) fragment).setData(redEnvelopes);
+        if (listResource.getStatus() == Status.LOADING) {
+            hasShownError = false;
+            progressBar.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        swipeRefreshLayout.setRefreshing(false);
+        progressBar.setVisibility(View.GONE);
+
+        if (listResource.getStatus() == Status.ERROR) {
+            if (!hasShownError) {
+                String message = listResource.getMessage();
+                if (TextUtils.isEmpty(message)) {
+                    message = getString(R.string.api_error_message);
                 }
+                AlertUtils.showAlertDialog(requireContext(), message);
+                hasShownError = true;
+            }
+            return;
+        }
+
+        if (listResource.getData() == null) {
+            return;
+        }
+
+        redEnvelopes = listResource.getData();
+        double total = 0.0;
+        for (RedEnvelope redEnvelope : redEnvelopes) {
+            total += redEnvelope.getMoneyDouble();
+        }
+        if (totalTextView.getVisibility() == View.GONE) {
+            totalTextView.setVisibility(View.VISIBLE);
+        }
+        totalTextView.setText(String.format(getString(
+                R.string.red_envelope_total), redEnvelopes.size(), total));
+        if (reverseSorting) {
+            Collections.reverse(redEnvelopes);
+        }
+        setAdapter();
+
+        // init chart data when first open app
+        if (mIsFirstOpen && redEnvelopes.size() > 0) {
+            Fragment fragment = getActivity().getSupportFragmentManager()
+                    .findFragmentById(R.id.container);
+            if (fragment != null && fragment.isAdded()
+                    && fragment instanceof BaseDaggerFragment) {
+                mSharedPreferences.edit().putBoolean(
+                        FIRST_OPEN_APP, false).apply();
+                mIsFirstOpen = false;
+                ((BaseDaggerFragment) fragment).setData(redEnvelopes);
             }
         }
     }

@@ -4,7 +4,7 @@ package com.yjh.rer.data.network;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.yjh.rer.network.Status;
+import com.yjh.rer.data.network.Status;
 
 public class Resource<T> {
     private final Status mStatus;

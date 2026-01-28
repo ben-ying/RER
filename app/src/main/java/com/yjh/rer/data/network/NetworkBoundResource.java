@@ -47,9 +47,8 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
                 saveResultAndReInit(requestTypeApiResponse);
             } else {
                 onFetchFailed();
-                mResult.addSource(dbSource, resultType -> {
-                    Resource.error(requestTypeApiResponse.getErrorMessage(), resultType);
-                });
+                mResult.setValue(Resource.error(
+                        requestTypeApiResponse.getErrorMessage(), dbSource.getValue()));
             }
         });
     }
