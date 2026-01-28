@@ -1,20 +1,19 @@
 package com.yjh.rer.base;
 
-import android.support.v4.app.Fragment;
-
 import javax.inject.Inject;
 
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import dagger.android.HasAndroidInjector;
+import dagger.android.AndroidInjector;
 
 public abstract class BaseDaggerActivity extends BaseActivity
-        implements HasSupportFragmentInjector {
+        implements HasAndroidInjector {
 
     @Inject
-    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
+    DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Override
-    public DispatchingAndroidInjector<Fragment> supportFragmentInjector() {
+    public AndroidInjector<Object> androidInjector() {
         return dispatchingAndroidInjector;
     }
 }

@@ -1,14 +1,14 @@
 package com.yjh.rer.room.entity;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import static com.yjh.rer.room.entity.RedEnvelope.TABLE_NAME;
+
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 @Entity(tableName = TABLE_NAME)
 public class RedEnvelope {

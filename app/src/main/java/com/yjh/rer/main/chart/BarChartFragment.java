@@ -1,5 +1,12 @@
 package com.yjh.rer.main.chart;
 
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -11,18 +18,17 @@ import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
+import com.yjh.rer.databinding.FragmentBarChartBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-
 public class BarChartFragment extends BaseDaggerFragment {
 
-    @BindView(R.id.bar_chart)
-    BarChart chart;
+    private FragmentBarChartBinding binding;
+    private BarChart chart;
 
     public static BarChartFragment newInstance() {
         return new BarChartFragment();
@@ -31,6 +37,16 @@ public class BarChartFragment extends BaseDaggerFragment {
     @Override
     public int getLayoutId() {
         return R.layout.fragment_bar_chart;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentBarChartBinding.inflate(inflater, container, false);
+        chart = binding.barChart;
+        initView();
+        return binding.getRoot();
     }
 
     @Override
@@ -50,6 +66,12 @@ public class BarChartFragment extends BaseDaggerFragment {
         xAxis.setValueFormatter((value, axis) ->
             String.valueOf(redEnvelopes.get((int) value).getMoneyFrom()));
         chart.setDoubleTapToZoomEnabled(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override

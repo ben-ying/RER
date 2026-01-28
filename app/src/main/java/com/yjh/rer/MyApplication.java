@@ -13,15 +13,16 @@ import com.yjh.rer.util.CrashLibrary;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
+import dagger.android.HasAndroidInjector;
 import timber.log.Timber;
 
-public class MyApplication extends Application implements HasActivityInjector {
+public class MyApplication extends Application implements HasAndroidInjector {
 
 //    private RefWatcher mRefWatcher;
     @Inject
-    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    DispatchingAndroidInjector<Object> dispatchingAndroidInjector;
 
     @Override
     public void onCreate() {
@@ -44,7 +45,7 @@ public class MyApplication extends Application implements HasActivityInjector {
     }
 
     @Override
-    public DispatchingAndroidInjector<Activity> activityInjector() {
+    public AndroidInjector<Object> androidInjector() {
         return dispatchingAndroidInjector;
     }
 

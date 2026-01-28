@@ -1,7 +1,7 @@
 package com.yjh.rer.network;
 
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 
 import com.yjh.rer.model.CustomResponse;
 import com.yjh.rer.model.ListResponseResult;

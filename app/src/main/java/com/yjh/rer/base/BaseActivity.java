@@ -1,30 +1,19 @@
 package com.yjh.rer.base;
 
-import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
-import butterknife.ButterKnife;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
 
-public abstract class BaseActivity extends AppCompatActivity implements
-        LifecycleRegistryOwner {
-
-    private final LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
+public abstract class BaseActivity extends AppCompatActivity implements LifecycleOwner {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        ButterKnife.bind(this);
 
-        initView();
-    }
-
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return mLifecycleRegistry;
+//        initView();
     }
 
     public abstract int getLayoutId();

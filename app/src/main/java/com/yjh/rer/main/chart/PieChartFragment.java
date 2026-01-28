@@ -1,6 +1,12 @@
 package com.yjh.rer.main.chart;
 
 import android.graphics.Color;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -13,6 +19,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.databinding.FragmentPieChartBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.text.DecimalFormat;
@@ -21,11 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindView;
-
 public class PieChartFragment extends BaseDaggerFragment implements OnChartValueSelectedListener {
-    @BindView(R.id.pie_chart)
-    PieChart pieChart;
+    private FragmentPieChartBinding binding;
+    private PieChart pieChart;
 
     public static PieChartFragment newInstance() {
         return new PieChartFragment();
@@ -34,6 +39,16 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
     @Override
     public int getLayoutId() {
         return R.layout.fragment_pie_chart;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentPieChartBinding.inflate(inflater, container, false);
+        pieChart = binding.pieChart;
+        initView();
+        return binding.getRoot();
     }
 
     @Override
@@ -52,6 +67,12 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override

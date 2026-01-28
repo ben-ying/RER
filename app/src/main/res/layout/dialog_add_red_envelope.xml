@@ -4,7 +4,7 @@
     android:padding="@dimen/space_l"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/default_input_layout"
         android:layout_marginTop="@dimen/space_s">
 
@@ -18,9 +18,9 @@
             android:gravity="bottom"
             android:background="@drawable/bg_edit_text"
             android:imeOptions="actionNext" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/default_input_layout"
         android:layout_marginTop="@dimen/space_s">
 
@@ -34,9 +34,9 @@
             android:inputType="numberDecimal"
             android:background="@drawable/bg_edit_text"
             android:imeOptions="actionNext" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/default_input_layout"
         android:layout_marginTop="@dimen/space_s">
 
@@ -50,5 +50,5 @@
             android:maxLines="1"
             android:background="@drawable/bg_edit_text"
             android:imeOptions="actionDone" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

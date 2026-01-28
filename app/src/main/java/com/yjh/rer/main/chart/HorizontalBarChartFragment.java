@@ -1,5 +1,12 @@
 package com.yjh.rer.main.chart;
 
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -11,23 +18,17 @@ import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
+import com.yjh.rer.databinding.FragmentHorizontalBarChartBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-import butterknife.BindView;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.disposables.Disposable;
+import java.util.Comparator;
 
 public class HorizontalBarChartFragment extends BaseDaggerFragment {
 
-    @BindView(R.id.horizontal_bar_chart)
-    HorizontalBarChart chart;
-
-    private Disposable mDisposable;
+    private FragmentHorizontalBarChartBinding binding;
+    private HorizontalBarChart chart;
 
     public static HorizontalBarChartFragment newInstance() {
         return new HorizontalBarChartFragment();
@@ -36,6 +37,16 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
     @Override
     public int getLayoutId() {
         return R.layout.fragment_horizontal_bar_chart;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentHorizontalBarChartBinding.inflate(inflater, container, false);
+        chart = binding.horizontalBarChart;
+        initView();
+        return binding.getRoot();
     }
 
     @Override
@@ -58,11 +69,9 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
@@ -76,15 +85,8 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
     }
 
     private void sortByAmount(final List<RedEnvelope> redEnvelopes) {
-        mDisposable = Observable
-                .create((ObservableEmitter<RedEnvelope> e) -> {
-                    for (RedEnvelope redEnvelope : redEnvelopes) {
-                        e.onNext(redEnvelope);
-                    }
-                    e.onComplete();
-                })
-                .toSortedList(Comparator.comparing(RedEnvelope::getMoneyDouble))
-                .subscribe((res) -> this.redEnvelopes = res);
+        redEnvelopes.sort(Comparator.comparing(RedEnvelope::getMoneyDouble));
+        this.redEnvelopes = redEnvelopes;
     }
 
     private BarData generateBarData() {
@@ -98,7 +100,7 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment {
             barEntry.setData(redEnvelope.getCreatedDate() + "\n"
                     + redEnvelope.getMoneyFrom()
                     + ": " + Utils.formatNumber(
-                    money, 2, true));
+                    (float) money, 2, true));
             entries.add(barEntry);
         }
 
