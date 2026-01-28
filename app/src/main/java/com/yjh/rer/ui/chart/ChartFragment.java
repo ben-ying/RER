@@ -1,4 +1,4 @@
-package com.yjh.rer.main.chart;
+package com.yjh.rer.ui.chart;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;

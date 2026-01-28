@@ -1,4 +1,4 @@
-package com.yjh.rer.main;
+package com.yjh.rer.ui;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -17,9 +17,9 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerActivity;
 import com.yjh.rer.base.BaseFragment;
 import com.yjh.rer.databinding.ActivityMainBinding;
-import com.yjh.rer.main.chart.ChartFragment;
-import com.yjh.rer.main.list.HomeViewPagerAdapter;
-import com.yjh.rer.main.list.RedEnvelopesFragment;
+import com.yjh.rer.ui.chart.ChartFragment;
+import com.yjh.rer.ui.list.HomeViewPagerAdapter;
+import com.yjh.rer.ui.list.RedEnvelopesFragment;
 
 import java.util.ArrayList;
 import java.util.List;

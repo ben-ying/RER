@@ -1,4 +1,4 @@
-package com.yjh.rer.main.list;
+package com.yjh.rer.ui.list;
 
 
 import android.app.AlertDialog;
@@ -27,9 +27,10 @@ import android.widget.TextView;
 
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
+import com.yjh.rer.config.AppConfig;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
-import com.yjh.rer.main.MainActivity;
+import com.yjh.rer.ui.MainActivity;
 import com.yjh.rer.network.Resource;
 import com.yjh.rer.room.entity.RedEnvelope;
 import com.yjh.rer.viewmodel.RedEnvelopeViewModel;
@@ -176,7 +177,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         swipeRefreshLayout.setColorSchemeResources(R.color.google_blue,
                 R.color.google_green, R.color.google_red, R.color.google_yellow);
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            mViewModel.load("1");
+            mViewModel.load(AppConfig.DEFAULT_USER_ID);
             progressBar.setVisibility(View.VISIBLE);
         });
 
@@ -223,10 +224,10 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private void initRecyclerViewData() {
         mViewModel = new ViewModelProvider(this, viewModelFactory).get(RedEnvelopeViewModel.class);
-        mViewModel.setToken("83cd0f7a0483db73ce4223658cb61deac6531e85");
+        mViewModel.setToken(AppConfig.DEFAULT_TOKEN);
         mViewModel.getRedEnvelopesResource().observe(this, this::setData);
         progressBar.setVisibility(View.VISIBLE);
-        mViewModel.load("1");
+        mViewModel.load(AppConfig.DEFAULT_USER_ID);
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {

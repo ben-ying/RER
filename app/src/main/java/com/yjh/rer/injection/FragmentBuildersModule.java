@@ -1,9 +1,9 @@
 package com.yjh.rer.injection;
 
-import com.yjh.rer.main.chart.BarChartFragment;
-import com.yjh.rer.main.chart.HorizontalBarChartFragment;
-import com.yjh.rer.main.chart.PieChartFragment;
-import com.yjh.rer.main.list.RedEnvelopesFragment;
+import com.yjh.rer.ui.chart.BarChartFragment;
+import com.yjh.rer.ui.chart.HorizontalBarChartFragment;
+import com.yjh.rer.ui.chart.PieChartFragment;
+import com.yjh.rer.ui.list.RedEnvelopesFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

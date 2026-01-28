@@ -1,4 +1,4 @@
-package com.yjh.rer.main.chart;
+package com.yjh.rer.ui.chart;
 
 import android.graphics.Color;
 import android.os.Bundle;

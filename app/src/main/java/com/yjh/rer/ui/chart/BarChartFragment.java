@@ -1,4 +1,4 @@
-package com.yjh.rer.main.chart;
+package com.yjh.rer.ui.chart;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -14,14 +14,13 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.Utils;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.custom.MyMarkerView;
 import com.yjh.rer.databinding.FragmentBarChartBinding;
 import com.yjh.rer.room.entity.RedEnvelope;
+import com.yjh.rer.util.MoneyFormatter;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +86,6 @@ public class BarChartFragment extends BaseDaggerFragment {
     }
 
     private BarData generateBarData() {
-        final DecimalFormat format = new DecimalFormat("###,###,###.##");
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
 
@@ -97,7 +95,7 @@ public class BarChartFragment extends BaseDaggerFragment {
             BarEntry barEntry = new BarEntry(i, (float) money);
             barEntry.setData(redEnvelope.getCreatedDate() + "\n"
                     + redEnvelope.getMoneyFrom()
-                    + ": " + format.format(money));
+                    + ": " + MoneyFormatter.format(money));
             entries.add(barEntry);
         }
 

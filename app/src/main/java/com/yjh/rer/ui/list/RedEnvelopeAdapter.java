@@ -1,4 +1,4 @@
-package com.yjh.rer.main.list;
+package com.yjh.rer.ui.list;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;

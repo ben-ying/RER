@@ -1,6 +1,6 @@
 package com.yjh.rer.injection;
 
-import com.yjh.rer.main.MainActivity;
+import com.yjh.rer.ui.MainActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
