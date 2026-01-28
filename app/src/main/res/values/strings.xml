@@ -5,8 +5,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">设置</string>
-    <string name="action_sorted_by_date">按日期显示</string>
-    <string name="action_sorted_by_amount">按金额显示</string>
+    <string name="action_sorted_by_date">按年份显示</string>
+    <string name="action_sorted_by_amount">按来源汇总</string>
     <string name="action_sorted_by_category">按种类显示</string>
     <string name="action_sort">排序</string>
     <string name="category_others">其它红包</string>

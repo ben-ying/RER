@@ -5,9 +5,9 @@
     style="@style/Widget.RER.Toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorSurface"
-    app:titleTextColor="?attr/colorOnSurface"
-    app:navigationIconTint="?attr/colorOnSurface"
+    android:background="?attr/colorPrimary"
+    app:titleTextColor="?attr/colorOnPrimary"
+    app:navigationIconTint="?attr/colorOnPrimary"
     app:contentInsetStartWithNavigation="@dimen/space_m"
     app:layout_scrollFlags="scroll|enterAlways"
     app:popupTheme="@style/AppTheme.PopupOverlay" />

@@ -62,7 +62,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
     private TextView totalTextView;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ProgressBar progressBar;
+    private View progressOverlay;
     private NestedScrollView scrollView;
 
     private RedEnvelopeViewModel mViewModel;
@@ -96,7 +96,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         totalTextView = binding.tvTotal;
         recyclerView = binding.recyclerView;
         swipeRefreshLayout = binding.swipeRefreshLayout;
-        progressBar = binding.progressLayout.progressBar;
+        progressOverlay = binding.progressLayout.getRoot();
         scrollView = binding.scrollView;
 
         initView();
@@ -129,7 +129,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     @Override
     public void delete(int reId) {
-        progressBar.setVisibility(View.VISIBLE);
+        progressOverlay.setVisibility(View.VISIBLE);
         mViewModel.delete(reId);
     }
 
@@ -181,7 +181,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
                 R.color.google_green, R.color.google_red, R.color.google_yellow);
         swipeRefreshLayout.setOnRefreshListener(() -> {
             mViewModel.load(AppConfig.DEFAULT_USER_ID);
-            progressBar.setVisibility(View.VISIBLE);
+            progressOverlay.setVisibility(View.VISIBLE);
         });
 
         disposables.add(createScrollViewObservable()
@@ -229,25 +229,25 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         mViewModel = new ViewModelProvider(this, viewModelFactory).get(RedEnvelopeViewModel.class);
         mViewModel.setToken(AppConfig.DEFAULT_TOKEN);
         mViewModel.getRedEnvelopesResource().observe(getViewLifecycleOwner(), this::setData);
-        progressBar.setVisibility(View.VISIBLE);
+        progressOverlay.setVisibility(View.VISIBLE);
         mViewModel.load(AppConfig.DEFAULT_USER_ID);
     }
 
     private void setData(@Nullable Resource<List<RedEnvelope>> listResource) {
         if (listResource == null) {
-            progressBar.setVisibility(View.GONE);
+            progressOverlay.setVisibility(View.GONE);
             swipeRefreshLayout.setRefreshing(false);
             return;
         }
 
         if (listResource.getStatus() == Status.LOADING) {
             hasShownError = false;
-            progressBar.setVisibility(View.VISIBLE);
+            progressOverlay.setVisibility(View.VISIBLE);
             return;
         }
 
         swipeRefreshLayout.setRefreshing(false);
-        progressBar.setVisibility(View.GONE);
+        progressOverlay.setVisibility(View.GONE);
 
         if (listResource.getStatus() == Status.ERROR) {
             if (!hasShownError) {
@@ -321,7 +321,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v ->  {
             if (isValid(dialogBinding)) {
                 dialog.dismiss();
-                progressBar.setVisibility(View.VISIBLE);
+                progressOverlay.setVisibility(View.VISIBLE);
                 mViewModel.add(dialogBinding.etFrom.getText().toString(),
                         dialogBinding.etMoney.getText().toString(),
                         dialogBinding.etRemark.getText().toString());

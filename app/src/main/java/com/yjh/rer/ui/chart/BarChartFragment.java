@@ -23,11 +23,14 @@ import com.yjh.rer.util.MoneyFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class BarChartFragment extends BaseDaggerFragment {
 
     private FragmentBarChartBinding binding;
     private BarChart chart;
+    private final List<String> yearLabels = new ArrayList<>();
 
     public static BarChartFragment newInstance() {
         return new BarChartFragment();
@@ -62,8 +65,13 @@ public class BarChartFragment extends BaseDaggerFragment {
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(7);
-        xAxis.setValueFormatter((value, axis) ->
-            String.valueOf(redEnvelopes.get((int) value).getMoneyFrom()));
+        xAxis.setValueFormatter((value, axis) -> {
+            int index = (int) value;
+            if (index < 0 || index >= yearLabels.size()) {
+                return "";
+            }
+            return yearLabels.get(index);
+        });
         chart.setDoubleTapToZoomEnabled(false);
     }
 
@@ -77,7 +85,7 @@ public class BarChartFragment extends BaseDaggerFragment {
     public void setData(List<RedEnvelope> redEnvelopes) {
         super.setData(redEnvelopes);
         this.redEnvelopes = redEnvelopes;
-        chart.setData(generateBarData());
+        chart.setData(generateYearBarData());
         chart.invalidate();
         if (redEnvelopes.size() > 0) {
             // if data is empty set this, when has data chart always not shown
@@ -85,18 +93,28 @@ public class BarChartFragment extends BaseDaggerFragment {
         }
     }
 
-    private BarData generateBarData() {
+    private BarData generateYearBarData() {
         ArrayList<IBarDataSet> sets = new ArrayList<>();
         ArrayList<BarEntry> entries = new ArrayList<>();
+        yearLabels.clear();
 
-        for (int i = 0; i < redEnvelopes.size(); i++) {
-            RedEnvelope redEnvelope = redEnvelopes.get(i);
-            double money = redEnvelope.getMoneyDouble();
-            BarEntry barEntry = new BarEntry(i, (float) money);
-            barEntry.setData(redEnvelope.getCreatedDate() + "\n"
-                    + redEnvelope.getMoneyFrom()
-                    + ": " + MoneyFormatter.format(money));
+        Map<String, Double> yearTotals = new TreeMap<>();
+        for (RedEnvelope redEnvelope : redEnvelopes) {
+            String created = redEnvelope.getCreatedDate();
+            String year = created != null && created.length() >= 4
+                    ? created.substring(0, 4)
+                    : getString(R.string.category_others);
+            yearTotals.merge(year, redEnvelope.getMoneyDouble(), Double::sum);
+        }
+
+        int index = 0;
+        for (Map.Entry<String, Double> entry : yearTotals.entrySet()) {
+            yearLabels.add(entry.getKey());
+            double money = entry.getValue();
+            BarEntry barEntry = new BarEntry(index, (float) money);
+            barEntry.setData(entry.getKey() + ": " + MoneyFormatter.format(money));
             entries.add(barEntry);
+            index++;
         }
 
         BarDataSet ds = new BarDataSet(entries, getString(R.string.action_sorted_by_date));
