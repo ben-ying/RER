@@ -13,6 +13,7 @@ import com.yjh.rer.data.network.Resource;
 import com.yjh.rer.data.network.Webservice;
 import com.yjh.rer.data.room.dao.RedEnvelopeDao;
 import com.yjh.rer.data.room.entity.RedEnvelope;
+import com.yjh.rer.config.AppConfig;
 import com.yjh.rer.util.RateLimiter;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class RedEnvelopeRepository {
             @Override
             protected LiveData<ApiResponse<
                     CustomResponse<ListResponseResult<List<RedEnvelope>>>>> createCall() {
-                return mWebservice.getRedEnvelopes(token, userId);
+                return mWebservice.getRedEnvelopes(token, userId, AppConfig.DEFAULT_PAGE_SIZE);
             }
 
             @Override
