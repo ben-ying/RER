@@ -4,9 +4,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -16,20 +18,27 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.databinding.FragmentPieChartBinding;
 import com.yjh.rer.data.room.entity.RedEnvelope;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PieChartFragment extends BaseDaggerFragment implements OnChartValueSelectedListener {
     private FragmentPieChartBinding binding;
     private PieChart pieChart;
+    private final Set<String> shownCategories = new HashSet<>();
 
     public static PieChartFragment newInstance() {
         return new PieChartFragment();
@@ -86,6 +95,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
         Map<String, Double> map = new HashMap<>();
         Map<String, Double> sortedMap = new HashMap<>();
         sortedMap.put(getString(R.string.category_others), 0.0);
+        shownCategories.clear();
         double total = 0.0;
         for (RedEnvelope redEnvelope : redEnvelopes) {
             double money = redEnvelope.getMoneyDouble();
@@ -110,10 +120,13 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
                 .forEach(entry -> {
                     if (sortedMap.size() <= colors.size() - 1
                             && entry.getValue() / totalMoney > 0.02) {
-                        entries.add(new PieEntry(entry.getValue().floatValue(),
-                                entry.getKey() + "\n: " +
-                                        format.format(entry.getValue())));
+                        String key = entry.getKey();
+                        PieEntry pieEntry = new PieEntry(entry.getValue().floatValue(),
+                                key + "\n: " + format.format(entry.getValue()));
+                        pieEntry.setData(key);
+                        entries.add(pieEntry);
                         sortedMap.put(entry.getKey(), entry.getValue());
+                        shownCategories.add(entry.getKey());
                     } else {
                         sortedMap.put(getString(R.string.category_others),
                                 sortedMap.get(getString(R.string.category_others)) + entry.getValue());
@@ -121,10 +134,11 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
                 });
 
         if (sortedMap.get(getString(R.string.category_others)) > 0.0) {
-            entries.add(new PieEntry(sortedMap.get(getString(R.string.category_others)).floatValue(),
-                    getString(R.string.category_others) + "\n: " +
-                            format.format(sortedMap.get(
-                                    getString(R.string.category_others)))));
+            String others = getString(R.string.category_others);
+            PieEntry pieEntry = new PieEntry(sortedMap.get(others).floatValue(),
+                    others + "\n: " + format.format(sortedMap.get(others)));
+            pieEntry.setData(others);
+            entries.add(pieEntry);
         }
 
         PieDataSet pieDataSet = new PieDataSet(
@@ -141,11 +155,97 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
-        pieChart.setCenterText(((PieEntry) e).getLabel());
+        PieEntry pe = (PieEntry) e;
+        String key = pe.getData() instanceof String ? (String) pe.getData() : null;
+        if (key == null || key.trim().isEmpty()) {
+            pieChart.setCenterText(pe.getLabel());
+            return;
+        }
+        pieChart.setCenterText(key);
+        showCategoryDialog(key);
     }
 
     @Override
     public void onNothingSelected() {
         pieChart.setCenterText(getString(R.string.action_sorted_by_category));
+    }
+
+    private void showCategoryDialog(String category) {
+        if (redEnvelopes == null || redEnvelopes.isEmpty()) {
+            return;
+        }
+        String others = getString(R.string.category_others);
+        List<RedEnvelope> matched = new ArrayList<>();
+
+        for (RedEnvelope redEnvelope : redEnvelopes) {
+            String remark = redEnvelope.getRemark();
+            if (others.equals(category)) {
+                // 其它 = 未在图上单独展示的种类
+                if (!shownCategories.contains(remark)) {
+                    matched.add(redEnvelope);
+                }
+            } else {
+                if (category.equals(remark)) {
+                    matched.add(redEnvelope);
+                }
+            }
+        }
+
+        RecyclerView recyclerView = new RecyclerView(requireContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerView.setAdapter(new CategoryListAdapter(matched));
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.red_envelopes) + " - " + category)
+                .setView(recyclerView)
+                .setPositiveButton(R.string.ok, null)
+                .create();
+        dialog.show();
+    }
+
+    private static final class CategoryListAdapter
+            extends RecyclerView.Adapter<CategoryListAdapter.ViewHolder> {
+        private final List<RedEnvelope> items;
+
+        private CategoryListAdapter(List<RedEnvelope> items) {
+            this.items = items;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(android.R.layout.simple_list_item_2, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            RedEnvelope redEnvelope = items.get(position);
+            String money = com.yjh.rer.util.MoneyFormatter.format(redEnvelope.getMoneyDouble());
+            String from = redEnvelope.getMoneyFrom();
+            if (from == null || from.trim().isEmpty()) {
+                from = holder.itemView.getContext().getString(R.string.category_others);
+            }
+            holder.title.setText(from + "  " + money);
+            String remark = redEnvelope.getRemark() == null ? "" : redEnvelope.getRemark();
+            holder.subtitle.setText(redEnvelope.getCreatedDate() + "  " + remark);
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
+
+        static final class ViewHolder extends RecyclerView.ViewHolder {
+            final TextView title;
+            final TextView subtitle;
+
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                title = itemView.findViewById(android.R.id.text1);
+                subtitle = itemView.findViewById(android.R.id.text2);
+            }
+        }
     }
 }
