@@ -7,11 +7,11 @@
     android:layout_gravity="center"
     android:layout_marginStart="@dimen/space_m"
     android:layout_marginEnd="@dimen/space_m"
-    android:layout_marginTop="@dimen/space_s"
-    android:layout_marginBottom="@dimen/space_s"
+    android:layout_marginTop="@dimen/space_xs"
+    android:layout_marginBottom="@dimen/space_xs"
     android:clickable="true"
     android:focusable="true"
-    app:cardUseCompatPadding="true"
+    app:cardUseCompatPadding="false"
     app:cardElevation="@dimen/card_elevation"
     app:cardCornerRadius="@dimen/card_radius"
     app:cardBackgroundColor="@color/surface"
@@ -20,7 +20,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/space_l">
+        android:padding="@dimen/space_m">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_from"
