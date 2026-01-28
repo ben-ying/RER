@@ -4,21 +4,29 @@
     android:layout_height="match_parent"
     android:background="@color/app_background">
 
-    <TextView
-        android:id="@+id/tv_total"
-        android:textColor="@color/default_text_color"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:paddingStart="@dimen/space_l"
-        android:paddingEnd="@dimen/space_l"
-        android:background="@drawable/bg_total_bar"
-        android:elevation="@dimen/card_elevation"
-        android:gravity="center_vertical"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/total_card"
         android:layout_width="match_parent"
         android:layout_height="@dimen/total_bar_height"
         android:layout_marginStart="@dimen/space_m"
         android:layout_marginEnd="@dimen/space_m"
-        android:layout_marginTop="@dimen/space_m" />
+        android:layout_marginTop="@dimen/space_m"
+        app:cardBackgroundColor="@color/surface"
+        app:cardElevation="@dimen/card_elevation"
+        app:strokeColor="@color/divider"
+        app:strokeWidth="1dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_total"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/space_l"
+            android:paddingEnd="@dimen/space_l"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:textColor="@color/default_text_color"
+            android:textStyle="bold" />
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"

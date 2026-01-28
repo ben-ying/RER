@@ -2,6 +2,7 @@ package com.yjh.rer.main.list;
 
 
 import android.app.AlertDialog;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -278,7 +279,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         DialogAddRedEnvelopeBinding dialogBinding = DialogAddRedEnvelopeBinding.inflate(
                 LayoutInflater.from(getActivity()));
         
-        final AlertDialog dialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(getActivity(), R.style.MyDialogTheme)
                 .setTitle(R.string.red_envelopes)
                 .setView(dialogBinding.getRoot())
                 .setPositiveButton(R.string.ok, (dialogInterface, which) -> {

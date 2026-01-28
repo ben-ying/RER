@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.appbar.MaterialToolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
+    style="@style/Widget.RER.Toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
-    app:contentInsetStartWithNavigation="0dp"
+    android:background="?attr/colorSurface"
+    app:titleTextColor="?attr/colorOnSurface"
+    app:navigationIconTint="?attr/colorOnSurface"
+    app:contentInsetStartWithNavigation="@dimen/space_m"
     app:layout_scrollFlags="scroll|enterAlways"
     app:popupTheme="@style/AppTheme.PopupOverlay" />

@@ -1,11 +1,21 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/default_text_color</item>
+        <item name="colorBackground">@color/app_background</item>
+        <item name="colorOnBackground">@color/default_text_color</item>
+        <item name="materialToolbarStyle">@style/Widget.RER.Toolbar</item>
+        <item name="tabStyle">@style/Widget.RER.TabLayout</item>
+        <item name="materialCardViewStyle">@style/Widget.RER.Card</item>
+        <item name="textInputStyle">@style/Widget.RER.TextInputLayout</item>
+        <item name="navigationViewStyle">@style/Widget.RER.NavigationView</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -13,18 +23,61 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
 
-    <style name="default_input_layout">
+    <style name="default_input_layout" parent="Widget.RER.TextInputLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColorHint">@color/hint_color</item>
     </style>
 
-    <style name="MyDialogTheme" parent="@android:style/Theme.DeviceDefault.Light.Dialog.NoActionBar.MinWidth">
+    <style name="MyDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="Widget.RER.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="titleCentered">true</item>
+    </style>
+
+    <style name="Widget.RER.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabIndicatorFullWidth">false</item>
+    </style>
+
+    <style name="Widget.RER.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.RER.Card</item>
+    </style>
+
+    <style name="Widget.RER.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/surface</item>
+        <item name="boxStrokeColor">@color/colorPrimary</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.RER.Input</item>
+    </style>
+
+    <style name="Widget.RER.NavigationView" parent="Widget.MaterialComponents.NavigationView">
+        <item name="itemIconTint">@color/colorPrimary</item>
+        <item name="itemTextColor">@color/default_text_color</item>
+        <item name="itemShapeAppearance">@style/ShapeAppearanceOverlay.RER.NavItem</item>
+        <item name="itemShapeFillColor">@color/surface</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.RER.Card">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_radius</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.RER.Input">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/card_radius</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.RER.NavItem">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/space_s</item>
     </style>
 </resources>
