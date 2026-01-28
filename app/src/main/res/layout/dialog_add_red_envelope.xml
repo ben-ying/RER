@@ -44,8 +44,6 @@
             android:inputType="text"
             android:maxLines="1"
             android:minWidth="0dp"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
             android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

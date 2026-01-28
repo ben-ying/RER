@@ -118,7 +118,7 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment
         }
 
         List<Map.Entry<String, Double>> sortedTotals = new ArrayList<>(totals.entrySet());
-        sortedTotals.sort(Map.Entry.<String, Double>comparingByValue().reversed());
+        sortedTotals.sort(Map.Entry.<String, Double>comparingByValue());
 
         int index = 0;
         for (Map.Entry<String, Double> entry : sortedTotals) {
