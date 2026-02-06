@@ -29,6 +29,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.base.BaseDaggerFragment;
 import com.yjh.rer.config.AppConfig;
 import com.yjh.rer.util.AlertUtils;
+import com.yjh.rer.util.MoneyFormatter;
 import com.yjh.rer.databinding.DialogAddRedEnvelopeBinding;
 import com.yjh.rer.databinding.FragmentRedEnvelopesBinding;
 import com.yjh.rer.data.network.Status;
@@ -274,7 +275,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
             totalTextView.setVisibility(View.VISIBLE);
         }
         totalTextView.setText(String.format(getString(
-                R.string.red_envelope_total), redEnvelopes.size(), total));
+                R.string.red_envelope_total), redEnvelopes.size(), MoneyFormatter.format(total)));
         if (reverseSorting) {
             Collections.reverse(redEnvelopes);
         }

@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 
 public final class MoneyFormatter {
     private static final ThreadLocal<DecimalFormat> FORMATTER = ThreadLocal.withInitial(() -> {
-        DecimalFormat format = new DecimalFormat("#,##0.00");
+        DecimalFormat format = new DecimalFormat("#,##0");
         format.setRoundingMode(RoundingMode.HALF_UP);
         return format;
     });

@@ -11,6 +11,7 @@ import com.yjh.rer.R;
 import com.yjh.rer.databinding.ItemRedEnvelopeBinding;
 import com.yjh.rer.data.room.entity.RedEnvelope;
 import com.yjh.rer.util.AlertUtils;
+import com.yjh.rer.util.MoneyFormatter;
 
 import java.util.List;
 
@@ -53,8 +54,7 @@ public class RedEnvelopeAdapter extends RecyclerView.Adapter<
         holder.binding.tvFrom.setText(redEnvelope.getMoneyFrom());
         holder.binding.tvDatetime.setText(redEnvelope.getCreatedDate());
         holder.binding.tvRemark.setText(redEnvelope.getRemark());
-        holder.binding.tvMoney.setText(String.format(mContext.getString(R.string.red_envelope_yuan),
-                redEnvelope.getMoneyDouble()));
+        holder.binding.tvMoney.setText(MoneyFormatter.format(redEnvelope.getMoneyDouble()) + "(元)");
         holder.binding.contentLayout.setTag(redEnvelope);
     }
 
