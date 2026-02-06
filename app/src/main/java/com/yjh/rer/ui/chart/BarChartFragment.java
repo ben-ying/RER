@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -95,6 +96,7 @@ public class BarChartFragment extends BaseDaggerFragment implements OnChartValue
     public void setData(List<RedEnvelope> redEnvelopes) {
         super.setData(redEnvelopes);
         this.redEnvelopes = redEnvelopes;
+        this.redEnvelopes.sort(Comparator.comparing(RedEnvelope::getCreated).reversed());
         chart.setData(generateYearBarData());
         chart.invalidate();
         if (redEnvelopes.size() > 0) {

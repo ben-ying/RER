@@ -97,6 +97,7 @@ public class HorizontalBarChartFragment extends BaseDaggerFragment
     public void setData(List<RedEnvelope> redEnvelopes) {
         super.setData(redEnvelopes);
         this.redEnvelopes = redEnvelopes;
+        this.redEnvelopes.sort(Comparator.comparing(RedEnvelope::getCreated).reversed());
         chart.setData(generateMoneyFromBarData());
         chart.invalidate();
         chart.setVisibleXRangeMaximum(ChartFragment.CHART_PAGE_SIZE);

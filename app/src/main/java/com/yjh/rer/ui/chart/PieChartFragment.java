@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,7 @@ public class PieChartFragment extends BaseDaggerFragment implements OnChartValue
     @Override
     public void setData(List<RedEnvelope> redEnvelopes) {
         this.redEnvelopes = redEnvelopes;
+        this.redEnvelopes.sort(Comparator.comparing(RedEnvelope::getCreated).reversed());
         pieChart.setData(generatePieData());
         pieChart.invalidate();
     }

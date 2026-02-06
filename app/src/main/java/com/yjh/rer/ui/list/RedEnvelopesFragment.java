@@ -164,9 +164,11 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
 
     private void sortDataByTime() {
         if (redEnvelopes != null && mAdapter != null) {
-            redEnvelopes.sort(reverseSorting
-                    ? Comparator.comparing(RedEnvelope::getRedEnvelopeId).reversed()
-                    : Comparator.comparing(RedEnvelope::getRedEnvelopeId));
+            redEnvelopes.sort(
+                reverseSorting
+                    ? Comparator.comparing(RedEnvelope::getCreated).reversed()
+                    : Comparator.comparing(RedEnvelope::getCreated)
+            );
             reverseSorting = !reverseSorting;
             requireActivity().invalidateOptionsMenu();
             setAdapter();
@@ -267,6 +269,7 @@ public class RedEnvelopesFragment extends BaseDaggerFragment
         }
 
         redEnvelopes = listResource.getData();
+        redEnvelopes.sort(Comparator.comparing(RedEnvelope::getCreated).reversed());
         double total = 0.0;
         for (RedEnvelope redEnvelope : redEnvelopes) {
             total += redEnvelope.getMoneyDouble();
